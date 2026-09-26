@@ -197,10 +197,10 @@ border:1px solid var(--line);background:var(--panel);color:var(--ink);
 .play-btn svg{width:18px;height:18px;fill:currentColor;}
 .play-btn.on{background:var(--accent);color:var(--accent-ink);border-color:transparent;}
 .play-btn:disabled{opacity:0.4;}
-.run-btn{right:60px;}
-.run-btn svg{fill:none;}
-.run-btn.on svg{fill:currentColor;}
+.metro-btn{right:60px;}
+.metro-btn svg{fill:none;}
 .stars{color:var(--accent);letter-spacing:1px;margin-left:6px;}
+.done-stars{margin:0 0 4px;font-size:34px;line-height:1.1;letter-spacing:4px;color:var(--accent);}
 .keys.muted{opacity:0.55;}
 #score{width:100%;}
 #score svg{display:block;width:100%;height:auto;max-height:min(48vh,460px);margin-inline:auto;}
@@ -505,7 +505,7 @@ border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;fo
     </button>
 
     <main class="sheet" id="sheet">
-      <button class="play-btn run-btn" id="runBtn" type="button" aria-label="На оценку: сыграть в темпе с метрономом" hidden></button>
+      <button class="play-btn metro-btn" id="metroBtn" type="button" aria-label="Метроном" aria-pressed="false" hidden></button>
       <button class="play-btn" id="playBtn" type="button" aria-label="Прослушать с этой строки" hidden></button>
       <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
     </main>
@@ -629,6 +629,7 @@ border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;fo
     </button>
   </div>
   <section class="group">
+    <p class="done-stars" id="doneStars" hidden></p>
     <p class="note" id="donePiece"></p>
     <dl class="kv" id="doneKv"></dl>
     <p class="note" id="doneNote" hidden></p>
@@ -705,7 +706,7 @@ return now - lastDone.t < ECHO_MS;
 }
 const SETTINGS_DEFAULTS = {
 clef: 'treble', below: 1, above: 1, adaptive: true,
-naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
+naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, metronome: false, last: null,
 };
 function migrateSettings(old) {
 if (!old || typeof old !== 'object') return {};
@@ -811,50 +812,22 @@ e.soundEnd = at.get(last).end;
 }
 return { events, total: t };
 }
-const JUDGE_TIGHT = 0.12, JUDGE_LOOSE = 0.25;
-function judgeTimeline(score) {
-const ev = playbackPlan(score, null).events.filter((e) => e.midi != null);
-return ev.map((e, i) => {
-const gap = Math.min(i ? e.t - ev[i - 1].t : Infinity, i + 1 < ev.length ? ev[i + 1].t - e.t : Infinity);
-return { item: e.item, t: e.t, midi: e.midi, tight: Math.min(JUDGE_TIGHT, gap / 3), loose: Math.min(JUDGE_LOOSE, gap / 2) };
-});
+function noteTimes(score) {
+const at = new Map(playbackPlan(score, null).events.map((e) => [e.item, e.t]));
+return score.notes.map((n) => at.get(n));
 }
-const starsOf = (pct) => (pct >= 100 ? 3 : pct >= 85 ? 2 : pct >= 60 ? 1 : 0);
-function createJudge(timeline, same = (a, b) => a === b) {
-const res = timeline.map(() => null);
-let wrong = 0, next = 0;
-return {
-res,
-input(midi, t, canWrong = true) {
-let best = -1, bd = Infinity;
-for (let i = next; i < timeline.length && timeline[i].t - timeline[i].loose <= t; i++) {
-const n = timeline[i], d = Math.abs(t - n.t);
-if (!res[i] && d <= n.loose && same(midi, n.midi) && d < bd) { best = i; bd = d; }
+function rhythmResult(expected, actual) {
+let diff = 0, total = 0, n = 0;
+for (let i = 1; i < expected.length; i++) {
+if (actual[i] == null || actual[i - 1] == null) continue;
+const e = expected[i] - expected[i - 1], a = actual[i] - actual[i - 1];
+total += e;
+diff += Math.abs(a - e);
+n++;
 }
-if (best >= 0) {
-res[best] = { state: bd <= timeline[best].tight ? 'on' : 'near', dt: t - timeline[best].t };
-return { i: best, state: res[best].state, dt: res[best].dt };
+return { diff, total, n, dev: total > 0 ? Math.max(0, Math.ceil((100 * diff) / total - 1e-9)) : 0 };
 }
-if (canWrong) wrong++;
-return { i: -1, state: canWrong ? 'wrong' : 'ignored' };
-},
-tick(t) {
-const missed = [];
-while (next < timeline.length && (res[next] || t > timeline[next].t + timeline[next].loose)) {
-if (!res[next]) { res[next] = { state: 'miss', dt: null }; missed.push(next); }
-next++;
-}
-return missed;
-},
-pending() { for (let i = next; i < timeline.length; i++) if (!res[i]) return i; return -1; },
-result() {
-const n = timeline.length, count = (st) => res.filter((r) => r && r.state === st).length;
-const on = count('on'), near = count('near');
-const pct = n ? Math.max(0, Math.floor((100 * (on + near / 2 - wrong / 2)) / n)) : 0;
-return { n, on, near, miss: n - on - near, wrong, pct, stars: starsOf(pct) };
-},
-};
-}
+const pieceStars = (errors, dev) => (errors ? 0 : dev <= 20 ? 3 : dev <= 40 ? 2 : 1);
 const metroBeat = (time) => { const [n, d] = time || [4, 4]; return (d >= 8 && n % 3 === 0 ? 3 : 1) * durOf(d); };
 function metronomeBeats(score) {
 const plan = playbackPlan(score, null), start = new Map(plan.events.map((e) => [e.item, e.t]));
@@ -1670,8 +1643,8 @@ msg.textContent = piecesFlash || (piecesIndex.length ? 'Выберите пье�
 piecesFlash = null;
 list.innerHTML = piecesIndex.map((p) => `<li class="piece"><div class="piece-t"><b>${esc(p.title)}</b><span>${esc(p.composer || '')}</span></div>` +
 `<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) => {
-const sc = SCORES[`${p.id}:${c}`];
-return `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}"${sc ? ` aria-label="${CLEFS[c].name}, лучший результат на оценку ${sc.best}%"` : ''}>${CLEFS[c].name}${sc ? `<span class="stars" aria-hidden="true">${starsText(starsOf(sc.best))}</span>` : ''}</button>`;
+const k = SCORES[`${p.id}:${c}`] ? SCORES[`${p.id}:${c}`].stars : 0;
+return `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}" aria-label="${CLEFS[c].name}, звёзд: ${k} из 3">${CLEFS[c].name}<span class="stars" aria-hidden="true">${starsText(k)}</span></button>`;
 }).join('')}</div></li>`).join('');
 }
 $('piecesList').addEventListener('click', (e) => {
@@ -1730,7 +1703,7 @@ ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: n
 ex.W = sheetUnits();
 ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
 startExercise();
-$('playBtn').hidden = $('runBtn').hidden = true;
+$('playBtn').hidden = $('metroBtn').hidden = true;
 newRandomRow(false);
 renderAll();
 }
@@ -1755,22 +1728,23 @@ fresh = true;
 function startPiece(piece, clef) {
 const score = buildScore(piece, clef);
 const midis = score.notes.map((n) => n.midi);
-ex = { mode: 'piece', clef, piece, score, lo: Math.min(...midis), hi: Math.max(...midis), elapsed: 0 };
+ex = { mode: 'piece', clef, piece, score, lo: Math.min(...midis), hi: Math.max(...midis), elapsed: 0, pauseAcc: 0, pausedAt: 0 };
 ex.W = sheetUnits();
 ex.vb = scoreVBox(score);
 ex.rows = layoutRows(score, ex.W);
 ex.cur = 0;
 ex.row = 0;
 startExercise();
-$('playBtn').hidden = $('runBtn').hidden = false;
+$('playBtn').hidden = $('metroBtn').hidden = false;
 score.notes[0].startAt = performance.now();
 fresh = true;
 renderAll();
+metroStart();
 if (ex.rows[0].noteFrom < 0) { busy = true; const e = ex; setTimeout(() => { if (ex === e) nextRow(); }, 1400); }
 }
 function startExercise() {
 stopPlayback();
-stopRun(true);
+metroStop();
 busy = false; ghost = null; anim = null; lastDone = null;
 clearTimeout(ghostTimer);
 buildKeys(ex.lo, ex.hi);
@@ -1786,8 +1760,8 @@ loadPiano(Math.min(...ks), Math.max(...ks));
 }
 function leavePlay() {
 stopPlayback();
-stopRun(true);
-$('playBtn').hidden = $('runBtn').hidden = true;
+metroStop();
+$('playBtn').hidden = $('metroBtn').hidden = true;
 ex = null;
 busy = false;
 clearTimeout(ghostTimer);
@@ -1982,8 +1956,16 @@ const st = STATS.notes[k] || (STATS.notes[k] = { n: 0, e: 0, ms: 0 });
 st.n++; if (!clean) st.e++; st.ms += ms;
 store.set('slista.stats.v1', STATS);
 }
-function advance(status, midi, note = '') {
+function advance(status, midi, note = '', at = performance.now()) {
 const cur = curNote(), now = performance.now();
+if (ex.mode === 'piece') {
+const r = rowOfNote(ex.rows, ex.cur);
+if (r !== ex.row) { clearTimeout(ex.rowTimer); ex.row = r; fresh = true; }
+if (status === 'ok') {
+cur.at = at - ex.pauseAcc;
+if (ex.cur === 0) metroAnchor(at);
+}
+}
 const ms = Math.min(10000, now - cur.startAt);
 const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
 cur.status = status;
@@ -2002,15 +1984,33 @@ const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinte
 const done = ex.mode === 'piece' ? ex.cur >= ex.score.notes.length : ex.done + ex.cur >= ex.total;
 const rowMsg = notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '';
 if (!done) say([note, rowMsg].filter(Boolean).join(' '), note ? 'bad' : 'ok');
+const e = ex;
+if (ex.mode === 'piece') {
+if (done) { busy = true; renderScore(); renderStats(); renderTitle(); setTimeout(() => { if (ex === e) { busy = false; finishPiece(); } }, 500); return; }
+ex.score.notes[ex.cur].startAt = now;
+renderStats();
+pieceRow();
+return;
+}
 busy = true;
 renderScore(); renderStats(); renderTitle();
-const e = ex;
 setTimeout(() => { if (ex === e) nextRow(); }, 700);
 return;
 }
 ex.score.notes[ex.cur].startAt = now;
 if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
 renderScore(); renderStats(); renderTitle();
+}
+function pieceRow() {
+const e = ex, target = rowOfNote(ex.rows, ex.cur);
+clearTimeout(ex.rowTimer);
+ex.row = ex.row + 1 < target ? ex.row + 1 : target;
+fresh = true;
+renderScore(); renderTitle();
+if (ex.row >= target) return;
+const row = ex.rows[ex.row];
+const sec = row.parts.reduce((a, p) => { const m = ex.score.measures[p.mi]; return a + m.items.slice(p.from, p.to).reduce((b, it) => b + it.dur, 0) * 60 / ((m.tempo || 100) * TPQ); }, 0);
+ex.rowTimer = setTimeout(() => { if (ex === e && ex.row < rowOfNote(ex.rows, ex.cur)) pieceRow(); }, Math.min(1400, Math.max(600, sec * 1000)));
 }
 function nextRow() {
 const e = ex, n = ex.score.notes.length;
@@ -2034,14 +2034,13 @@ renderScore(); renderTitle();
 }
 let lastDone = null;
 function handleInput(midi, via, strong = true, at = performance.now()) {
-if (run) { if (screen === 'play' && !paused) runInput(midi, via, strong, at); return; }
 const cur = curNote();
 if (!cur || screen !== 'play' || busy || paused || pb) return;
 const now = performance.now();
 if ((via === 'onset' || via === 'legato') && now < micMuteUntil) return;
 const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
 if (isEcho(midi, via, strong, lastDone, now, hit)) return;
-if (hit) { lastDone = { midi, t: now }; advance('ok', midi); return; }
+if (hit) { lastDone = { midi, t: now }; advance('ok', midi, '', at); return; }
 if (via === 'legato') return;
 if (via === 'onset' && !strong) return;
 cur.errors++;
@@ -2067,21 +2066,34 @@ if (src === 'measure') return `${need}: знак раньше в такте де
 return `${need}.`;
 }
 function finishPiece() {
+metroStop();
 const notes = ex.score.notes;
 const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+const r = rhythmResult(noteTimes(ex.score), notes.map((n) => (n.at != null ? n.at / 1000 : null)));
+const stars = pieceStars(notes.length - first, r.dev);
+const key = `${ex.piece.id}:${ex.clef}`, prev = SCORES[key];
+const better = !prev || stars > prev.stars || (stars === prev.stars && r.dev < prev.dev);
+if (better) { SCORES[key] = { stars, dev: r.dev }; store.set(SCORES_KEY, SCORES); }
+const best = SCORES[key], ms = (x) => (x < 1 ? `${Math.round(x * 1000)} мс` : `${x.toFixed(1).replace('.', ',')} с`);
 $('doneTitle').textContent = 'Пьеса сыграна';
+$('doneStars').textContent = starsText(stars);
+$('doneStars').setAttribute('aria-label', `Звёзд: ${stars} из 3`);
+$('doneStars').hidden = false;
 $('doneList').textContent = 'К списку';
-$('doneNote').hidden = true;
 doneKind = 'piece';
-$('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)}`;
-$('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
-say('Пьеса сыграна.', 'ok');
+$('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)} · ♩ = ${String(ex.score.measures[0].tempo).replace('.', ',')}`;
+$('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd>`
++ `<dt>Отклонение ритма</dt><dd>${r.dev}%${r.n ? ` · ${ms(r.diff / r.n)} на промежуток` : ''}</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`
++ `<dt>Лучший результат</dt><dd>${starsText(best.stars)} · отклонение ${best.dev}%${better && prev ? ' · новый' : ''}</dd>`;
+$('doneNote').textContent = '★ — все ноты без ошибок, подсказок и пропусков. ★★ — ещё и отклонение ритма не больше 40%, ★★★ — не больше 20%. Отклонение — насколько в среднем промежуток между нотами разошёлся с пьесой в её темпе, от среднего промежутка; заминка портит только один промежуток. Метроном — кнопка на листе.';
+$('doneNote').hidden = false;
+say(stars ? `Пьеса сыграна: ${starsText(stars)}.` : 'Пьеса сыграна. Звезда — когда все ноты без ошибок.', 'ok');
 openPanel('donePanel');
 }
 function finishRandom() {
 $('doneTitle').textContent = 'Упражнение пройдено';
 $('doneList').textContent = 'К настройке';
-$('doneNote').hidden = true;
+$('doneNote').hidden = $('doneStars').hidden = true;
 doneKind = 'random';
 $('donePiece').textContent = `Случайные ноты · ${clefLabel(ex.clef)} · ${linesLabel(S.below, S.above)}`;
 $('doneKv').innerHTML = `<dt>Нот</dt><dd>${ex.total}</dd><dt>С первого раза</dt><dd>${ex.clean} (${pct(ex.clean, ex.total)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd><dt>В среднем на ноту</dt><dd>${fmtSec(ex.elapsed / ex.total)}</dd>`;
@@ -2091,7 +2103,7 @@ openPanel('donePanel');
 }
 $('doneAgain').addEventListener('click', () => {
 const e = ex, kind = doneKind;
-closePanel(() => { if (!e || ex !== e) return; if (kind === 'run') startRun(); else if (e.mode === 'random') startRandom(); else startPiece(e.piece, e.clef); });
+closePanel(() => { if (!e || ex !== e) return; if (kind === 'random') startRandom(); else startPiece(e.piece, e.clef); });
 });
 $('doneList').addEventListener('click', () => closePanel(() => history.back()));
 let pb = null, micMuteUntil = 0;
@@ -2114,6 +2126,7 @@ try { ctx = audioOut(); } catch (e) { say('Этот браузер не умее
 const first = ex.rows[ex.row].parts[0];
 const plan = playbackPlan(ex.score, ex.score.measures[first.mi].items[first.from]);
 pb = { e: ex, ctx, t0: ctx.currentTime + 0.12, plan, next: 0, vis: -1, shown: null, nodes: [], rowOf: itemRowMap(ex.score, ex.rows), timer: 0 };
+pauseStart();
 ghost = null;
 clearTimeout(ghostTimer);
 setHintKey(null);
@@ -2152,6 +2165,7 @@ for (const n of p.nodes) {
 try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.02); n.srcs.forEach((o) => o.stop(t + 0.1)); } catch (e) { /* уже отзвучала */ }
 }
 micMuteUntil = performance.now() + 1200;
+pauseEnd();
 setPlayUI(false);
 if (ex === p.e) {
 ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
@@ -2161,22 +2175,20 @@ fresh = true;
 renderScore(); renderTitle(); idleMessage();
 }
 }
-const SCORES_KEY = 'slista.scores.v1';
+const SCORES_KEY = 'slista.scores.v2';
 const SCORES = store.get(SCORES_KEY, null) || {};
 const MIC_LAG = 30;
 const METRO_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5L19 20.5H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 16.5l4.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const METRO_GAIN = 0.5;
 const starsText = (k) => '★'.repeat(k) + '☆'.repeat(3 - k);
-let run = null, clickBuf = null, doneKind = null, resetAfterRun = false;
-$('runBtn').innerHTML = METRO_ICON;
-function setRunUI(on) {
-const b = $('runBtn');
-b.classList.toggle('on', on);
-b.innerHTML = on ? STOP_ICON : METRO_ICON;
-b.setAttribute('aria-label', on ? 'Прервать игру на оценку' : 'На оценку: сыграть в темпе с метрономом');
-$('hintBtn').disabled = $('skipBtn').disabled = $('playBtn').disabled = on;
-setMicUI();
+let metro = null, clickBuf = null, doneKind = null;
+$('metroBtn').innerHTML = METRO_ICON;
+function setMetroUI() {
+const b = $('metroBtn');
+b.classList.toggle('on', !!S.metronome);
+b.setAttribute('aria-pressed', S.metronome ? 'true' : 'false');
 }
-function metroClick(ctx, when, accent, nodes) {
+function metroClick(ctx, when, accent) {
 if (!clickBuf || clickBuf.sampleRate !== ctx.sampleRate) {
 const n = Math.round(ctx.sampleRate * 0.03);
 clickBuf = ctx.createBuffer(1, n, ctx.sampleRate);
@@ -2188,117 +2200,61 @@ src.buffer = clickBuf;
 f.type = 'bandpass'; f.frequency.value = accent ? 3200 : 2300; f.Q.value = 1.4;
 g.gain.value = accent ? METRO_GAIN * 1.6 : METRO_GAIN;
 src.connect(f); f.connect(g); g.connect(outBus);
-src.start(Math.max(when, ctx.currentTime));
-nodes.push({ g, srcs: [src] });
+const t = Math.max(when, ctx.currentTime);
+src.start(t);
+return { src, when: t };
 }
-const METRO_GAIN = 0.5;
 const ctxTimeAt = (ctx, ms) => ctx.currentTime + (ms - performance.now()) / 1000 - ((ctx.outputLatency || 0) + (ctx.baseLatency || 0));
-function startRun() {
-if (!ex || ex.mode !== 'piece' || run || paused) return;
-stopPlayback();
+function metroStart() {
+metroStop();
+if (!S.metronome || !ex || ex.mode !== 'piece' || screen !== 'play') return;
 let ctx;
-try { ctx = audioOut(); } catch (e) { say('Этот браузер не умеет воспроизводить звук.', 'bad'); return; }
-busy = false; ghost = null; anim = null;
-clearTimeout(ghostTimer);
-setHintKey(null);
-for (const n of ex.score.notes) { n.status = null; n.errors = 0; n.hinted = false; }
-const timeline = judgeTimeline(ex.score), beats = metronomeBeats(ex.score);
-const same = S.octave ? undefined : (a, b) => (((a - b) % 12) + 12) % 12 === 0;
-run = { e: ex, ctx, timeline, beats, judge: createJudge(timeline, same), t0: performance.now() + (0.25 - beats[0].t) * 1000,
-end: playbackPlan(ex.score, null).total, nextBeat: 0, nodes: [], timer: 0, pend: -2, msg: '', holdUntil: 0, last: null };
-ex.cur = 0;
-ex.row = rowOfNote(ex.rows, 0);
-fresh = true;
-setRunUI(true);
-run.timer = setInterval(runTick, 25);
-runTick();
+try { ctx = audioOut(); } catch (e) { return; }
+const m0 = ex.score.measures[0], unit = metroBeat(m0.time);
+metro = { ctx, e: ex, beatMs: (unit * 60000) / ((m0.tempo || 100) * TPQ), per: Math.max(1, Math.round(m0.full / unit)),
+next: performance.now() + 150, k: 0, grid: [], clicks: [], timer: 0 };
+metro.timer = setInterval(metroTick, 25);
+metroTick();
 }
-function runTick() {
-const r = run;
-if (!r) return;
-if (ex !== r.e || screen !== 'play') { stopRun(true); return; }
-const now = performance.now(), t = (now - r.t0) / 1000;
-while (r.nextBeat < r.beats.length && r.beats[r.nextBeat].t < t + 0.3) {
-const b = r.beats[r.nextBeat++];
-metroClick(r.ctx, ctxTimeAt(r.ctx, r.t0 + b.t * 1000), b.accent, r.nodes);
+function metroTick() {
+const m = metro;
+if (!m) return;
+if (ex !== m.e || screen !== 'play') { metroStop(); return; }
+const now = performance.now();
+if (paused || pb) { m.next = Math.max(m.next, now + 150); m.grid = []; return; }
+m.clicks = m.clicks.filter((c) => c.when > m.ctx.currentTime - 1);
+while (m.next < now + 300) {
+m.clicks.push(metroClick(m.ctx, ctxTimeAt(m.ctx, m.next), m.k % m.per === 0));
+m.k++;
+m.next = m.grid.length ? m.grid.shift() : m.next + m.beatMs;
 }
-let beat = null;
-for (const b of r.beats) { if (b.t > t + 0.02) break; beat = b; }
-const msg = t < 0 ? (beat && beat.count ? `Счёт: ${beat.n}` : 'Приготовьтесь…') : 'Играйте в такт с метрономом.';
-if (msg !== r.msg && now > r.holdUntil) { r.msg = msg; say(msg); }
-const missed = r.judge.tick(t);
-for (const i of missed) r.timeline[i].item.status = 'miss';
-const k = r.judge.pending();
-if (missed.length || k !== r.pend) {
-r.pend = k;
-if (k >= 0) {
-ex.cur = r.timeline[k].item.idx;
-const row = rowOfNote(ex.rows, ex.cur);
-if (row !== ex.row) { ex.row = row; fresh = true; }
 }
-renderScore(); renderTitle();
+function metroCancel(m) {
+for (const c of m.clicks) if (c.when > m.ctx.currentTime + 0.005) { try { c.src.stop(); } catch (e) { /* уже прозвучал */ } }
+m.clicks = [];
 }
-const lastNote = r.timeline[r.timeline.length - 1];
-if (t > r.end + 0.3 || (k < 0 && t > lastNote.t + lastNote.loose + 0.3)) finishRun();
+function metroAnchor(at) {
+const m = metro;
+if (!m) return;
+const beats = metronomeBeats(ex.score).filter((b) => !b.count && b.t > 0.02);
+metroCancel(m);
+m.grid = beats.slice(1).map((b) => at + b.t * 1000);
+m.next = beats.length ? at + beats[0].t * 1000 : at + m.beatMs;
+m.k = beats.length ? beats[0].n - 1 : 1;
 }
-function runInput(midi, via, strong, at) {
-const r = run, t = (at - r.t0) / 1000;
-if (t < -0.4) return;
-const mic = via === 'onset' || via === 'legato';
-if (mic && r.last && r.last.midi === midi && at - r.last.at < 250) return;
-const res = r.judge.input(midi, t, !mic || (via === 'onset' && strong));
-if (res.i >= 0) {
-const it = r.timeline[res.i].item;
-r.last = { midi, at };
-it.status = res.state === 'on' ? 'ok' : 'near';
-anim = { type: 'pop', note: it };
-flashKey(midi, 'ok');
-r.pend = -2;
-} else if (res.state === 'wrong') {
-const sp = spellMidi(midi, keyAt(ex.score, curNote() || ex.score.notes[0]) < 0);
-flashKey(midi, 'bad');
-say(`Лишняя нота: ${nm(sp.d, sp.acc)}.`, 'bad');
-r.msg = '';
-r.holdUntil = performance.now() + 1100;
+function metroStop() {
+if (!metro) return;
+clearInterval(metro.timer);
+metroCancel(metro);
+metro = null;
 }
-runTick();
-}
-function stopRun(finished = false) {
-const r = run;
-if (!r) return;
-run = null;
-keyDownRun = false;
-clearInterval(r.timer);
-const t = r.ctx.currentTime;
-for (const n of r.nodes) {
-try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.01); n.srcs.forEach((o) => o.stop(t + 0.05)); } catch (e) { /* уже отзвучал */ }
-}
-setRunUI(false);
-if (!finished && ex === r.e && screen === 'play') { startPiece(ex.piece, ex.clef); say('Игра на оценку прервана.'); }
-}
-function finishRun() {
-const r = run;
-if (!r) return;
-r.judge.tick(Infinity).forEach((i) => { r.timeline[i].item.status = 'miss'; });
-stopRun(true);
-const res = r.judge.result(), key = `${ex.piece.id}:${ex.clef}`;
-const prev = SCORES[key] ? SCORES[key].best : null, better = prev == null || res.pct > prev;
-if (better) { SCORES[key] = { best: res.pct }; store.set(SCORES_KEY, SCORES); }
-const best = SCORES[key].best;
-ex.cur = ex.score.notes.length;
-$('doneTitle').textContent = `${res.pct}% ${starsText(res.stars)}`;
-$('doneList').textContent = 'К списку';
-$('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)} · на оценку, ♩ = ${String(ex.score.measures[0].tempo).replace('.', ',')}`;
-$('doneKv').innerHTML = `<dt>В такт</dt><dd>${res.on} из ${res.n}</dd><dt>Неточно</dt><dd>${res.near}</dd><dt>Пропущено</dt><dd>${res.miss}</dd>`
-+ `<dt>Лишние ноты</dt><dd>${res.wrong}</dd><dt>Лучший результат</dt><dd>${best}% ${starsText(starsOf(best))}${better && prev != null ? ' · новый' : ''}</dd>`;
-$('doneNote').textContent = 'В такт — балл, неточно — половина, лишняя нота — минус половина. ★ — от 60%, ★★ — от 85%, ★★★ — 100%: все ноты в такт и без лишних.';
-$('doneNote').hidden = false;
-doneKind = 'run';
-renderScore(); renderTitle();
-say(`На оценку: ${res.pct}%.`, res.pct >= 60 ? 'ok' : '');
-openPanel('donePanel');
-}
-$('runBtn').addEventListener('click', () => (run ? stopRun() : startRun()));
+$('metroBtn').addEventListener('click', () => {
+S.metronome = !S.metronome;
+save();
+setMetroUI();
+if (S.metronome) metroStart(); else metroStop();
+});
+setMetroUI();
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 let audio = null, wakeLock = null;
 function setMicUI() {
@@ -2306,7 +2262,7 @@ const on = micState === 'on';
 const btn = $('micBtn');
 btn.classList.toggle('primary', !on);
 btn.classList.toggle('on', on);
-btn.disabled = micState === 'starting' || !!pb || !!run;
+btn.disabled = micState === 'starting' || !!pb;
 $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
 $('meter').hidden = !on;
 $('spacer').hidden = on;
@@ -2531,6 +2487,8 @@ access.onstatechange = hook;
 note.textContent = 'Нет доступа к MIDI. Разрешите его в настройках сайта или откройте приложение как отдельный сайт.';
 }
 }
+function pauseStart() { if (ex && ex.mode === 'piece' && !ex.pausedAt) ex.pausedAt = performance.now(); }
+function pauseEnd() { if (ex && ex.pausedAt) { ex.pauseAcc += performance.now() - ex.pausedAt; ex.pausedAt = 0; } }
 let openPanelEl = null, returnFocus = null;
 function showPanel(id) {
 returnFocus = document.activeElement;
@@ -2541,25 +2499,24 @@ if (id === 'calibPanel') calReset();
 $('scrim').hidden = false;
 openPanelEl.hidden = false;
 paused = true;
+pauseStart();
 const f = openPanelEl.querySelector('[data-close]');
 if (f) f.focus();
 }
 function hidePanel() {
 if (!openPanelEl) return;
 if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
-if (openPanelEl.id === 'donePanel' && doneKind === 'run' && ex && ex.mode === 'piece' && screen === 'play') { doneKind = null; resetAfterRun = true; }
 openPanelEl.hidden = true;
 $('scrim').hidden = true;
 openPanelEl = null;
 paused = false;
-if (resetAfterRun) { resetAfterRun = false; startPiece(ex.piece, ex.clef); }
+pauseEnd();
 const cur = curNote();
 if (cur) cur.startAt = performance.now();
 if (returnFocus && returnFocus.focus) returnFocus.focus();
 }
 function openPanel(id) {
 stopPlayback();
-stopRun();
 if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
 else history.pushState({ s: screen, panel: id }, '');
 showPanel(id);
@@ -2658,22 +2615,19 @@ const text = `Пропущено. Это была нота ${fn(cur.d, cur.acc)}
 say(text, 'bad');
 advance('miss', undefined, text);
 });
-let keyDownRun = false;
+let keyDown = null;
 $('keys').addEventListener('pointerdown', (e) => {
-const k = run && e.target.closest('[data-midi]');
-if (!k) return;
-keyDownRun = true;
-const m = +k.dataset.midi;
-playTone(m);
-handleInput(m, 'screen', true, e.timeStamp);
+const k = e.target.closest('[data-midi]');
+keyDown = k ? { m: +k.dataset.midi, t: e.timeStamp } : null;
 });
 $('keys').addEventListener('click', (e) => {
 const k = e.target.closest('[data-midi]');
 if (!k || pb) return;
-if (keyDownRun) { keyDownRun = false; return; }
 const m = +k.dataset.midi;
+const at = keyDown && keyDown.m === m && e.timeStamp - keyDown.t < 2000 ? keyDown.t : e.timeStamp;
+keyDown = null;
 playTone(m);
-handleInput(m, 'screen', true, e.timeStamp);
+handleInput(m, 'screen', true, at);
 });
 let lastW = 0;
 const ro = new ResizeObserver(() => {

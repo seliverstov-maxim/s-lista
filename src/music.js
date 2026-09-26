@@ -81,7 +81,7 @@ function isEcho(midi, via, strong, lastDone, now, hit) {
 /* ---- Настройки (FR-RND-04) ---- */
 const SETTINGS_DEFAULTS = {
   clef: 'treble', below: 1, above: 1, adaptive: true,
-  naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
+  naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, metronome: false, last: null,
 };
 // Настройки версии 1 → поля версии 2. Большой стан становится скрипичным ключом,
 // диапазон — наименьшим числом линеек, при котором старая граница попадает в диапазон (не больше 3).
@@ -202,58 +202,30 @@ function playbackPlan(score, from) {
   }
   return { events, total: t };
 }
-/* ---------- Игра на оценку (FR-PC-12) ---------- */
-// Ноты пьесы с моментами (с от первой ноты) и окнами попадания: «в такт» — не дальше min(120 мс, трети промежутка
-// до ближайшей соседней ноты), «неточно» — не дальше min(250 мс, половины промежутка). Окна соседних нот не пересекаются.
-const JUDGE_TIGHT = 0.12, JUDGE_LOOSE = 0.25;
-function judgeTimeline(score) {
-  const ev = playbackPlan(score, null).events.filter((e) => e.midi != null);
-  return ev.map((e, i) => {
-    const gap = Math.min(i ? e.t - ev[i - 1].t : Infinity, i + 1 < ev.length ? ev[i + 1].t - e.t : Infinity);
-    return { item: e.item, t: e.t, midi: e.midi, tight: Math.min(JUDGE_TIGHT, gap / 3), loose: Math.min(JUDGE_LOOSE, gap / 2) };
-  });
+/* ---------- Звёзды за пьесу (FR-PC-12) ---------- */
+// Моменты нот пьесы в её темпе (с от первой ноты) — эталон для ритма
+function noteTimes(score) {
+  const at = new Map(playbackPlan(score, null).events.map((e) => [e.item, e.t]));
+  return score.notes.map((n) => at.get(n));
 }
-const starsOf = (pct) => (pct >= 100 ? 3 : pct >= 85 ? 2 : pct >= 60 ? 1 : 0);
-// Судья: нажатие (MIDI, время в с от первой ноты) засчитывается ближайшей по времени ещё не сыгранной ноте
-// той же высоты в пределах её окна — «в такт» или «неточно»; не нашлось — лишняя нота (если canWrong: неуверенный
-// звук с микрофона лишним не считаем). tick(t) — ноты, чьё окно прошло, пропущены. Счёт: в такт — 1, неточно — ½,
-// лишняя нота — минус ½; процент от числа нот, вниз до целого, поэтому 100 % — только все в такт и без лишних.
-function createJudge(timeline, same = (a, b) => a === b) {
-  const res = timeline.map(() => null);
-  let wrong = 0, next = 0;
-  return {
-    res,
-    input(midi, t, canWrong = true) {
-      let best = -1, bd = Infinity;
-      for (let i = next; i < timeline.length && timeline[i].t - timeline[i].loose <= t; i++) {
-        const n = timeline[i], d = Math.abs(t - n.t);
-        if (!res[i] && d <= n.loose && same(midi, n.midi) && d < bd) { best = i; bd = d; }
-      }
-      if (best >= 0) {
-        res[best] = { state: bd <= timeline[best].tight ? 'on' : 'near', dt: t - timeline[best].t };
-        return { i: best, state: res[best].state, dt: res[best].dt };
-      }
-      if (canWrong) wrong++;
-      return { i: -1, state: canWrong ? 'wrong' : 'ignored' };
-    },
-    tick(t) {
-      const missed = [];
-      while (next < timeline.length && (res[next] || t > timeline[next].t + timeline[next].loose)) {
-        if (!res[next]) { res[next] = { state: 'miss', dt: null }; missed.push(next); }
-        next++;
-      }
-      return missed;
-    },
-    // первая ещё не оценённая нота — её и ждём
-    pending() { for (let i = next; i < timeline.length; i++) if (!res[i]) return i; return -1; },
-    result() {
-      const n = timeline.length, count = (st) => res.filter((r) => r && r.state === st).length;
-      const on = count('on'), near = count('near');
-      const pct = n ? Math.max(0, Math.floor((100 * (on + near / 2 - wrong / 2)) / n)) : 0;
-      return { n, on, near, miss: n - on - near, wrong, pct, stars: starsOf(pct) };
-    },
-  };
+// Отклонение ритма: сумма расхождений между промежутками сыгранного и эталона, по отношению к длине пьесы — то же,
+// что среднее расхождение к среднему промежутку (ноты через 0,5 с, отклонение 20 % — в среднем 0,1 с). Каждый промежуток
+// между соседними нотами сравнивается сам по себе: заминка добавляет своё расхождение, а дальше ровная игра снова
+// совпадает. actual[i] = null — нота не сыграна, её промежутки не считаются.
+function rhythmResult(expected, actual) {
+  let diff = 0, total = 0, n = 0;
+  for (let i = 1; i < expected.length; i++) {
+    if (actual[i] == null || actual[i - 1] == null) continue;
+    const e = expected[i] - expected[i - 1], a = actual[i] - actual[i - 1];
+    total += e;
+    diff += Math.abs(a - e);
+    n++;
+  }
+  return { diff, total, n, dev: total > 0 ? Math.max(0, Math.ceil((100 * diff) / total - 1e-9)) : 0 };
 }
+// Звёзды: ★ — все ноты без ошибок (неверных нажатий, подсказок, пропусков), ★★ — ещё и отклонение ритма
+// не больше 40 %, ★★★ — не больше 20 % (сумма расхождений — не больше 20 % длины пьесы)
+const pieceStars = (errors, dev) => (errors ? 0 : dev <= 20 ? 3 : dev <= 40 ? 2 : 1);
 // Доля метронома: в 3/8, 6/8, 9/8, 12/8 — четверть с точкой, иначе — знаменатель размера
 const metroBeat = (time) => { const [n, d] = time || [4, 4]; return (d >= 8 && n % 3 === 0 ? 3 : 1) * durOf(d); };
 // Щелчки метронома (с от первой ноты): n — номер доли в такте, accent — сильная доля, count — счёт до первой ноты.

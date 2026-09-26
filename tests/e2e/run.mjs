@@ -363,7 +363,7 @@ try {
     let rows = 0;
     // первые 27 нот (восьмые, шестнадцатые, такт с лигой), затем строка без нот для игры должна появиться на экране
     for (let i = 0; i < 27; i++) await press(page, await curMidi(page));
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(250);
     const tieRow = await page.evaluate(() => {
       const ns = [...document.querySelectorAll('#score .n')];
       return ns.length > 0 && ns.every((e) => !e.dataset.i);
@@ -487,7 +487,7 @@ try {
     await ctx.close();
   }
 
-  // 10в. На оценку (FR-PC-12): счёт, нажатия по расписанию, итог и звёзды, прерывание
+  // 10в. Звёзды за каждую игру пьесы и метроном-ориентир (FR-PC-12)
   {
     const init = { fn: () => {
       window.__metro = 0;
@@ -495,60 +495,62 @@ try {
       AC.prototype.createBiquadFilter = function () { window.__metro++; return bq.call(this); };
     } };
     const q = (d) => ({ d, acc: 0, len: 4 });
-    const piece = { id: 'e2e-run', title: 'На оценку', composer: 'тест', license: 'CC0', shift: { treble: 0 },
+    const piece = { id: 'e2e-stars', title: 'Звёзды', composer: 'тест', license: 'CC0', shift: { treble: 0 },
       measures: [{ time: [4, 4], key: 0, tempo: 120, items: [q(28), q(29), q(30), q(31)] }, { items: [q(32), q(33), q(34), q(35)] }] };
     const route = async (page) => {
-      await page.route('**/pieces/index.json', (r) => r.fulfill({ json: { pieces: [{ id: 'e2e-run', title: 'На оценку', composer: 'тест', clefs: ['treble'] }] } }));
-      await page.route('**/pieces/e2e-run.json', (r) => r.fulfill({ json: piece }));
+      await page.route('**/pieces/index.json', (r) => r.fulfill({ json: { pieces: [{ id: 'e2e-stars', title: 'Звёзды', composer: 'тест', clefs: ['treble'] }] } }));
+      await page.route('**/pieces/e2e-stars.json', (r) => r.fulfill({ json: piece }));
     };
     const { ctx, page, errors } = await open(base + '#pieces', { init, route });
     await page.waitForSelector('#piecesList .piece');
-    await page.click('[data-piece="e2e-run"][data-clef="treble"]');
+    const btn = () => page.locator('[data-piece="e2e-stars"][data-clef="treble"]');
+    check('в списке пьес — пустые звёзды сразу', (await btn().textContent()).includes('☆☆☆') && (await btn().getAttribute('aria-label')).includes('звёзд: 0 из 3'));
+    await btn().click();
     await page.waitForSelector('#playScreen:not([hidden])');
     await page.waitForTimeout(300);
-    check('в пьесе есть кнопка «На оценку»', await visible(page, '#runBtn'));
-    // ноты — четверти при ♩ = 120 (через 0,5 с), счёт — такт 4/4 (2 с) и 0,25 с запаса.
-    // [нота, сдвиг в мс, перед ней лишняя]: 0–3 в такт, 4 — на 180 мс позже (неточно), 5 — пропуск, перед 6 — лишняя
-    const plan = [[0, 0], [1, 30], [2, -40], [3, 10], [4, 180], [6, 0, true], [7, 0]];
-    await page.evaluate((plan) => {
+    // ноты — четверти при ♩ = 120 (через 0,5 с); нажатия по расписанию: касание (pointerdown) и щелчок
+    const play = (times, wrongBefore = -1) => page.evaluate(([times, wrongBefore]) => new Promise((done) => {
       const midis = [60, 62, 64, 65, 67, 69, 71, 72];
-      const press = (m) => document.querySelector(`#keys [data-midi="${m}"]`).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-      const t0 = performance.now() + 2250;
-      document.getElementById('runBtn').click();
-      for (const [i, off, wrong] of plan) {
-        if (wrong) setTimeout(() => press(midis[i] - 1), t0 + i * 500 - 200 - performance.now());
-        setTimeout(() => press(midis[i]), t0 + i * 500 + off - performance.now());
-      }
-    }, plan);
-    await page.waitForTimeout(700);
-    check('на оценку: идёт счёт', (await text(page, '#msg')).startsWith('Счёт'), await text(page, '#msg'));
-    check('на оценку: подсказка, пропуск и прослушивание недоступны, кнопка — «■»',
-      (await page.isDisabled('#hintBtn')) && (await page.isDisabled('#skipBtn')) && (await page.isDisabled('#playBtn')) && (await page.getAttribute('#runBtn', 'class')).includes('on'));
-    await page.waitForTimeout(2600);
-    check('на оценку: сыгранные в такт ноты — зелёные', (await page.locator('#score .n[data-i="0"] .g-ok').count()) > 0 && (await page.locator('#score .n[data-i="1"] .g-ok').count()) > 0);
-    await page.screenshot({ path: outDir + 'run-play.png' });
-    await page.waitForTimeout(3400);
-    check('на оценку: метроном щёлкал', (await page.evaluate(() => window.__metro)) >= 12, `${await page.evaluate(() => window.__metro)} щелчков`);
-    check('на оценку: итог открылся', await visible(page, '#donePanel'));
-    const title = await text(page, '#doneTitle'), kv = await text(page, '#doneKv');
-    check('итог на оценку: 75% и одна звезда', title === '75% ★☆☆', title);
-    check('итог на оценку: 6 в такт, 1 неточно, 1 пропущена, 1 лишняя', kv.includes('В такт6 из 8') && kv.includes('Неточно1') && kv.includes('Пропущено1') && kv.includes('Лишние ноты1'), kv);
-    check('итог на оценку: объяснение шкалы', (await text(page, '#doneNote')).includes('★★★ — 100%'));
-    await page.screenshot({ path: outDir + 'run-done.png' });
-    await page.click('#donePanel [data-close]');
+      const press = (m) => { const k = document.querySelector(`#keys [data-midi="${m}"]`); k.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); k.click(); };
+      const t0 = performance.now() + 100;
+      times.forEach((t, i) => {
+        if (i === wrongBefore) setTimeout(() => press(midis[i] + 1), t0 + t - 150 - performance.now());
+        setTimeout(() => { press(midis[i]); if (i === times.length - 1) setTimeout(done, 900); }, t0 + t - performance.now());
+      });
+    }), [times, wrongBefore]);
+    const even = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500];
+    await play(even);
+    const devOf = async () => +((await text(page, '#doneKv')).match(/Отклонение ритма(\d+)%/) || [0, -1])[1];
+    check('ровная игра без ошибок — ★★★, отклонение около 0%', (await visible(page, '#donePanel')) && (await text(page, '#doneStars')) === '★★★' && (await devOf()) <= 5, await text(page, '#doneKv'));
+    await page.screenshot({ path: outDir + 'stars-done.png' });
+    await page.click('#doneAgain');
     await page.waitForTimeout(400);
-    check('после итога — обычная игра с начала', (await page.locator('#score .g-ok, #score .g-near, #score .g-miss').count()) === 0 && !(await page.getAttribute('#runBtn', 'class')).includes('on'));
-    // прерывание: «■» — пьеса с начала, итога нет, результат не записан
-    await page.click('#runBtn');
+    // заминка 1 с перед пятой нотой, дальше ровно: (1,5 − 0,5) / 3,5 = 29% → ★★
+    await play([0, 500, 1000, 1500, 3000, 3500, 4000, 4500]);
+    check('заминка, потом ровно — ★★, отклонение около 29%', (await text(page, '#doneStars')) === '★★☆' && Math.abs((await devOf()) - 29) <= 3, await text(page, '#doneKv'));
+    check('лучший результат остаётся ★★★', (await text(page, '#doneKv')).includes('Лучший результат★★★'));
+    await page.click('#doneAgain');
+    await page.waitForTimeout(400);
+    await play(even, 3); // перед четвёртой нотой — неверная клавиша
+    check('с ошибкой — ни одной звезды', (await text(page, '#doneStars')) === '☆☆☆' && (await text(page, '#msg')).includes('Звезда — когда все ноты без ошибок'), await text(page, '#msg'));
+    await page.click('#doneAgain');
+    await page.waitForTimeout(400);
+    // метроном — только ориентир: щёлкает, механика та же (курсор ждёт ноту)
+    const before = await page.evaluate(() => window.__metro);
+    await page.click('#metroBtn');
+    await page.waitForTimeout(1300);
+    const on = await page.evaluate(() => window.__metro);
+    check('метроном включается кнопкой и щёлкает в темпе пьесы', (await page.getAttribute('#metroBtn', 'aria-pressed')) === 'true' && on - before >= 2, `${on - before} щелчков за 1,3 с`);
+    check('с метрономом курсор ждёт ноту', (await page.getAttribute('#score .n.cur', 'data-i')) === '0' && (await text(page, '#levelRange')).endsWith('нота 1 из 8'));
+    await page.click('#metroBtn');
+    await page.waitForTimeout(500);
+    const off1 = await page.evaluate(() => window.__metro);
     await page.waitForTimeout(800);
-    await page.click('#runBtn');
-    await page.waitForTimeout(300);
-    check('«■» прерывает игру на оценку', (await text(page, '#msg')) === 'Игра на оценку прервана.' && !(await visible(page, '#donePanel')) && !(await page.isDisabled('#hintBtn')));
+    check('метроном выключается', (await page.getAttribute('#metroBtn', 'aria-pressed')) === 'false' && (await page.evaluate(() => window.__metro)) === off1);
     await page.goBack();
     await page.waitForSelector('#piecesList .piece');
-    const btn = page.locator('[data-piece="e2e-run"][data-clef="treble"]');
-    check('в списке пьес — лучший результат звёздами', (await btn.textContent()).includes('★☆☆') && (await btn.getAttribute('aria-label')).includes('75%'), await btn.getAttribute('aria-label'));
-    check('страница без ошибок JS (на оценку)', errors.length === 0, errors.join('; '));
+    check('в списке — лучший результат ★★★', (await btn().textContent()).includes('★★★') && (await btn().getAttribute('aria-label')).includes('звёзд: 3 из 3'));
+    check('страница без ошибок JS (звёзды)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
 

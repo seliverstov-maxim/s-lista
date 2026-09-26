@@ -304,54 +304,30 @@ test('Ошибка из-за ключевых знаков: вспыхивает
 const quarters = (ds, tempo = 120, time = [4, 4]) => ({ id: 't', title: 't', shift: { treble: 0 },
   measures: [{ time, key: 0, tempo, items: ds.slice(0, 4).map((d) => ({ d, acc: 0, len: 4 })) }, { items: ds.slice(4).map((d) => ({ d, acc: 0, len: 4 })) }] });
 
-test('FR-PC-12: окна попадания — «в такт» до 120 мс, «неточно» до 250 мс, у быстрых нот — доля промежутка', () => {
-  const tl = M.judgeTimeline(M.buildScore(quarters([28, 29, 30, 31, 32, 33, 34, 35]), 'treble'));
-  assert.equal(tl.length, 8);
-  assert.deepEqual(tl.map((n) => n.t), [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5]);
-  assert.deepEqual([tl[0].tight, tl[0].loose], [0.12, 0.25]);
-  const sixteenths = M.buildScore({ id: 's', title: 's', shift: { treble: 0 }, measures: [{ time: [2, 4], key: 0, tempo: 72, items: Array.from({ length: 8 }, (_, i) => ({ d: 30 + (i % 3), acc: 0, len: 16 })) }] }, 'treble');
-  const s = M.judgeTimeline(sixteenths); // шестнадцатые при ♩ = 72 — через 208 мс
-  assert.ok(Math.abs(s[1].tight - 0.2083 / 3) < 1e-3 && Math.abs(s[1].loose - 0.2083 / 2) < 1e-3, JSON.stringify(s[1]));
+test('FR-PC-12: отклонение ритма — сумма расхождений промежутков к длине пьесы; пример: 8 нот через 0,25 с и заминка 1 с', () => {
+  const exp = [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75];
+  const act = [10, 11, 11.25, 11.5, 11.75, 12, 12.25, 12.5]; // первая нота, думал 1 с, дальше ровно через 0,25 с
+  const r = M.rhythmResult(exp, act);
+  assert.ok(Math.abs(r.diff - 0.75) < 1e-9, String(r.diff));
+  assert.deepEqual([r.total, r.n, r.dev], [1.75, 7, 43]); // 0,75 / 1,75 = 42,9 % — вверх до целого: ★ (★★ — до 0,7 с)
+  assert.equal(M.rhythmResult(exp, exp.map((t) => t + 5)).dev, 0); // ровно в темпе, с любого момента
+  assert.equal(M.rhythmResult(exp, exp.map((t, i) => t + (i % 2 ? 0.02 : -0.02))).dev, 16); // дрожание ±20 мс: 0,28 с из 1,75
+  assert.equal(M.rhythmResult(exp, exp.map((t) => 2 * t)).dev, 100); // вдвое медленнее — каждый промежуток расходится на свою длину
+  // та же заминка в длинной пьесе почти не заметна: 60 промежутков по 0,5 с
+  const long = Array.from({ length: 61 }, (_, i) => i * 0.5);
+  assert.equal(M.rhythmResult(long, long.map((t, i) => t + (i ? 1 : 0))).dev, 4);
+  // несыгранная нота выпадает вместе с соседними промежутками
+  assert.deepEqual(M.rhythmResult([0, 1, 2, 3], [0, null, 2, 3.5]), { diff: 0.5, total: 1, n: 1, dev: 50 });
 });
 
-test('FR-PC-12: судья — в такт, неточно, пропущено, лишняя нота; 100 % — только всё в такт и без лишних', () => {
-  const tl = M.judgeTimeline(M.buildScore(quarters([28, 29, 30, 31, 32, 33, 34, 35]), 'treble'));
-  const midi = tl.map((n) => n.midi);
-  const perfect = M.createJudge(tl);
-  tl.forEach((n) => assert.equal(perfect.input(n.midi, n.t + 0.05).state, 'on'));
-  perfect.tick(10);
-  assert.deepEqual(perfect.result(), { n: 8, on: 8, near: 0, miss: 0, wrong: 0, pct: 100, stars: 3 });
-
-  const j = M.createJudge(tl);
-  assert.equal(j.input(midi[0], 0.03).state, 'on');
-  assert.equal(j.input(midi[1], 0.5 - 0.1).state, 'on');
-  assert.equal(j.input(midi[2], 1 + 0.18).state, 'near');
-  assert.equal(j.input(midi[5], 1.5).state, 'wrong'); // не та нота
-  assert.equal(j.input(midi[3], 1.5 + 0.3).state, 'wrong'); // та нота, но за пределами окна
-  assert.deepEqual(j.tick(2.2), [3]); // окно ноты 3 (до 1,75 с) прошло — пропущена; нота 4 (окно до 2,25 с) ещё ждёт
-  assert.equal(j.pending(), 4);
-  assert.equal(j.input(midi[4], 2.2).state, 'near');
-  assert.equal(j.input(midi[6], 3.01, false).state, 'on');
-  assert.equal(j.input(99, 3.2, false).state, 'ignored'); // неуверенный звук с микрофона — не лишняя нота
-  j.tick(10);
-  const r = j.result();
-  assert.deepEqual([r.on, r.near, r.miss, r.wrong], [3, 2, 3, 2]);
-  assert.equal(r.pct, Math.floor((100 * (3 + 1 - 1)) / 8)); // 37
-  assert.equal(r.stars, 0);
-  // одна неточная нота из многих — уже не 100 %
-  const one = M.createJudge(tl);
-  tl.forEach((n, i) => one.input(n.midi, n.t + (i === 7 ? 0.2 : 0)));
-  assert.equal(one.result().pct, 93);
-  assert.deepEqual([60, 84, 85, 99, 100].map(M.starsOf), [1, 1, 2, 2, 3]);
+test('FR-PC-12: звёзды — ★ за ноты без ошибок, ★★ — отклонение ритма до 40 %, ★★★ — до 20 %', () => {
+  assert.deepEqual([[1, 0], [0, 0], [0, 20], [0, 21], [0, 40], [0, 41], [0, 100]].map(([e, d]) => M.pieceStars(e, d)), [0, 3, 3, 2, 2, 1, 1]);
 });
 
-test('FR-PC-12: без «точной октавы» засчитывается та же нота в другой октаве; повтор ноты — каждой своё нажатие', () => {
-  const tl = M.judgeTimeline(M.buildScore(quarters([30, 30, 30, 30]), 'treble'));
-  const j = M.createJudge(tl, (a, b) => (((a - b) % 12) + 12) % 12 === 0);
-  assert.equal(j.input(tl[0].midi + 12, 0).state, 'on');
-  assert.equal(j.input(tl[0].midi, 0.02).state, 'wrong'); // первая уже сыграна, до второй далеко
-  assert.equal(j.input(tl[1].midi, 0.5).i, 1);
-  assert.equal(j.input(tl[2].midi, 1.0).i, 2);
+test('FR-PC-12: эталон ритма — моменты нот пьесы в её темпе, лиги не звучат заново', () => {
+  const piece = { id: 't', title: 't', shift: { treble: 0 }, measures: [{ time: [4, 4], key: 0, tempo: 120,
+    items: [{ d: 30, acc: 0, len: 2, tie: true }, { d: 30, acc: 0, len: 4 }, { d: 32, acc: 0, len: 4 }] }, { tempo: 60, items: [{ d: 33, acc: 0, len: 1 }] }] };
+  assert.deepEqual(M.noteTimes(M.buildScore(piece, 'treble')), [0, 1.5, 2]);
 });
 
 test('FR-PC-12: метроном — доли по размеру, счёт такт (или два, если такт короче 1,6 с), затакт на своих долях', () => {
