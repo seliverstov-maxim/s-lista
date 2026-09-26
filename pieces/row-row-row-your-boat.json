@@ -1,0 +1,17 @@
+{
+ "id": "row-row-row-your-boat",
+ "title": "Row, Row, Row Your Boat",
+ "composer": "Детская песня",
+ "license": "CC0 1.0",
+ "shift": {"treble":0,"bass":-1},
+ "measures": [
+  {"time":[6,8],"key":0,"items":[{"d":28,"acc":0,"len":4,"dots":1},{"d":28,"acc":0,"len":4,"dots":1}]},
+  {"items":[{"d":28,"acc":0,"len":4},{"d":29,"acc":0,"len":8},{"d":30,"acc":0,"len":4,"dots":1}]},
+  {"items":[{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":8},{"d":30,"acc":0,"len":4},{"d":31,"acc":0,"len":8}]},
+  {"items":[{"d":32,"acc":0,"len":2,"dots":1}]},
+  {"items":[{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["continue"]},{"d":35,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":8,"beam":["begin"]},{"d":32,"acc":0,"len":8,"beam":["continue"]},{"d":32,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":30,"acc":0,"len":8,"beam":["begin"]},{"d":30,"acc":0,"len":8,"beam":["continue"]},{"d":30,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":28,"acc":0,"len":8,"beam":["continue"]},{"d":28,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":32,"acc":0,"len":4},{"d":31,"acc":0,"len":8},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":8}]},
+  {"items":[{"d":28,"acc":0,"len":2,"dots":1}]}
+ ]
+}

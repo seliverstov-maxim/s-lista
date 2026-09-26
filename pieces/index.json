@@ -1,0 +1,6 @@
+{ "pieces": [
+  {"id":"bratets-yakov","title":"Братец Яков","composer":"Французская народная песня","clefs":["treble","bass"]},
+  {"id":"oda-k-radosti","title":"Ода к радости","composer":"Л. ван Бетховен","clefs":["treble","bass"]},
+  {"id":"row-row-row-your-boat","title":"Row, Row, Row Your Boat","composer":"Детская песня","clefs":["treble","bass"]},
+  {"id":"twinkle-twinkle-little-star","title":"Twinkle, Twinkle, Little Star","composer":"Французская народная песня","clefs":["treble","bass"]}
+] }
