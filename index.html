@@ -292,6 +292,37 @@ select {
 .switch input:checked { background: var(--accent); }
 .switch input:checked::before { transform: translateX(18px); }
 input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st; }
+.steps li { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; align-items: center; color: var(--muted); counter-increment: st; }
+.steps li::before {
+  content: counter(st); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--muted);
+}
+.steps li b { color: var(--ink); font-weight: 600; line-height: 1.25; }
+.steps li span { font-size: 13px; line-height: 1.3; }
+.steps li.active::before { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+.steps li.done::before { content: "✓"; border-color: var(--ok); color: var(--ok); }
+.calib-msg { margin: 0; font-size: 15.5px; min-height: 4.4em; text-wrap: pretty; }
+.calib-msg.bad { color: var(--bad); }
+.cal-track { position: relative; height: 14px; border-radius: 7px; background: var(--ground); }
+.cal-track i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 7px; }
+#calNoise { width: 0; background: repeating-linear-gradient(135deg, var(--staff) 0 2px, transparent 2px 7px); opacity: 0.45; }
+#calLevel { width: 0; background: var(--accent); opacity: 0.8; }
+#calGate { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--ink); }
+#calPeaks { position: absolute; inset: 0; }
+#calPeaks em { position: absolute; top: 1px; bottom: 1px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--ok); }
+.cal-scale { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.cal-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.cal-legend .lg-noise::before { background: repeating-linear-gradient(135deg, var(--staff) 0 2px, transparent 2px 5px); }
+.cal-legend .lg-note::before { background: var(--ok); }
+.cal-legend .lg-gate::before { background: var(--ink); width: 3px; }
+.cal-dots { display: flex; gap: 8px; align-items: center; }
+.cal-dots i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--line); }
+.cal-dots i.on { background: var(--ok); border-color: var(--ok); }
+.cal-dots span { font-size: 13px; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.sens-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.sens-head output { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
 .sens-scale { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: -6px; }
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; margin: 0; }
 .kv dt { color: var(--muted); }
@@ -421,10 +452,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 
   <section class="group">
     <h3>Микрофон</h3>
-    <label for="sens">Чувствительность</label>
-    <input type="range" id="sens" min="0" max="40" step="1">
+    <button class="btn primary" type="button" id="calibBtn">Настроить микрофон</button>
+    <p class="note">Приложение послушает тишину и пять ваших нот и само выберет порог срабатывания. Повторите настройку, если переставили телефон или в комнате стало шумнее.</p>
+    <div class="sens-head"><label for="sens">Порог срабатывания</label><output id="sensVal" for="sens"></output></div>
+    <input type="range" id="sens" min="20" max="80" step="1">
     <div class="sens-scale"><span>шумная комната</span><span>тихое пианино</span></div>
-    <p class="note">Положите телефон на пюпитр. Играйте по одной ноте и без педали: так распознавание надёжнее. Если ноты не ловятся, сдвиньте ползунок вправо. Если приложение срабатывает от шума, сдвиньте влево.</p>
+    <p class="note">Положите телефон на пюпитр. Играйте по одной ноте и без педали: так распознавание надёжнее.</p>
     <p class="note" id="frameNote" hidden>В окне предпросмотра браузер не даёт доступ к микрофону. Чтобы играть на настоящем пианино, откройте приложение как отдельный сайт. Здесь можно нажимать клавиши на экране.</p>
   </section>
 
@@ -434,6 +467,32 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
     <label class="switch" for="optSound"><span>Звук при нажатии на экране</span><input type="checkbox" id="optSound"></label>
     <button class="btn" type="button" id="midiBtn">Подключить MIDI-клавиатуру</button>
     <p class="note" id="midiNote">Цифровое пианино можно подключить кабелем USB: ноты будут приходить без микрофона.</p>
+  </section>
+</aside>
+
+<aside class="panel" id="calibPanel" role="dialog" aria-modal="true" aria-labelledby="calibTitle" hidden>
+  <div class="panel-head">
+    <h2 id="calibTitle">Настройка микрофона</h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <section class="group">
+    <ol class="steps" id="calSteps">
+      <li data-step="silence"><b>Тишина</b><span>3 секунды не играйте и не говорите</span></li>
+      <li data-step="notes"><b>Пять нот</b><span>сыграйте любые ноты по одной, как обычно</span></li>
+      <li data-step="done"><b>Порог</b><span>приложение поставит его между шумом и самой тихой нотой</span></li>
+    </ol>
+  </section>
+  <section class="group">
+    <p class="calib-msg" id="calMsg" aria-live="polite"></p>
+    <div aria-hidden="true">
+      <div class="cal-track"><i id="calNoise"></i><i id="calLevel"></i><span id="calPeaks"></span><b id="calGate"></b></div>
+      <div class="cal-scale"><span>−80 дБ</span><span>−45 дБ</span><span>−10 дБ</span></div>
+    </div>
+    <div class="cal-legend"><span class="lg-noise">шум</span><span class="lg-note">ноты</span><span class="lg-gate">порог</span></div>
+    <div class="cal-dots" id="calDots" hidden><i></i><i></i><i></i><i></i><i></i><span id="calCount">0 из 5</span></div>
+    <div class="controls" id="calActions"></div>
   </section>
 </aside>
 
@@ -593,6 +652,10 @@ class PitchListener {
     this.specCur = new Float32Array(bufferLength / 2);
     this.specNew = new Float32Array(bufferLength / 2);
     this.gateDb = -50;
+    this.floorDb = -90;          // шумовой фон: минимум громкости за последние ~3 с
+    this.floorBins = new Array(30).fill(0);
+    this.floorBinT = 0;
+    this.floorIdx = 0;
     this.env = 0;
     this.lastT = null;
     this.lastOnset = -1e9;
@@ -620,19 +683,25 @@ class PitchListener {
     const n = buf.length;
     const dt = this.lastT == null ? 16.7 : Math.max(1, t - this.lastT);
     this.lastT = t;
+    if (this.startT == null) this.startT = t;
+    const warm = t - this.startT < 600; // первые 0,6 с только слушаем фон
 
     // быстрая громкость по последним ~11 мс
     const fastN = Math.min(512, n);
     let s = 0;
     for (let i = n - fastN; i < n; i++) s += buf[i] * buf[i];
     const rms = Math.sqrt(s / fastN);
-    const gate = Math.pow(10, this.gateDb / 20);
+    const db = 20 * Math.log10(rms + 1e-9);
 
-    const onset = rms > gate && rms > this.env * 1.4 + gate * 0.25 && t - this.lastOnset > 90;
+    // рабочий порог (посчитан на прошлом кадре): из настройки, но не ниже «фон + 8 дБ»
+    const gateDb = Math.max(this.gateDb, this.floorDb + 8);
+    const gate = Math.pow(10, gateDb / 20);
+
+    const onset = !warm && rms > gate && rms > this.env * 1.4 + gate * 0.25 && t - this.lastOnset > 90;
     this.env = Math.max(rms, this.env * Math.pow(0.93, dt / 16.7));
     if (onset) {
       this.lastOnset = t;
-      this.collect = { t0: t, votes: new Map() };
+      this.collect = { t0: t, votes: new Map(), peak: rms };
       this.spectrum(this.prevBuf, this.specPre);
     }
 
@@ -657,12 +726,21 @@ class PitchListener {
         valid = r.ap < 0.25 && rms > gate;
       }
     }
-    this.onEvent('level', { rms, db: 20 * Math.log10(rms + 1e-9), gateDb: this.gateDb, midi: valid ? midi : null, cents });
+    // шумовой фон: минимум по корзинам (100 мс) за последние ~3 с «немузыкальных» кадров —
+    // без тона и не сразу после удара, чтобы фон не подстраивался под само пианино
+    if (warm || (t - this.lastOnset > 1200 && ap > 0.3)) {
+      if (!this.floorBinT) { this.floorBins.fill(db); this.floorBinT = t; }
+      if (t - this.floorBinT >= 100) { this.floorBinT = t; this.floorIdx = (this.floorIdx + 1) % this.floorBins.length; this.floorBins[this.floorIdx] = db; }
+      else if (db < this.floorBins[this.floorIdx]) this.floorBins[this.floorIdx] = db;
+      this.floorDb = Math.min.apply(null, this.floorBins);
+    }
+    this.onEvent('level', { rms, db, t, gateDb, floorDb: this.floorDb, midi: valid ? midi : null, cents });
 
     // решение после удара
     if (this.collect) {
       const c = this.collect;
       const age = t - c.t0;
+      if (rms > c.peak) c.peak = rms;
       if (age >= this.settleMs && rms > gate) {
         let vm = this.newNote(buf);
         // спектр грубоват на низких нотах: если YIN уверен и близок — берём его точное значение
@@ -670,19 +748,19 @@ class PitchListener {
         if (vm != null) {
           const v = (c.votes.get(vm) || 0) + 1;
           c.votes.set(vm, v);
-          if (v >= 3) this.emit(vm, 'onset');
+          if (v >= 3) this.emit(vm, 'onset', c.peak > gate * 2);
         }
       }
       if (this.collect && age > 420) {
         let best = null, bv = 0;
         c.votes.forEach((v, m) => { if (v > bv) { bv = v; best = m; } });
-        if (bv >= 2) this.emit(best, 'onset');
+        if (bv >= 2) this.emit(best, 'onset', false);
         this.collect = null;
       }
     }
 
     // плавный переход без явного удара (легато)
-    if (valid) {
+    if (valid && !warm) {
       if (midi !== this.stableMidi) { this.stableMidi = midi; this.stableSince = t; }
       else if (!this.collect && t - this.stableSince >= 130 && midi !== this.lastEmitted &&
                (this.lastEmitted == null || Math.abs(midi - this.lastEmitted) % 12 !== 0)) {
@@ -714,11 +792,12 @@ class PitchListener {
     return r.midi;
   }
 
-  emit(midi, via) {
+  // strong — уверенное распознавание: громкий удар (на 6 дБ выше порога) и три совпавших замера
+  emit(midi, via, strong = false) {
     this.collect = null;
     this.lastEmitted = midi;
     this.stableMidi = midi;
-    this.onEvent('note', { midi, via });
+    this.onEvent('note', { midi, via, strong });
   }
 }
 
@@ -766,8 +845,11 @@ const PRESETS = [
   { id: 'ledger', name: 'Добавочные линейки', clef: 'grand', lo: 14, hi: 42 },
 ];
 const D_MIN = 12, D_MAX = 49; // ля контроктавы … до пятой
-const DEFAULTS = { clef: 'treble', lo: 28, hi: 39, acc: false, motion: 'any', perRow: 'row', naming: 'solfege', octave: true, adaptive: true, sens: 20, showKeys: true, keySound: true };
-const S = Object.assign({}, DEFAULTS, store.get('slista.settings.v1', {}));
+const DEFAULTS = { clef: 'treble', lo: 28, hi: 39, acc: false, motion: 'any', perRow: 'row', naming: 'solfege', octave: true, adaptive: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true };
+const saved = store.get('slista.settings.v1', {}) || {};
+if (saved.gateDb == null && typeof saved.sens === 'number') saved.gateDb = -30 - saved.sens; // старая шкала ползунка
+delete saved.sens;
+const S = Object.assign({}, DEFAULTS, saved);
 let STATS = store.get('slista.stats.v1', null);
 if (!STATS || typeof STATS !== 'object' || !STATS.notes) STATS = { notes: {}, n: 0, first: 0 };
 const session = { n: 0, first: 0, streak: 0, best: 0, ms: 0 };
@@ -1115,12 +1197,17 @@ function advance(status, midi) {
   if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
   renderScore(); renderStats();
 }
-function handleInput(midi, via) {
+let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ошибкой
+function handleInput(midi, via, strong = true) {
   if (!row || busy || paused || row.idx >= row.notes.length) return;
   const cur = row.notes[row.idx];
   const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
-  if (hit) { advance('ok', midi); return; }
+  if (hit) { lastDone = { midi, t: performance.now() }; advance('ok', midi); return; }
   if (via === 'legato') return; // плавный переход без удара не штрафуем
+  if (via === 'onset') {
+    if (!strong) return; // распознано неуверенно — не штрафуем
+    if (lastDone && lastDone.midi === midi && performance.now() - lastDone.t < 1500) return; // отголосок прошлой ноты
+  }
   cur.errors++;
   if (cur.errors === 1) { session.streak = 0; renderStats(); }
   const sp = spellMidi(midi, cur.acc < 0);
@@ -1177,6 +1264,7 @@ async function startMic() {
     applyListener();
     micState = 'on'; setMicUI(); idleMessage();
     requestWake();
+    if (!S.calibrated && !openPanelEl) openPanel('calibPanel');
     const loop = () => {
       if (!audio) return;
       audio.analyser.getFloatTimeDomainData(audio.buf);
@@ -1201,7 +1289,7 @@ function stopMic() {
 }
 function applyListener() {
   if (!audio) return;
-  audio.listener.gateDb = -30 - S.sens;
+  audio.listener.gateDb = S.gateDb;
   audio.listener.setRange(midiOf(lowD()) - 1, midiOf(highD()) + 1);
 }
 async function requestWake() {
@@ -1211,7 +1299,8 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 let heardUntil = 0;
 function onDetector(type, d) {
-  if (type === 'note') { if (!midiSeen) handleInput(d.midi, d.via); return; }
+  if (type === 'note') { if (!midiSeen && !calActive()) handleInput(d.midi, d.via, d.strong); return; }
+  if (calActive()) calFeed(d);
   const pos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
   $('meterFill').style.width = pos(d.db).toFixed(1) + '%';
   $('meterGate').style.left = pos(d.gateDb).toFixed(1) + '%';
@@ -1227,6 +1316,118 @@ function onDetector(type, d) {
     setHeard(null);
   }
 }
+
+/* ---------- Калибровка микрофона ---------- */
+const fmtDb = (v) => (v < 0 ? '−' : '') + Math.abs(Math.round(v)) + '\u00a0дБ';
+const dbPos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
+const cal = { state: 'idle', t0: 0, lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null };
+const calActive = () => cal.state === 'silence' || cal.state === 'notes';
+const percentile = (arr, q) => { const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; };
+
+function calReset() {
+  Object.assign(cal, { state: 'intro', noise: [], noiseDb: null, peaks: [], cur: null, result: null });
+  renderCal();
+}
+async function calStart() {
+  if (micState !== 'on') {
+    await startMic();
+    if (micState !== 'on') { cal.state = 'fail'; renderCal($('msg').textContent); return; }
+  }
+  Object.assign(cal, { state: 'silence', t0: performance.now(), lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null });
+  renderCal();
+}
+function calFeed(d) {
+  const dt = cal.lastT ? d.t - cal.lastT : 16.7;
+  cal.lastT = d.t;
+  if (calActive()) $('calLevel').style.width = dbPos(d.db).toFixed(1) + '%';
+  if (cal.state === 'silence') {
+    cal.noise.push(d.db);
+    const left = Math.max(0, 3 - (d.t - cal.t0) / 1000);
+    $('calMsg').textContent = `Слушаю тишину… ещё ${Math.ceil(left)} с. Не играйте и не говорите.`;
+    if (d.t - cal.t0 >= 3000) {
+      cal.noiseDb = percentile(cal.noise, 0.95);
+      cal.state = 'notes'; cal.t0 = d.t; cal.env = cal.noiseDb;
+      renderCal();
+    }
+    return;
+  }
+  // ноты: резкий рост громкости заметно выше шума — это удар по клавише
+  if (cal.cur) {
+    cal.cur.peak = Math.max(cal.cur.peak, d.db);
+    if (d.t - cal.cur.t > 300) {
+      cal.peaks.push(cal.cur.peak);
+      cal.cur = null;
+      renderCal();
+      if (cal.peaks.length >= 5) { calFinish(); return; }
+    }
+  } else if (d.db > cal.noiseDb + 10 && d.db > cal.env + 4 && d.t - cal.lastOn > 350) {
+    cal.cur = { t: d.t, peak: d.db };
+    cal.lastOn = d.t;
+  }
+  cal.env = Math.max(d.db, cal.env - 0.6 * (dt / 16.7));
+  if (d.t - cal.t0 > 30000) calFinish();
+}
+function calFinish() {
+  if (cal.peaks.length < 2) { cal.state = 'fail'; renderCal(); return; }
+  const noise = cal.noiseDb, soft = Math.min.apply(null, cal.peaks), span = soft - noise;
+  let gate = noise + 0.4 * span;
+  gate = span >= 14 ? Math.min(Math.max(gate, noise + 6), soft - 8) : noise + span / 2;
+  gate = Math.round(Math.max(-80, Math.min(-20, gate)));
+  cal.result = { noise, soft, gate, weak: span < 14 };
+  cal.state = 'done';
+  renderCal();
+}
+function calSave() {
+  S.gateDb = cal.result.gate;
+  S.calibrated = true;
+  store.set('slista.settings.v1', S);
+  applyListener();
+  closePanel();
+  say(`Микрофон настроен: порог ${fmtDb(S.gateDb)}. Играйте отмеченную ноту.`, 'ok');
+}
+function renderCal(errText) {
+  const order = ['silence', 'notes', 'done'];
+  const stepIdx = { intro: -1, silence: 0, notes: 1, done: 3, fail: 1 }[cal.state];
+  $('calSteps').querySelectorAll('li').forEach((li) => {
+    const i = order.indexOf(li.dataset.step);
+    li.classList.toggle('done', i < stepIdx);
+    li.classList.toggle('active', i === stepIdx);
+  });
+  const msg = $('calMsg');
+  msg.classList.toggle('bad', cal.state === 'fail');
+  const actions = [];
+  if (cal.state === 'intro') {
+    msg.textContent = 'Поставьте телефон туда, где он будет стоять во время игры, и нажмите «Начать».';
+    actions.push('<button class="btn primary" type="button" data-cal="start">Начать</button>');
+  } else if (cal.state === 'silence') {
+    msg.textContent = 'Слушаю тишину… Не играйте и не говорите.';
+  } else if (cal.state === 'notes') {
+    msg.textContent = 'Теперь сыграйте пять любых нот по одной, с паузами, так тихо, как обычно играете.';
+  } else if (cal.state === 'done') {
+    const r = cal.result;
+    msg.textContent = `Шум около ${fmtDb(r.noise)}, самая тихая нота ${fmtDb(r.soft)}. Порог: ${fmtDb(r.gate)}.` +
+      (r.weak ? ' Пианино звучит ненамного громче шума, поэтому возможны пропуски. Поставьте телефон ближе к инструменту и повторите.' : ' Можно сохранять.');
+    actions.push('<button class="btn primary" type="button" data-cal="save">Сохранить</button>', '<button class="btn" type="button" data-cal="start">Повторить</button>');
+  } else if (cal.state === 'fail') {
+    msg.textContent = errText || 'Не удалось услышать ноты. Поставьте телефон ближе к пианино, играйте чуть громче и повторите.';
+    actions.push('<button class="btn primary" type="button" data-cal="start">Повторить</button>');
+  }
+  $('calActions').innerHTML = actions.join('');
+  $('calNoise').style.width = cal.noiseDb != null ? dbPos(cal.noiseDb).toFixed(1) + '%' : '0';
+  $('calPeaks').innerHTML = cal.peaks.map((p) => `<em style="left:${dbPos(p).toFixed(1)}%"></em>`).join('');
+  $('calGate').style.left = dbPos(cal.result ? cal.result.gate : S.gateDb).toFixed(1) + '%';
+  const dots = $('calDots');
+  dots.hidden = !(cal.state === 'notes' || cal.state === 'done' || (cal.state === 'fail' && cal.peaks.length));
+  dots.querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', i < cal.peaks.length));
+  $('calCount').textContent = `${Math.min(5, cal.peaks.length)} из 5`;
+  if (!calActive()) $('calLevel').style.width = '0';
+}
+$('calActions').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-cal]');
+  if (!b) return;
+  if (b.dataset.cal === 'start') calStart();
+  if (b.dataset.cal === 'save') calSave();
+});
 
 /* ---------- MIDI ---------- */
 async function connectMidi() {
@@ -1267,6 +1468,7 @@ function openPanel(id) {
   openPanelEl = $(id);
   if (id === 'progressPanel') renderProgress();
   if (id === 'settingsPanel') syncForm();
+  if (id === 'calibPanel') calReset();
   $('scrim').hidden = false;
   openPanelEl.hidden = false;
   paused = true;
@@ -1275,6 +1477,7 @@ function openPanel(id) {
 }
 function closePanel() {
   if (!openPanelEl) return;
+  if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
   openPanelEl.hidden = true;
   $('scrim').hidden = true;
   openPanelEl = null;
@@ -1355,7 +1558,8 @@ function syncForm() {
   $('optAdaptive').checked = S.adaptive;
   $('optKeys').checked = S.showKeys;
   $('optSound').checked = S.keySound;
-  $('sens').value = String(S.sens);
+  $('sens').value = String(-S.gateDb);
+  $('sensVal').textContent = fmtDb(S.gateDb);
   $('frameNote').hidden = !inFrame;
 }
 function apply(kind) {
@@ -1390,7 +1594,13 @@ $('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; 
 $('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; apply(); });
 $('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; apply(); });
 $('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; apply(); });
-$('sens').addEventListener('input', (e) => { S.sens = +e.target.value; store.set('slista.settings.v1', S); applyListener(); });
+$('sens').addEventListener('input', (e) => {
+  S.gateDb = -(+e.target.value);
+  $('sensVal').textContent = fmtDb(S.gateDb);
+  store.set('slista.settings.v1', S);
+  applyListener();
+});
+$('calibBtn').addEventListener('click', () => openPanel('calibPanel'));
 $('midiBtn').addEventListener('click', connectMidi);
 
 /* ---------- Кнопки ---------- */
