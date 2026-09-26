@@ -42,24 +42,40 @@ export function ledgerLines(d, clef) {
   return 0;
 }
 
-// Сдвиг в октавах для версии в ключе clef (FR-PC-02): меньше всего линеек у самой крайней ноты,
-// при равенстве — меньше нот за пределами стана, затем меньший сдвиг (при равных по модулю — вниз).
-// null — версии нет: трёх линеек не хватает.
-export function chooseShift(ds, clef) {
+// Сколько добавочных линеек рисуется у ноты: нота под нижней или над верхней линией стана — без линейки
+export function drawnLedgers(d, clef) {
+  const b = CLEF_BOTTOM[clef];
+  if (d < b) return Math.floor((b - d) / 2);
+  if (d > b + 8) return Math.floor((d - b - 8) / 2);
+  return 0;
+}
+
+// Сдвиг в октавах для версии в ключе clef (FR-PC-02). В ключе, которым записан исходник (keep), мелодия
+// остаётся в своей октаве, если помещается в три линейки. Иначе — сдвиг, при котором по всем нотам рисуется
+// меньше всего добавочных линеек; при равенстве — меньше линеек у самой крайней ноты, затем меньший сдвиг
+// (при равных по модулю — вниз). null — версии нет: трёх линеек не хватает.
+export function chooseShift(ds, clef, keep = false) {
+  const maxAt = (k) => ds.reduce((m, d) => Math.max(m, ledgerLines(d + 7 * k, clef)), 0);
+  if (keep && maxAt(0) <= MAX_LEDGER) return 0;
   let best = null;
   for (let k = -7; k <= 7; k++) {
-    let max = 0, outside = 0;
-    for (const d of ds) {
-      const l = ledgerLines(d + 7 * k, clef);
-      if (l > max) max = l;
-      if (l > 0) outside++;
-    }
+    const max = maxAt(k);
     if (max > MAX_LEDGER) continue;
-    const better = !best || max < best.max || (max === best.max && (outside < best.outside ||
-      (outside === best.outside && (Math.abs(k) < Math.abs(best.k) || (Math.abs(k) === Math.abs(best.k) && k < best.k)))));
-    if (better) best = { k, max, outside };
+    const sum = ds.reduce((a, d) => a + drawnLedgers(d + 7 * k, clef), 0);
+    const better = !best || sum < best.sum || (sum === best.sum && (max < best.max ||
+      (max === best.max && (Math.abs(k) < Math.abs(best.k) || (Math.abs(k) === Math.abs(best.k) && k < best.k)))));
+    if (better) best = { k, sum, max };
   }
   return best ? best.k : null;
+}
+
+// Ключ исходника: скрипичный или басовый без октавного сдвига; остальные (альтовый, скрипичный с восьмёркой) — null
+function clefOf(cl) {
+  const sign = textOf(cl, 'sign'), line = textOf(cl, 'line'), oct = Number(textOf(cl, 'clef-octave-change') || 0);
+  if (oct) return null;
+  if (sign === 'G' && (!line || line === '2')) return 'treble';
+  if (sign === 'F' && (!line || line === '4')) return 'bass';
+  return null;
 }
 
 // Длина группы для автоматической группировки, в четвертях
@@ -171,7 +187,7 @@ export function convert(xmlText, meta = {}) {
   const notes = []; // { it, mi } — все ноты по порядку
   const stream = []; // все ноты и паузы по порядку: { it, mi }
   let divisions = null, time = null, key = 0;
-  let voice = null, fileHasAccidentals = false, fileHasBeams = false;
+  let voice = null, fileHasAccidentals = false, fileHasBeams = false, srcClef; // srcClef — первый ключ партии
   const once = new Set();
   const errOnce = (k, m) => { if (!once.has(k)) { once.add(k); err(m); } };
   const lens = []; // длительность каждого такта в четвертях
@@ -222,6 +238,7 @@ export function convert(xmlText, meta = {}) {
             }
           }
         }
+        if (srcClef === undefined && kid(c, 'clef')) srcClef = clefOf(kid(c, 'clef'));
         const staves = textOf(c, 'staves');
         if (staves != null && Number(staves) > 1) errOnce('staves', `В партии ${staves} ${plural(+staves, 'стан', 'стана', 'станов')} (например, две руки фортепиано). Нужна одна рука: удалите лишний стан в MuseScore и экспортируйте снова.`);
         for (const tr of kids(c, 'transpose')) {
@@ -387,7 +404,7 @@ export function convert(xmlText, meta = {}) {
   const ds = notes.map((r) => r.it.d);
   if (ds.length) {
     for (const clef of CLEFS) {
-      const k = chooseShift(ds, clef);
+      const k = chooseShift(ds, clef, clef === srcClef);
       if (k != null) shift[clef] = k;
     }
     if (!Object.keys(shift).length) {

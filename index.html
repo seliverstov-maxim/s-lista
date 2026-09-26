@@ -1512,7 +1512,7 @@ save();
 go('play');
 startRandom();
 });
-let piecesIndex = null;
+let piecesIndex = null, piecesFlash = null; // piecesFlash — сообщение для списка вместо обычной подсказки
 const pieceCache = new Map();
 const fileMsg = 'Пьесы загружаются с сайта. Откройте приложение по адресу seliverstov-maxim.github.io/s-lista — случайные ноты работают и так.';
 async function fetchJSON(url) {
@@ -1530,7 +1530,8 @@ msg.textContent = location.protocol === 'file:' ? fileMsg : 'Не удалось
 return;
 }
 }
-msg.textContent = piecesIndex.length ? 'Выберите пьесу и ключ: скрипичный — для правой руки, басовый — для левой.' : 'Пьес пока нет.';
+msg.textContent = piecesFlash || (piecesIndex.length ? 'Выберите пьесу и ключ: скрипичный — для правой руки, басовый — для левой.' : 'Пьес пока нет.');
+piecesFlash = null;
 list.innerHTML = piecesIndex.map((p) => `<li class="piece"><div class="piece-t"><b>${esc(p.title)}</b><span>${esc(p.composer || '')}</span></div>` +
 `<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) =>
 `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}">${CLEFS[c].name}</button>`).join('')}</div></li>`).join('');
@@ -1544,9 +1545,11 @@ let piece = pieceCache.get(id);
 if (!piece) {
 if (navigate) $('piecesMsg').textContent = 'Загружаю пьесу…';
 try { piece = await fetchJSON(`pieces/${encodeURIComponent(id)}.json`); pieceCache.set(id, piece); } catch (e) {
-const text = location.protocol === 'file:' ? fileMsg : 'Не удалось загрузить пьесу. Проверьте интернет и попробуйте ещё раз.';
+const text = location.protocol === 'file:' ? fileMsg : /HTTP 404/.test(e.message) ? 'Этой пьесы больше нет в списке. Выберите другую.'
+: 'Не удалось загрузить пьесу. Проверьте интернет и попробуйте ещё раз.';
 if (navigate) { $('piecesMsg').textContent = text; return; }
-history.replaceState({ s: 'pieces' }, '', '#pieces'); show('pieces'); $('piecesMsg').textContent = text;
+piecesFlash = text;
+if (screen === 'play') history.back(); else show('pieces');
 return;
 }
 }

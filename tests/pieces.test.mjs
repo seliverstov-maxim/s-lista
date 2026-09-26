@@ -43,13 +43,13 @@ function noteXml(tok, bar) {
   return s + '</note>';
 }
 
-function score({ title = 'Тестовая пьеса', composer = 'Автор', rights = 'CC0 1.0', time = '4/4', key = 0, parts = 1, firstAttrs = '', measures } = {}) {
+function score({ title = 'Тестовая пьеса', composer = 'Автор', rights = 'CC0 1.0', time = '4/4', key = 0, parts = 1, firstAttrs = '', clef = '<clef><sign>G</sign><line>2</line></clef>', measures } = {}) {
   const part = (id) => {
     let [b, bt] = time.split('/').map(Number);
     const body = measures.map((mm, i) => {
       const o = typeof mm === 'string' ? { notes: mm } : mm;
       let attrs = '';
-      if (i === 0) attrs = `<divisions>${DIV}</divisions><key><fifths>${key}</fifths></key><time><beats>${b}</beats><beat-type>${bt}</beat-type></time><clef><sign>G</sign><line>2</line></clef>${firstAttrs}`;
+      if (i === 0) attrs = `<divisions>${DIV}</divisions><key><fifths>${key}</fifths></key><time><beats>${b}</beats><beat-type>${bt}</beat-type></time>${clef}${firstAttrs}`;
       if (i > 0 && o.key != null) attrs += `<key><fifths>${o.key}</fifths></key>`;
       if (i > 0 && o.time) { [b, bt] = o.time.split('/').map(Number); attrs += `<time><beats>${b}</beats><beat-type>${bt}</beat-type></time>`; }
       const bar = (DIV * 4 * b) / bt;
@@ -162,9 +162,27 @@ test('FR-PC-02: мелодия до¹–до² — скрипичная верс
   assert.deepEqual(r.piece.shift, { treble: 0, bass: -1 });
 });
 
-test('FR-PC-02: ля малой – ля¹ (как «Ода к радости») — скрипичная на октаву выше, басовая на октаву ниже', () => {
-  assert.equal(chooseShift([26, 33], 'treble'), 1);
+test('FR-PC-02: ля малой – ля¹ (как «Ода к радости») — в ключе исходника своя октава, в другом — меньше всего линеек', () => {
+  assert.equal(chooseShift([26, 33], 'treble', true), 0, 'исходник в скрипичном: помещается — не сдвигаем');
+  assert.equal(chooseShift([26, 33], 'treble', false), 1, 'без предпочтения: на октаву выше рисуется меньше линеек');
   assert.equal(chooseShift([26, 33], 'bass'), -1);
+});
+
+test('FR-PC-02: сдвиг выбирается по всем нотам — одна крайняя нота не утаскивает мелодию', () => {
+  // до¹ ×6 и ля¹ ×4: в своей октаве 6 линеек, октавой выше — 4, но исходник в скрипичном — остаётся на месте
+  const ds = [28, 28, 28, 28, 28, 28, 33, 33, 33, 33];
+  assert.equal(chooseShift(ds, 'treble', true), 0);
+  assert.equal(chooseShift(ds, 'treble', false), 1);
+});
+
+test('FR-PC-02: исходник в басовом ключе — басовая версия без сдвига, скрипичная сдвигается', () => {
+  const r = ok(score({ measures: ['C3:4 D3:4 E3:4 F3:4', 'G3:4 A3:4 B3:4 C4:4'], clef: '<clef><sign>F</sign><line>4</line></clef>' }));
+  assert.deepEqual(r.piece.shift, { treble: 1, bass: 0 });
+});
+
+test('FR-PC-02: скрипичный ключ с восьмёркой — своя октава не предпочитается', () => {
+  const r = ok(score({ measures: ['F3:4 G3:4 A3:4 B3:4', 'C4:4 D4:4 E4:4 F4:4'], clef: '<clef><sign>G</sign><line>2</line><clef-octave-change>-1</clef-octave-change></clef>' }));
+  assert.equal(r.piece.shift.treble, 1, 'фа малой … фа¹ в скрипичном — выше на октаву, чтобы не висеть на линейках');
 });
 
 test('FR-PC-02: самая широкая мелодия, фа малой – ми³ (без секунды три октавы), помещается только в скрипичный ключ', () => {
@@ -199,7 +217,7 @@ test('«Данные пьесы»: затакт, лиги, паузы, точк�
     { time: [3, 4], items: [n(30, 16, { beam: ['begin', 'begin'] }), { d: 31, acc: 1, len: 16, beam: ['continue', 'end'] }, n(32, 8, { beam: ['end'] }), n(33, 2)] },
     { items: [{ rest: true, measure: true }] },
   ]);
-  assert.deepEqual(r.piece.shift, { treble: 0, bass: -1 });
+  assert.deepEqual(r.piece.shift, { treble: 0, bass: -2 }); // в басовом ре большой – ре малой: меньше всего линеек
   assert.deepEqual(r.warnings, []);
 });
 
@@ -374,7 +392,7 @@ test('FR-TOOL-01: --check только проверяет и ничего не �
     const r = run([good, '--root', root, '--check']);
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /Проверка пройдена/);
-    assert.match(r.stdout, /Скрипичный ключ: сдвиг на октаву вверх, ноты от C5 до F5/);
+    assert.match(r.stdout, /Скрипичный ключ: без сдвига, ноты от C4 до F4/);
     assert.match(r.stdout, /Басовый ключ: сдвиг на октаву вниз, ноты от C3 до F3/);
     assert.equal(existsSync(join(root, 'pieces')), false);
     writeFileSync(bad, score({ title: 'Плохая', measures: [{ notes: 'C4:4 D4:4 E4:4 F4:4', after: `<note><chord/>${pitchXml('A', 0, 4)}<duration>16</duration><voice>1</voice><type>quarter</type></note>` }] }));
