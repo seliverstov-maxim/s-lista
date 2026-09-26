@@ -147,7 +147,6 @@ border-radius: 14px; border: 1px solid var(--line); background: var(--sheet); bo
 .card b { font-family: var(--display); font-weight: 400; font-size: 25px; line-height: 1.1; }
 .card .sub { color: var(--muted); font-size: 14px; text-wrap: pretty; }
 .card .kicker { font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); }
-.card.continue { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 .card .staff-ico { width: 64px; height: 30px; margin-bottom: 4px; stroke: var(--staff); fill: none; stroke-width: 1.2; }
 .card .staff-ico .h { fill: var(--ink); stroke: none; }
 .setup { display: flex; flex-direction: column; gap: 4px; }
@@ -392,11 +391,6 @@ border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 
       </div>
     </header>
     <p class="lead">Тренажёр чтения нот. Поставьте телефон на пюпитр и играйте на пианино: приложение слушает и отмечает, та ли нота сыграна.</p>
-    <button class="card continue" type="button" id="continueBtn" hidden>
-      <span class="kicker">Продолжить</span>
-      <b id="continueTitle"></b>
-      <span class="sub" id="continueSub"></span>
-    </button>
     <div class="modes">
       <button class="card" type="button" data-go="random">
         <svg class="staff-ico" viewBox="0 0 64 30" aria-hidden="true"><path d="M2 5h60M2 11h60M2 17h60M2 23h60"/><ellipse class="h" cx="16" cy="20" rx="4" ry="3" transform="rotate(-20 16 20)"/><ellipse class="h" cx="34" cy="11" rx="4" ry="3" transform="rotate(-20 34 11)"/><ellipse class="h" cx="52" cy="17" rx="4" ry="3" transform="rotate(-20 52 17)"/></svg>
@@ -1534,7 +1528,6 @@ const was = screen;
 screen = name;
 for (const [k, id] of Object.entries(SCREENS)) $(id).hidden = k !== name;
 if (was === 'play' && name !== 'play') leavePlay();
-if (name === 'home') renderHome();
 if (name === 'random') renderSetup();
 if (name === 'pieces') renderPieces();
 window.scrollTo(0, 0);
@@ -1553,18 +1546,6 @@ if (afterPop) { const f = afterPop; afterPop = null; f(); }
 });
 document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => history.back()));
 document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
-function renderHome() {
-const l = S.last;
-$('continueBtn').hidden = !l;
-if (!l) return;
-if (l.mode === 'piece') {
-$('continueTitle').textContent = l.title || 'Пьеса';
-$('continueSub').textContent = 'Пьеса · ' + clefLabel(l.clef);
-} else {
-$('continueTitle').textContent = 'Случайные ноты';
-$('continueSub').textContent = CLEFS[S.clef].name + ' ключ · ' + linesLabel(S.below, S.above);
-}
-}
 function continueLast(push = true) {
 const l = S.last;
 if (!l) { history.replaceState({ s: 'home' }, '', location.pathname + location.search); show('home'); return; }
@@ -1572,7 +1553,6 @@ if (push) { const parent = l.mode === 'piece' ? 'pieces' : 'random'; history.pus
 if (l.mode === 'piece') openPiece(l.id, l.clef, false);
 else startRandom();
 }
-$('continueBtn').addEventListener('click', () => continueLast(true));
 function renderSetup() {
 document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
 document.querySelectorAll('input[name="below"]').forEach((r) => { r.checked = +r.value === S.below; });
@@ -1669,9 +1649,10 @@ if (rows.length === 1 && rowFactor(rows[0], W) >= 1) return k;
 }
 return 3;
 }
+const RANDOM_TOTAL = 32;
 function startRandom() {
 const r = ledgerRange(S.clef, S.below, S.above);
-ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: null };
+ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: null, total: RANDOM_TOTAL, given: 0, done: 0, clean: 0, elapsed: 0 };
 ex.W = sheetUnits();
 ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
 startExercise();
@@ -1679,12 +1660,15 @@ $('playBtn').hidden = true;
 newRandomRow(false);
 renderAll();
 }
+const randomRowSize = () => Math.min(randomCount(ex.W), ex.total - ex.given);
 function newRandomRow(regen) {
 const cands = candidates(S.clef, S.below, S.above);
 const before = regen ? ex.prev : lastNote;
+if (regen) ex.given -= ex.score.notes.length;
 let prev = before;
 const list = [];
-for (let i = randomCount(ex.W); i > 0; i--) { prev = pickNote(prev, cands, S.adaptive ? difficulty : null); list.push(prev); }
+for (let i = randomRowSize(); i > 0; i--) { prev = pickNote(prev, cands, S.adaptive ? difficulty : null); list.push(prev); }
+ex.given += list.length;
 lastNote = prev;
 ex.prev = before;
 ex.score = randomScore(list, S.clef);
@@ -1755,9 +1739,8 @@ $('stCount').textContent = session.n;
 function renderTitle() {
 if (!ex) return;
 if (ex.mode === 'random') {
-const r = ledgerRange(ex.clef, S.below, S.above);
 $('levelName').textContent = 'Случайные ноты';
-$('levelRange').textContent = `${clefLabel(ex.clef)} · ${nm(r.lo)}–${nm(r.hi)}`;
+$('levelRange').textContent = `${clefLabel(ex.clef)} · нота ${Math.min(ex.done + ex.cur + 1, ex.total)} из ${ex.total}`;
 } else {
 const total = ex.score.notes.length;
 $('levelName').textContent = ex.piece.title;
@@ -1929,7 +1912,8 @@ const ms = Math.min(10000, now - cur.startAt);
 const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
 cur.status = status;
 record(cur, clean, ms);
-if (ex.mode === 'piece') ex.elapsed += now - cur.startAt;
+ex.elapsed += now - cur.startAt;
+if (clean) ex.clean = (ex.clean || 0) + 1;
 ghost = null;
 clearTimeout(ghostTimer);
 setHintKey(null);
@@ -1939,7 +1923,7 @@ const row = ex.rows[ex.row];
 if (ex.cur >= row.noteTo) {
 const notes = ex.score.notes.slice(row.noteFrom, row.noteTo);
 const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
-const done = ex.mode === 'piece' && ex.cur >= ex.score.notes.length;
+const done = ex.mode === 'piece' ? ex.cur >= ex.score.notes.length : ex.done + ex.cur >= ex.total;
 const rowMsg = notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '';
 if (!done) say([note, rowMsg].filter(Boolean).join(' '), note ? 'bad' : 'ok');
 busy = true;
@@ -1954,8 +1938,11 @@ renderScore(); renderStats(); renderTitle();
 }
 function nextRow() {
 const e = ex, n = ex.score.notes.length;
-if (ex.mode === 'random' && ex.cur >= n) newRandomRow(false);
-else {
+if (ex.mode === 'random' && ex.cur >= n) {
+ex.done += n;
+if (ex.done >= ex.total) { busy = false; finishRandom(); return; }
+newRandomRow(false);
+} else {
 const target = ex.cur < n ? rowOfNote(ex.rows, ex.cur) : ex.rows.length;
 if (ex.row < target) { ex.row++; fresh = true; }
 if (ex.row >= ex.rows.length) { ex.row = ex.rows.length - 1; busy = false; finishPiece(); return; }
@@ -2005,12 +1992,26 @@ return `${need}.`;
 function finishPiece() {
 const notes = ex.score.notes;
 const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+$('doneTitle').textContent = 'Пьеса сыграна';
+$('doneList').textContent = 'К списку';
 $('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)}`;
 $('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
 say('Пьеса сыграна.', 'ok');
 openPanel('donePanel');
 }
-$('doneAgain').addEventListener('click', () => { const p = ex && ex.piece, c = ex && ex.clef; closePanel(() => { if (p) startPiece(p, c); }); });
+function finishRandom() {
+$('doneTitle').textContent = 'Упражнение пройдено';
+$('doneList').textContent = 'К настройке';
+$('donePiece').textContent = `Случайные ноты · ${clefLabel(ex.clef)} · ${linesLabel(S.below, S.above)}`;
+$('doneKv').innerHTML = `<dt>Нот</dt><dd>${ex.total}</dd><dt>С первого раза</dt><dd>${ex.clean} (${pct(ex.clean, ex.total)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd><dt>В среднем на ноту</dt><dd>${fmtSec(ex.elapsed / ex.total)}</dd>`;
+say('Упражнение пройдено.', 'ok');
+renderTitle();
+openPanel('donePanel');
+}
+$('doneAgain').addEventListener('click', () => {
+const e = ex;
+closePanel(() => { if (!e) return; if (e.mode === 'random') { startRandom(); } else startPiece(e.piece, e.clef); });
+});
 $('doneList').addEventListener('click', () => closePanel(() => history.back()));
 let pb = null, micMuteUntil = 0;
 const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
@@ -2449,7 +2450,7 @@ if (!ex || screen !== 'play' || !w || Math.abs(w - lastW) < 2) return;
 lastW = w;
 ex.W = sheetUnits();
 const first = ex.score.notes[0];
-if (ex.mode === 'random' && ex.cur === 0 && !first.errors && !first.hinted && !busy && randomCount(ex.W) !== ex.score.notes.length) newRandomRow(true);
+if (ex.mode === 'random' && ex.cur === 0 && !first.errors && !first.hinted && !busy && Math.min(randomCount(ex.W), ex.total - ex.given + ex.score.notes.length) !== ex.score.notes.length) newRandomRow(true);
 else {
 ex.rows = layoutRows(ex.score, ex.W);
 ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));

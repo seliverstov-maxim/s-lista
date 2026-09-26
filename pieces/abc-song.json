@@ -1,0 +1,22 @@
+{
+ "id": "abc-song",
+ "title": "ABC Song",
+ "composer": "Детская песня",
+ "license": "CC BY-SA 4.0 (Википедия)",
+ "source": "https://en.wikipedia.org/w/index.php?title=The_ABC_Song&oldid=1376282733",
+ "shift": {"treble":0,"bass":-1},
+ "measures": [
+  {"time":[4,4],"key":0,"tempo":100,"items":[{"d":28,"acc":0,"len":4},{"d":28,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":32,"acc":0,"len":4}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":2}]},
+  {"items":[{"d":31,"acc":0,"len":4},{"d":31,"acc":0,"len":4},{"d":30,"acc":0,"len":4},{"d":30,"acc":0,"len":4}]},
+  {"items":[{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":2}]},
+  {"items":[{"d":32,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":31,"acc":0,"len":2}]},
+  {"items":[{"d":30,"acc":0,"len":4},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":2}]},
+  {"items":[{"d":32,"acc":0,"len":8,"beam":["begin"]},{"d":32,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":4},{"d":31,"acc":0,"len":2}]},
+  {"items":[{"d":30,"acc":0,"len":4},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":2}]},
+  {"items":[{"d":28,"acc":0,"len":4},{"d":28,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":32,"acc":0,"len":4}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":2}]},
+  {"items":[{"d":31,"acc":0,"len":4},{"d":31,"acc":0,"len":4},{"d":30,"acc":0,"len":4},{"d":30,"acc":0,"len":4}]},
+  {"items":[{"d":29,"acc":0,"len":4},{"d":29,"acc":0,"len":4},{"d":28,"acc":0,"len":2}]}
+ ]
+}

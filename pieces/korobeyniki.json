@@ -1,0 +1,22 @@
+{
+ "id": "korobeyniki",
+ "title": "Коробейники",
+ "composer": "Русская народная песня",
+ "license": "CC BY-SA 4.0 (Википедия)",
+ "source": "https://en.wikipedia.org/w/index.php?title=Korobeiniki&oldid=1373187891",
+ "shift": {"treble":0,"bass":-2},
+ "measures": [
+  {"time":[4,4],"key":0,"tempo":100,"items":[{"d":30,"acc":0,"len":4,"dots":1},{"d":32,"acc":1,"len":8,"mark":1},{"d":34,"acc":0,"len":4},{"d":32,"acc":1,"len":8,"beam":["begin"]},{"d":30,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":33,"acc":0,"len":4,"dots":1},{"d":35,"acc":0,"len":8},{"d":37,"acc":0,"len":4},{"d":36,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":34,"acc":0,"len":4,"dots":1},{"d":35,"acc":0,"len":8},{"d":36,"acc":0,"len":4},{"d":37,"acc":0,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":2}]},
+  {"items":[{"d":38,"acc":0,"len":4,"dots":1},{"d":39,"acc":0,"len":8},{"d":40,"acc":0,"len":4},{"d":39,"acc":0,"len":8,"beam":["begin"]},{"d":38,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":37,"acc":0,"len":4,"dots":1},{"d":38,"acc":0,"len":8},{"d":37,"acc":0,"len":4},{"d":36,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":34,"acc":0,"len":4,"dots":1},{"d":35,"acc":0,"len":8},{"d":36,"acc":0,"len":4},{"d":37,"acc":0,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":2}]},
+  {"items":[{"d":38,"acc":0,"len":4,"dots":1},{"d":39,"acc":0,"len":8},{"d":40,"acc":0,"len":4},{"d":39,"acc":0,"len":8,"beam":["begin"]},{"d":38,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":37,"acc":0,"len":4,"dots":1},{"d":38,"acc":0,"len":8},{"d":37,"acc":0,"len":4},{"d":36,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["end"]}]},
+  {"items":[{"d":34,"acc":0,"len":4,"dots":1},{"d":35,"acc":0,"len":8},{"d":36,"acc":0,"len":4},{"d":37,"acc":0,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":2}]}
+ ]
+}

@@ -74,11 +74,11 @@ async function playAll(page, limit = 400, onRow) {
 }
 
 try {
-  // 1. Первый запуск: главный экран, без «Продолжить»
+  // 1. Первый запуск: главный экран
   {
     const { ctx, page, errors } = await open();
     check('первый запуск — главный экран', await visible(page, '#homeScreen') && !(await visible(page, '#playScreen')));
-    check('первый запуск — нет кнопки «Продолжить»', !(await visible(page, '#continueBtn')));
+    check('главный экран без кнопки «Продолжить»', (await page.locator('#continueBtn').count()) === 0);
     await page.screenshot({ path: outDir + 'home.png' });
 
     // 2. Случайные ноты: настройка, образец диапазона, тренажёр
@@ -93,7 +93,7 @@ try {
     await page.screenshot({ path: outDir + 'random-setup.png' });
     await page.click('#startRandom');
     check('тренажёр открыт', await visible(page, '#playScreen'));
-    check('шапка тренажёра — ключ и диапазон', (await text(page, '#levelRange')).startsWith('басовый ключ · C₂–C₄'), await text(page, '#levelRange'));
+    check('шапка тренажёра — ключ и ход упражнения', (await text(page, '#levelRange')) === 'басовый ключ · нота 1 из 32', await text(page, '#levelRange'));
     check('клавиши «до» подписаны буквой с маленьким номером октавы', (await page.$$eval('#keys .lbl', (els) => els.map((e) => e.textContent))).includes('C₃'));
     const paths = await page.locator('#score svg path').count(), rects = await page.locator('#score svg rect').count();
     check('нотный стан нарисован', paths >= 4 && rects >= 5, `${paths} знаков, ${rects} линий`);
@@ -106,14 +106,14 @@ try {
     check('верная клавиша — «Верно»', (await text(page, '#msg')).startsWith('Верно'), await text(page, '#msg'));
     await page.screenshot({ path: outDir + 'random-play.png' });
 
-    // 3. «Назад» по истории браузера и «Продолжить»
+    // 3. «Назад» по истории браузера; настройки случайных нот сохраняются
     await page.goBack();
     check('«Назад» из тренажёра — к настройке случайных нот', await visible(page, '#randomScreen'));
     await page.goBack();
     check('ещё «Назад» — главный экран', await visible(page, '#homeScreen'));
-    check('«Продолжить» — случайные ноты с прошлыми настройками', (await visible(page, '#continueBtn')) && (await text(page, '#continueSub')).includes('Басовый ключ'), await text(page, '#continueSub'));
-    await page.click('#continueBtn');
-    check('«Продолжить» открывает тренажёр', await visible(page, '#playScreen') && (await text(page, '#levelRange')).startsWith('басовый ключ'));
+    await page.click('[data-go="random"]');
+    check('снова «Случайные ноты» — прошлые настройки', (await text(page, '#rangeText')).includes('от C₂ до C₄'), await text(page, '#rangeText'));
+    await page.click('#startRandom');
     await page.click('#playScreen [data-back]');
     check('кнопка «Назад» тренажёра — к настройке', await visible(page, '#randomScreen'));
     check('страница без ошибок JS (случайные ноты)', errors.length === 0, errors.join('; '));
@@ -142,11 +142,45 @@ try {
     await ctx.close();
   }
 
+  // 4а. Упражнение из 32 случайных нот: ход в шапке, итог, «Ещё раз», «К настройке» (FR-RND-05)
+  {
+    const { ctx, page, errors } = await open(base + '#random');
+    await page.click('input[name="clef"][value="treble"] + span');
+    await page.click('input[name="below"][value="1"] + span');
+    await page.click('input[name="above"][value="1"] + span');
+    await page.click('#startRandom');
+    const perRow = await page.locator('#score .n').count();
+    const m0 = await curMidi(page);
+    await press(page, (await page.$(`#keys [data-midi="${m0 + 2}"]`)) ? m0 + 2 : m0 - 2); // одна ошибка
+    let played = 0;
+    for (let i = 0; i < 40 && !(await visible(page, '#donePanel')); i++) {
+      const m = await curMidi(page);
+      if (m == null) break;
+      await press(page, m);
+      played++;
+      if (played === 10) check('шапка: ход упражнения — «нота 11 из 32»', (await text(page, '#levelRange')).endsWith('нота 11 из 32'), await text(page, '#levelRange'));
+    }
+    await page.waitForTimeout(900);
+    check('упражнение: ровно 32 ноты, потом итог', played === 32 && (await visible(page, '#donePanel')), `${played} нот, в строке ${perRow}`);
+    check('итог упражнения: заголовок и 31 из 32 с первого раза', (await text(page, '#doneTitle')) === 'Упражнение пройдено' && (await text(page, '#doneKv')).includes('31 (97%)'), await text(page, '#doneKv'));
+    check('итог упражнения: кнопка «К настройке»', (await text(page, '#doneList')) === 'К настройке');
+    await page.screenshot({ path: outDir + 'random-done.png' });
+    await page.click('#doneAgain');
+    await page.waitForTimeout(300);
+    check('«Ещё раз» — новое упражнение с первой ноты', !(await visible(page, '#donePanel')) && (await text(page, '#levelRange')).endsWith('нота 1 из 32'), await text(page, '#levelRange'));
+    for (let i = 0; i < 40 && !(await visible(page, '#donePanel')); i++) { const m = await curMidi(page); if (m == null) break; await press(page, m); }
+    await page.waitForTimeout(900);
+    await page.click('#doneList');
+    await page.waitForTimeout(300);
+    check('«К настройке» — экран случайных нот', await visible(page, '#randomScreen'));
+    check('страница без ошибок JS (упражнение)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
   // 5. Перенос настроек версии 1
   {
     const init = { fn: () => localStorage.setItem('slista.settings.v1', JSON.stringify({ clef: 'grand', lo: 14, hi: 42, acc: true, perRow: 'one', naming: 'letters', calibrated: true, gateDb: -44 })) };
     const { ctx, page, errors } = await open(base, { init });
-    check('версия 1: есть «Продолжить»', await visible(page, '#continueBtn'));
     await page.click('[data-go="random"]');
     const state = await page.evaluate(() => ['clef', 'below', 'above'].map((n) => document.querySelector(`input[name="${n}"]:checked`).value).join(' '));
     check('версия 1: большой стан → скрипичный, 3 снизу, 2 сверху', state === 'treble 3 2', state);
@@ -189,9 +223,10 @@ try {
     check('«К списку» — экран пьес', await visible(page, '#piecesScreen') && (await page.evaluate(() => location.hash)) === '#pieces');
     await page.goBack();
     check('«Назад» из списка — главный экран', await visible(page, '#homeScreen'));
-    check('«Продолжить» — пьеса', (await text(page, '#continueTitle')) === 'Ода к радости');
     // перезагрузка на тренажёре (например, телефон выгрузил вкладку) продолжает последнее упражнение
-    await page.click('#continueBtn');
+    await page.click('[data-go="pieces"]');
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="oda-k-radosti"][data-clef="bass"]');
     await page.waitForSelector('#playScreen:not([hidden])');
     await page.reload();
     await page.waitForSelector('#playScreen:not([hidden])');

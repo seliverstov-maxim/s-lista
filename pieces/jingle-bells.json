@@ -1,0 +1,18 @@
+{
+ "id": "jingle-bells",
+ "title": "Jingle Bells",
+ "composer": "Дж. Пирпонт",
+ "license": "Общественное достояние (набор — Niamh O'C)",
+ "source": "https://commons.wikimedia.org/w/index.php?title=File%3AJingle_Bells_refrain_vector.svg&oldid=1129990329",
+ "shift": {"treble":0,"bass":-2},
+ "measures": [
+  {"time":[4,4],"key":1,"tempo":100,"items":[{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":36,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":33,"acc":0,"len":16,"beam":["end","backward hook"]},{"d":34,"acc":0,"len":4},{"rest":true,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["end"]},{"d":35,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":35,"acc":0,"len":16,"beam":["end","backward hook"]},{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":16,"beam":["continue","begin"]},{"d":34,"acc":0,"len":16,"beam":["end","end"]}]},
+  {"items":[{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":33,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":33,"acc":0,"len":4},{"d":36,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":36,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":33,"acc":0,"len":16,"beam":["end","backward hook"]},{"d":34,"acc":0,"len":4},{"rest":true,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":35,"acc":0,"len":8,"beam":["end"]},{"d":35,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":35,"acc":0,"len":16,"beam":["end","backward hook"]},{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":8,"beam":["end"]},{"d":34,"acc":0,"len":8,"beam":["begin"]},{"d":34,"acc":0,"len":16,"beam":["continue","begin"]},{"d":34,"acc":0,"len":16,"beam":["end","end"]}]},
+  {"items":[{"d":36,"acc":0,"len":8,"beam":["begin"]},{"d":36,"acc":0,"len":8,"beam":["end"]},{"d":35,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":4,"dots":1},{"rest":true,"len":8}]}
+ ]
+}

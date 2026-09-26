@@ -11,6 +11,7 @@ import { deflateRawSync, crc32 } from 'node:zlib';
 import { parseXml, kids, textOf, decodeText } from '../scripts/lib/xml.mjs';
 import { readMxl } from '../scripts/lib/zip.mjs';
 import { convert, ledgerLines, chooseShift } from '../scripts/lib/musicxml.mjs';
+import { lyToMusicXml } from '../scripts/lib/lilypond.mjs';
 
 const TOOL = fileURLToPath(new URL('../scripts/add-piece.mjs', import.meta.url));
 const REPO = fileURLToPath(new URL('..', import.meta.url));
@@ -487,7 +488,7 @@ test('pieces/: данные совпадают с тем, что инструм�
     const src = srcs.find((f) => basename(f, extname(f)) === entry.id);
     assert.ok(src, `нет исходника для ${entry.id}`);
     const buf = readFileSync(join(dir, 'src', src));
-    const xml = extname(src) === '.mxl' ? readMxl(buf) : decodeText(buf);
+    const xml = extname(src) === '.mxl' ? readMxl(buf) : extname(src) === '.ly' ? lyToMusicXml(decodeText(buf)) : decodeText(buf);
     const r = convert(xml, { title: piece.title, composer: piece.composer, license: piece.license });
     assert.deepEqual(r.errors, [], entry.id);
     assert.deepEqual(r.piece.measures, piece.measures, `${entry.id}: данные устарели — запустите npm run add-piece -- --rebuild`);

@@ -1,6 +1,18 @@
 { "pieces": [
   {"id":"bratets-yakov","title":"Братец Яков","composer":"Французская народная песня","clefs":["treble","bass"]},
+  {"id":"k-elize-nachalo","title":"К Элизе (начало)","composer":"Л. ван Бетховен","clefs":["treble","bass"]},
+  {"id":"korobeyniki","title":"Коробейники","composer":"Русская народная песня","clefs":["treble","bass"]},
+  {"id":"menuet-sol-mazhor","title":"Менуэт соль мажор","composer":"К. Петцольд","clefs":["treble","bass"]},
   {"id":"oda-k-radosti","title":"Ода к радости","composer":"Л. ван Бетховен","clefs":["treble","bass"]},
+  {"id":"abc-song","title":"ABC Song","composer":"Детская песня","clefs":["treble","bass"]},
+  {"id":"alle-meine-entchen","title":"Alle meine Entchen","composer":"Немецкая детская песня","clefs":["treble","bass"]},
+  {"id":"au-clair-de-la-lune","title":"Au clair de la lune","composer":"Французская народная песня","clefs":["treble","bass"]},
+  {"id":"fuchs-du-hast-die-gans-gestohlen","title":"Fuchs, du hast die Gans gestohlen","composer":"Немецкая детская песня","clefs":["treble","bass"]},
+  {"id":"happy-birthday-to-you","title":"Happy Birthday to You","composer":"М. и П. Хилл","clefs":["treble","bass"]},
+  {"id":"jingle-bells","title":"Jingle Bells","composer":"Дж. Пирпонт","clefs":["treble","bass"]},
+  {"id":"london-bridge-is-falling-down","title":"London Bridge Is Falling Down","composer":"Английская детская песня","clefs":["treble","bass"]},
+  {"id":"mary-had-a-little-lamb","title":"Mary Had a Little Lamb","composer":"Детская песня","clefs":["treble","bass"]},
+  {"id":"old-macdonald-had-a-farm","title":"Old MacDonald Had a Farm","composer":"Детская песня","clefs":["treble","bass"]},
   {"id":"row-row-row-your-boat","title":"Row, Row, Row Your Boat","composer":"Детская песня","clefs":["treble","bass"]},
   {"id":"twinkle-twinkle-little-star","title":"Twinkle, Twinkle, Little Star","composer":"Французская народная песня","clefs":["treble","bass"]}
 ] }

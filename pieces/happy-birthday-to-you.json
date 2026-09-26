@@ -1,0 +1,19 @@
+{
+ "id": "happy-birthday-to-you",
+ "title": "Happy Birthday to You",
+ "composer": "М. и П. Хилл",
+ "license": "CC0 1.0 (набор — Christophe Dang Ngoc Chan)",
+ "source": "https://commons.wikimedia.org/w/index.php?title=File%3AJoyeux_anniversaire_patty_mildred_hill.svg&oldid=1226958144",
+ "shift": {"treble":0,"bass":-2},
+ "measures": [
+  {"time":[3,4],"key":0,"tempo":100,"pickup":true,"items":[{"d":32,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":32,"acc":0,"len":16,"beam":["end","backward hook"]}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":35,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":2},{"d":32,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":32,"acc":0,"len":16,"beam":["end","backward hook"]}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":36,"acc":0,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":2},{"d":32,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":32,"acc":0,"len":16,"beam":["end","backward hook"]}]},
+  {"items":[{"d":39,"acc":0,"len":4},{"d":37,"acc":0,"len":4},{"d":35,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":38,"acc":0,"len":8,"dots":1,"beam":["begin"]},{"d":38,"acc":0,"len":16,"beam":["end","backward hook"]}]},
+  {"items":[{"d":37,"acc":0,"len":4},{"d":35,"acc":0,"len":4},{"d":36,"acc":0,"len":4}]},
+  {"items":[{"d":35,"acc":0,"len":2}]}
+ ]
+}

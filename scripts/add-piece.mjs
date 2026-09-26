@@ -1,7 +1,8 @@
-// Добавляет пьесу в pieces/ (docs/spec-2.0.md, FR-TOOL): проверяет MusicXML, пишет данные для приложения,
+// Добавляет пьесу в pieces/ (docs/spec-2.0.md, FR-TOOL): проверяет MusicXML или LilyPond, пишет данные для приложения,
 // копию исходника и общий список pieces/index.json. Коммит и публикация — отдельный шаг (git push).
+// LilyPond (.ly) сначала переводится в MusicXML (scripts/lib/lilypond.mjs) и дальше проверяется так же.
 //
-//   npm run add-piece -- файл.mxl [--id …] [--title …] [--composer …] [--license …] [--source …] [--force] [--check]
+//   npm run add-piece -- файл.mxl|файл.ly [--id …] [--title …] [--composer …] [--license …] [--source …] [--force] [--check]
 //   npm run add-piece -- --rebuild        пересобрать все пьесы из pieces/src/ (метаданные — из pieces/<id>.json)
 //
 // --root <каталог> — где лежит pieces/ (по умолчанию корень репозитория; нужно тестам).
@@ -10,15 +11,17 @@ import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convert, noteName, plural, CLEFS } from './lib/musicxml.mjs';
 import { readMxl } from './lib/zip.mjs';
+import { lyToMusicXml } from './lib/lilypond.mjs';
 import { decodeText } from './lib/xml.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const EXTS = ['.mxl', '.musicxml', '.xml'];
+const EXTS = ['.mxl', '.musicxml', '.xml', '.ly'];
 const CLEF_NAME = { treble: 'Скрипичный ключ', bass: 'Басовый ключ' };
 const USAGE = `Как запустить:
   npm run add-piece -- файл.mxl [--id …] [--title "…"] [--composer "…"] [--license "…"] [--source "…"] [--force] [--check]
   npm run add-piece -- --rebuild
-Файл — сжатый (.mxl) или обычный (.musicxml, .xml) MusicXML с одной мелодией.
+Файл — сжатый (.mxl) или обычный (.musicxml, .xml) MusicXML с одной мелодией или LilyPond (.ly).
+Из LilyPond берётся первая партитура, а в ней — первый голос с нотами (у фортепиано — правая рука).
   --id        имя файлов пьесы (по умолчанию — транслитерация названия)
   --title     название, если его нет в файле или нужно другое
   --composer  автор
@@ -49,10 +52,11 @@ function parseArgs(argv) {
   return a;
 }
 
-// Текст MusicXML из файла: .mxl распаковываем, остальное читаем как текст (UTF-8 или UTF-16)
+// Текст MusicXML из файла: .mxl распаковываем, .ly переводим, остальное читаем как текст (UTF-8 или UTF-16)
 function readSource(path) {
   const buf = readFileSync(path);
   if (extname(path).toLowerCase() === '.mxl' || (buf[0] === 0x50 && buf[1] === 0x4b)) return readMxl(buf);
+  if (extname(path).toLowerCase() === '.ly') return lyToMusicXml(decodeText(buf));
   return decodeText(buf);
 }
 
@@ -131,11 +135,11 @@ function printProblems(result) {
 }
 
 function addPiece(a, root) {
-  if (!a.file) throw new UsageError('Укажите файл MusicXML.');
+  if (!a.file) throw new UsageError('Укажите файл MusicXML или LilyPond.');
   const file = resolve(a.file);
   if (!existsSync(file)) throw new UsageError(`Файл не найден: ${a.file}`);
   const ext = extname(file).toLowerCase();
-  if (!EXTS.includes(ext)) throw new UsageError(`Нужен файл .mxl, .musicxml или .xml, а не «${ext || 'без расширения'}».`);
+  if (!EXTS.includes(ext)) throw new UsageError(`Нужен файл .mxl, .musicxml, .xml или .ly, а не «${ext || 'без расширения'}».`);
   let xml;
   try { xml = readSource(file); }
   catch (e) { console.error(`Не удалось прочитать ${a.file}: ${e.message}`); return 1; }

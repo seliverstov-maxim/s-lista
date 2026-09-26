@@ -1,0 +1,18 @@
+{
+ "id": "au-clair-de-la-lune",
+ "title": "Au clair de la lune",
+ "composer": "Французская народная песня",
+ "license": "GFDL / CC BY-SA 3.0 (набор — Christophe Dang Ngoc Chan)",
+ "source": "https://commons.wikimedia.org/w/index.php?title=File%3ALy_au_clair_de_la_lune_accords_melodie_paroles.png&oldid=1006498541",
+ "shift": {"treble":0,"bass":-1},
+ "measures": [
+  {"time":[4,4],"key":0,"tempo":80,"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":28,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":4}]},
+  {"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":30,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":2}]},
+  {"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":28,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":4}]},
+  {"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":30,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":2}]},
+  {"items":[{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":26,"acc":0,"len":4},{"d":26,"acc":0,"len":4}]},
+  {"items":[{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":28,"acc":0,"len":8,"beam":["end"]},{"d":27,"acc":0,"len":8,"beam":["begin"]},{"d":26,"acc":0,"len":8,"beam":["end"]},{"d":25,"acc":0,"len":2}]},
+  {"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":28,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":30,"acc":0,"len":4},{"d":29,"acc":0,"len":4}]},
+  {"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":30,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":2}]}
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "id": "alle-meine-entchen",
+ "title": "Alle meine Entchen",
+ "composer": "Немецкая детская песня",
+ "license": "CC BY-SA 4.0 (Википедия)",
+ "source": "https://de.wikipedia.org/w/index.php?title=Alle_meine_Entchen&oldid=269542480",
+ "shift": {"treble":0,"bass":-1},
+ "measures": [
+  {"time":[4,4],"key":0,"tempo":100,"items":[{"d":28,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":30,"acc":0,"len":8,"beam":["begin"]},{"d":31,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":4},{"d":32,"acc":0,"len":4}]},
+  {"items":[{"d":33,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":33,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":2}]},
+  {"items":[{"d":33,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":33,"acc":0,"len":8,"beam":["begin"]},{"d":33,"acc":0,"len":8,"beam":["end"]},{"d":32,"acc":0,"len":2}]},
+  {"items":[{"d":31,"acc":0,"len":8,"beam":["begin"]},{"d":31,"acc":0,"len":8,"beam":["end"]},{"d":31,"acc":0,"len":8,"beam":["begin"]},{"d":31,"acc":0,"len":8,"beam":["end"]},{"d":30,"acc":0,"len":4},{"d":30,"acc":0,"len":4}]},
+  {"items":[{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":29,"acc":0,"len":8,"beam":["begin"]},{"d":29,"acc":0,"len":8,"beam":["end"]},{"d":28,"acc":0,"len":2}]}
+ ]
+}

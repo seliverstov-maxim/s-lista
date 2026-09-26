@@ -1,0 +1,18 @@
+{
+ "id": "mary-had-a-little-lamb",
+ "title": "Mary Had a Little Lamb",
+ "composer": "Детская песня",
+ "license": "CC BY-SA 4.0 (Википедия)",
+ "source": "https://it.wikipedia.org/w/index.php?title=Mary_had_a_little_lamb&oldid=150827858",
+ "shift": {"treble":0,"bass":-2},
+ "measures": [
+  {"time":[4,4],"key":1,"tempo":110,"items":[{"d":34,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":33,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":2}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":2}]},
+  {"items":[{"d":34,"acc":0,"len":4},{"d":36,"acc":0,"len":4},{"d":36,"acc":0,"len":2}]},
+  {"items":[{"d":34,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":33,"acc":0,"len":4}]},
+  {"items":[{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":4},{"d":34,"acc":0,"len":4}]},
+  {"items":[{"d":33,"acc":0,"len":4},{"d":33,"acc":0,"len":4},{"d":34,"acc":0,"len":4},{"d":33,"acc":0,"len":4}]},
+  {"items":[{"d":32,"acc":0,"len":1}]}
+ ]
+}

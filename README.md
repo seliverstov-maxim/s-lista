@@ -30,11 +30,12 @@ npm install && npx playwright install chromium
 npm run test:e2e    # проверки в браузере
 npm run serve       # http://localhost:8080
 npm run add-piece -- пьеса.mxl --license "CC0 1.0"   # добавить пьесу из MusicXML
+npm run add-piece -- пьеса.ly --title "…" --license "…" --source "…"   # или из LilyPond (Mutopia, Википедия)
 ```
 
 После `git push` в `main` GitHub Pages обновляет сайт за 1–2 минуты. Собранный `index.html` хранится в репозитории: его раздаёт Pages.
 
-Пьесы лежат в `pieces/`. Их добавляет `npm run add-piece`: он проверяет MusicXML (одна мелодия, без аккордов, триолей, форшлагов и повторов) и пишет данные для приложения. Хорошие источники — свободные коллекции вроде [OpenScore](https://fourscoreandmore.org/openscore/) (CC0) или мелодии, набранные в MuseScore.
+Пьесы лежат в `pieces/`. Их добавляет `npm run add-piece`: он проверяет MusicXML или LilyPond (одна мелодия, без аккордов и триолей; из фортепианной пьесы берётся правая рука) и пишет данные для приложения. Источники — свободные коллекции: [Mutopia](https://www.mutopiaproject.org/) (LilyPond), партитуры в статьях Википедии и на Викискладе, [OpenScore](https://fourscoreandmore.org/openscore/) (CC0). Исходник каждой пьесы хранится в `pieces/src/` со ссылкой на источник и лицензией.
 
 ## Документация
 
@@ -48,4 +49,4 @@ npm run add-piece -- пьеса.mxl --license "CC0 1.0"   # добавить п�
 
 ## Лицензии
 
-Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Звук рояля в `sounds/piano/` — фрагменты записей [Salamander Grand Piano V3](https://archive.org/details/SalamanderGrandPianoV3) © Alexander Holm, лицензия [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); записи обрезаны, сведены к одному микрофону и пережаты в MP3 (`scripts/make-piano.mjs`, `sounds/piano/README.md`). Образцы пьес в `pieces/` — мелодии общественного достояния, нотный набор — CC0. Лицензия на код проекта пока не выбрана.
+Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Звук рояля в `sounds/piano/` — фрагменты записей [Salamander Grand Piano V3](https://archive.org/details/SalamanderGrandPianoV3) © Alexander Holm, лицензия [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); записи обрезаны, сведены к одному микрофону и пережаты в MP3 (`scripts/make-piano.mjs`, `sounds/piano/README.md`). Мелодии пьес в `pieces/` — общественное достояние. Нотный набор: у четырёх наших образцов — CC0; у остальных — как в источнике: партитуры Википедии — CC BY-SA 4.0, файлы Викисклада — GFDL и CC BY-SA 3.0, CC0 или общественное достояние, Mutopia — общественное достояние. Лицензия и ссылка на источник — в поле `license` и `source` каждой пьесы и в начале её исходника `pieces/src/<id>.ly`. Лицензия на код проекта пока не выбрана.

@@ -10,7 +10,7 @@ npm test           # распознавание звука, нотный дви�
 npm install && npx playwright install chromium   # один раз, для e2e
 npm run test:e2e   # Chromium: экраны, пьеса целиком, MIDI-заглушка, калибровка с искусственным микрофоном
 npm run serve      # http://localhost:8080 — микрофон работает на localhost
-npm run add-piece -- файл.mxl [--license "CC0 1.0"] [--check]   # добавить пьесу из MusicXML
+npm run add-piece -- файл.mxl|файл.ly [--license "CC0 1.0"] [--check]   # добавить пьесу из MusicXML или LilyPond
 npm run add-piece -- --rebuild                                   # пересобрать все пьесы после смены формата
 ```
 
@@ -23,7 +23,7 @@ npm run add-piece -- --rebuild                                   # пересо�
 - `index.html` — **сгенерированный** файл, но хранится в git: его раздаёт Pages. Руками не править.
 - `sounds/piano/` — записи рояля (MP3, CC BY 3.0). **Генерируются** `scripts/make-piano.mjs` из архива Salamander Grand Piano V3; указание автора — в настройках, `README.md` и `sounds/piano/README.md`.
 - `pieces/` — пьесы: `index.json` (список), `<id>.json` (данные), `src/` (исходники MusicXML). **Генерируются** `scripts/add-piece.mjs`; руками не править.
-- `scripts/add-piece.mjs`, `scripts/lib/` — инструмент загрузки пьес: XML, zip (`.mxl`), проверки и перевод MusicXML.
+- `scripts/add-piece.mjs`, `scripts/lib/` — инструмент загрузки пьес: XML, zip (`.mxl`), проверки и перевод MusicXML, перевод LilyPond → MusicXML (`lilypond.mjs`).
 - `docs/` — требования (FR/NFR/критерии приёмки), архитектура, решения (ADR), тестирование, бэклог, спецификация 2.0 (в том числе формат данных пьесы).
 - `tests/detector.test.mjs` — распознавание, `tests/music.test.mjs` — нотный движок и логика, `tests/pieces.test.mjs` — инструмент пьес, `tests/helpers/` — синтез фортепиано, загрузка `detector.js` и `music.js` в Node, `tests/e2e/run.mjs` — Playwright.
 
@@ -66,5 +66,6 @@ npm run add-piece -- --rebuild                                   # пересо�
 - Ступень ноты `d = октава·7 + буква` (до = 0); до¹ = C4 = `d 28` = MIDI 60. Нижняя линия: у скрипичного ключа `d 30` (E4), у басового `d 18` (G2).
 - Диапазон по линейкам: `bottomD − 2·N ≤ d ≤ bottomD + 8 + 2·M`. Пьесам всегда разрешено 3 и 3: скрипичный F3–E6, басовый A1–G4.
 - Пьеса — одна линия на одну руку. Формат данных — `docs/spec-2.0.md`, «Данные пьесы».
+- **Пьесы — только из открытых источников с лицензией**, мелодию не набирать по памяти. Исходник хранить дословно: сверху комментарии `%` — откуда (ссылка на правку), лицензия; всё своё помечать «добавлено» / «изменено» (например, темп, если в источнике его нет или он только для MIDI). У фортепианных пьес — правая рука.
 - У пользователя цифровое пианино Roland FP-30 (USB и Bluetooth MIDI) и телефон на пюпитре. На iOS MIDI в браузере недоступен.
 - Открытые вопросы и следующие шаги — в `docs/backlog.md`.
