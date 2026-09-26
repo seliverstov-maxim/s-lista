@@ -321,6 +321,27 @@ try {
     await ctx.close();
   }
 
+  // 10б. Поворот экрана: посреди пьесы и в момент смены строки текущая нота остаётся на экране
+  {
+    const { ctx, page, errors } = await open(base + '#pieces');
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="oda-k-radosti"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
+    const firstRow = await page.locator('#score .n[data-i]').count();
+    for (let i = 0; i < firstRow; i++) await press(page, await curMidi(page));
+    await page.setViewportSize({ width: 844, height: 390 }); // сразу, пока идут 0,7 с смены строки
+    await page.waitForTimeout(1000);
+    const c1 = await page.getAttribute('#score .n.cur', 'data-i');
+    check('поворот в момент смены строки: текущая нота на экране', c1 === String(firstRow), `${c1}, ожидалось ${firstRow}`);
+    await press(page, await curMidi(page));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(500);
+    const c2 = await page.getAttribute('#score .n.cur', 'data-i');
+    check('поворот посреди строки: текущая нота та же', c2 === String(firstRow + 1), `${c2}`);
+    check('страница без ошибок JS (поворот)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
   // 11. Телефон 360 px: ни на одном экране нет горизонтальной прокрутки
   {
     const { ctx, page, errors } = await open(base, { viewport: { width: 360, height: 740 } });

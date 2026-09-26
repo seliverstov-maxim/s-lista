@@ -1543,8 +1543,10 @@ if (b) openPiece(b.dataset.piece, b.dataset.clef, true);
 async function openPiece(id, clef, navigate) {
 let piece = pieceCache.get(id);
 if (!piece) {
+const from = screen; // пока пьеса грузится, пользователь мог уйти с экрана — тогда ничего не открываем
 if (navigate) $('piecesMsg').textContent = 'Загружаю пьесу…';
 try { piece = await fetchJSON(`pieces/${encodeURIComponent(id)}.json`); pieceCache.set(id, piece); } catch (e) {
+if (screen !== from) return;
 const text = location.protocol === 'file:' ? fileMsg : /HTTP 404/.test(e.message) ? 'Этой пьесы больше нет в списке. Выберите другую.'
 : 'Не удалось загрузить пьесу. Проверьте интернет и попробуйте ещё раз.';
 if (navigate) { $('piecesMsg').textContent = text; return; }
@@ -1552,6 +1554,7 @@ piecesFlash = text;
 if (screen === 'play') history.back(); else show('pieces');
 return;
 }
+if (screen !== from) return;
 }
 if (!piece.shift || piece.shift[clef] == null) clef = piece.shift && piece.shift.treble != null ? 'treble' : 'bass';
 S.last = { mode: 'piece', id, clef, title: piece.title };
@@ -1634,6 +1637,8 @@ ex = null;
 busy = false;
 clearTimeout(ghostTimer);
 setHeard(null);
+$('score').innerHTML = '';
+$('levelName').textContent = $('levelRange').textContent = '';
 }
 const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 function renderScore() {
@@ -1791,13 +1796,13 @@ if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >=
 renderScore(); renderStats(); renderTitle();
 }
 function nextRow() {
-const e = ex;
-if (ex.mode === 'random' && ex.cur >= ex.score.notes.length) newRandomRow(false);
-else if (ex.row + 1 >= ex.rows.length) { busy = false; finishPiece(); return; }
+const e = ex, n = ex.score.notes.length;
+if (ex.mode === 'random' && ex.cur >= n) newRandomRow(false);
 else {
-ex.row++;
-fresh = true;
-if (ex.rows[ex.row].noteFrom < 0) {
+const target = ex.cur < n ? rowOfNote(ex.rows, ex.cur) : ex.rows.length;
+if (ex.row < target) { ex.row++; fresh = true; }
+if (ex.row >= ex.rows.length) { ex.row = ex.rows.length - 1; busy = false; finishPiece(); return; }
+if (ex.row < target) {
 renderScore(); renderTitle();
 setTimeout(() => { if (ex === e) nextRow(); }, 1400);
 return;
