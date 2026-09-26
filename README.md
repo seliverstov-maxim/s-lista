@@ -8,7 +8,9 @@
 
 ## Возможности
 
-- Скрипичный, басовый и большой нотный стан, диапазон от ля контроктавы до до четвёртой октавы, диезы и бемоли.
+- Два режима:
+  - **случайные ноты** — выберите ключ (скрипичный для правой руки, басовый для левой) и сколько добавочных линеек можно дорисовать снизу и сверху;
+  - **пьесы** — мелодии для одной руки в скрипичном или басовом ключе, с длительностями, паузами, ключевыми знаками и размером, как в нотах.
 - Ввод:
   - микрофон, с калибровкой порога по тишине и пяти нотам;
   - цифровое пианино по MIDI (USB/Bluetooth, Chrome на компьютере и Android);
@@ -23,23 +25,27 @@
 
 ```bash
 npm run build       # собрать index.html из src/
-npm test            # тесты распознавания звука
+npm test            # тесты распознавания звука, нотного движка и инструмента пьес
 npm install && npx playwright install chromium
 npm run test:e2e    # проверки в браузере
 npm run serve       # http://localhost:8080
+npm run add-piece -- пьеса.mxl --license "CC0 1.0"   # добавить пьесу из MusicXML
 ```
 
 После `git push` в `main` GitHub Pages обновляет сайт за 1–2 минуты. Собранный `index.html` хранится в репозитории: его раздаёт Pages.
+
+Пьесы лежат в `pieces/`. Их добавляет `npm run add-piece`: он проверяет MusicXML (одна мелодия, без аккордов, триолей, форшлагов и повторов) и пишет данные для приложения. Хорошие источники — свободные коллекции вроде [OpenScore](https://fourscoreandmore.org/openscore/) (CC0) или мелодии, набранные в MuseScore.
 
 ## Документация
 
 - [Требования: FR, NFR, критерии приёмки](docs/requirements.md)
 - [Техническая документация](docs/architecture.md)
 - [Архитектурные решения](docs/decisions.md)
+- [Спецификация 2.0: режимы и пьесы, формат данных пьесы](docs/spec-2.0.md)
 - [Тестирование и чек-лист на устройстве](docs/testing.md)
 - [Состояние и бэклог](docs/backlog.md)
 - [CLAUDE.md](CLAUDE.md) — инструкции для Claude Code
 
 ## Лицензии
 
-Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Лицензия на код проекта пока не выбрана.
+Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Образцы пьес в `pieces/` — мелодии общественного достояния, нотный набор — CC0. Лицензия на код проекта пока не выбрана.

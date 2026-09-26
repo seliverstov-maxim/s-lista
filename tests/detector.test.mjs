@@ -27,6 +27,24 @@ for (const sr of [48000, 44100]) {
   });
 }
 
+// Басовый ключ с тремя линейками снизу доходит до ля контроктавы (FR-RND-02). Диапазон детектора —
+// как в приложении: ноты упражнения ±1 полутон (Ля₁…соль¹ → 32…68).
+for (const sr of [48000, 44100]) {
+  test(`FR-RND-02: басовый ключ, 3 линейки — каждая клавиша от Ля₁ до соль¹ (A1–G4) распознаётся с одного удара, ${sr} Гц`, () => {
+    reseed();
+    const bad = [];
+    for (let m = 33; m <= 67; m++) {
+      const sig = new Float32Array(Math.floor(sr * 1.7));
+      addPiano(sig, sr, 0.8, m, 0.3, 0.8);
+      addNoise(sig, sr, -72, -62);
+      const ev = listen(sig, sr, 32, 68);
+      const onsets = ev.filter((e) => e.via === 'onset');
+      if (!ev.length || ev[0].midi !== m || onsets.length !== 1) bad.push(`${noteName(m)} → ${names(ev) || 'ничего'}`);
+    }
+    assert.deepEqual(bad, [], 'неверно распознаны: ' + bad.join('; '));
+  });
+}
+
 test('FR-IN-03: мелодия без педали — все ноты по порядку, включая повторы и тихие', () => {
   reseed();
   const sr = 48000, sig = melody(sr, 8, MELODY);
