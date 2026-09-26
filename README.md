@@ -48,4 +48,4 @@ npm run add-piece -- пьеса.mxl --license "CC0 1.0"   # добавить п�
 
 ## Лицензии
 
-Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Образцы пьес в `pieces/` — мелодии общественного достояния, нотный набор — CC0. Лицензия на код проекта пока не выбрана.
+Нотные знаки взяты из шрифта [Bravura](https://github.com/steinbergmedia/bravura) © Steinberg Media Technologies GmbH, лицензия SIL Open Font License 1.1 (`LICENSES/Bravura-OFL-1.1.txt`). Звук рояля в `sounds/piano/` — фрагменты записей [Salamander Grand Piano V3](https://archive.org/details/SalamanderGrandPianoV3) © Alexander Holm, лицензия [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); записи обрезаны, сведены к одному микрофону и пережаты в MP3 (`scripts/make-piano.mjs`, `sounds/piano/README.md`). Образцы пьес в `pieces/` — мелодии общественного достояния, нотный набор — CC0. Лицензия на код проекта пока не выбрана.

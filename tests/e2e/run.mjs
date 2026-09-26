@@ -384,6 +384,74 @@ try {
     await ctx.close();
   }
 
+  // 10а. Звук рояля: записи грузятся для клавиатуры на экране, клавиша и проигрыш звучат записями;
+  // без записей — запасной синтез. Узлы Web Audio считаем подменой методов AudioContext.
+  {
+    const init = { fn: () => {
+      window.__audio = { srcs: [], oscs: 0 };
+      const AC = window.AudioContext, cbs = AC.prototype.createBufferSource, co = AC.prototype.createOscillator;
+      AC.prototype.createBufferSource = function () { const n = cbs.call(this); window.__audio.srcs.push(n); return n; };
+      AC.prototype.createOscillator = function () { window.__audio.oscs++; return co.call(this); };
+    } };
+    const q = (d) => ({ d, acc: 0, len: 4 });
+    const fast = { id: 'e2e-play', title: 'Проигрыш', composer: 'тест', license: 'CC0', shift: { treble: 0 },
+      measures: [{ time: [4, 4], key: 0, tempo: 240, items: [q(28), q(30), q(32), q(35)] }] };
+    const sounds = [];
+    const route = async (page) => {
+      page.on('response', (r) => { if (r.url().includes('/sounds/piano/')) sounds.push(r.status()); });
+      await page.route('**/pieces/index.json', (r) => r.fulfill({ json: { pieces: [{ id: 'e2e-play', title: 'Проигрыш', composer: 'тест', clefs: ['treble'] }] } }));
+      await page.route('**/pieces/e2e-play.json', (r) => r.fulfill({ json: fast }));
+    };
+    const { ctx, page, errors } = await open(base + '#random', { init, route });
+    await page.check('input[name="clef"][value="treble"]', { force: true });
+    await page.check('input[name="above"][value="3"]', { force: true });
+    await page.click('#startRandom');
+    for (let i = 0; i < 30 && sounds.length < 13; i++) await page.waitForTimeout(100);
+    await page.waitForTimeout(300); // декодирование
+    check('записи рояля грузятся для клавиатуры на экране', sounds.length === 13 && sounds.every((s) => s === 200), `${sounds.length} файлов`);
+    const d6 = await page.evaluate(() => {
+      const a = window.__audio, n = a.srcs.length, o = a.oscs;
+      document.querySelector('#keys [data-midi="86"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      const s = a.srcs[n];
+      return { rate: s ? s.playbackRate.value : null, dur: s && s.buffer ? s.buffer.duration : 0, oscs: a.oscs - o };
+    });
+    check('клавиша ре³ (D6) звучит записью ре-диеза на полтона ниже', d6.rate != null && Math.abs(d6.rate - Math.pow(2, -1 / 12)) < 1e-4 && d6.dur > 1 && d6.oscs === 0, JSON.stringify(d6));
+    await page.click('#playScreen [data-panel="settingsPanel"]');
+    check('в настройках указан источник звука и лицензия', /Salamander Grand Piano V3.*Alexander Holm.*CC BY 3\.0/.test(await text(page, '#settingsPanel')));
+    await page.goBack();
+    await page.goto(base + '#pieces');
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="e2e-play"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
+    await page.waitForTimeout(800);
+    const before = await page.evaluate(() => ({ s: window.__audio.srcs.length, o: window.__audio.oscs }));
+    await page.click('#playBtn');
+    await page.waitForTimeout(1600);
+    const after = await page.evaluate(() => ({ s: window.__audio.srcs.length, o: window.__audio.oscs }));
+    check('проигрыш пьесы звучит записями', after.s - before.s === 4 && after.o === before.o, `${after.s - before.s} записей, ${after.o - before.o} генераторов`);
+    check('страница без ошибок JS (звук)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+  {
+    const init = { fn: () => {
+      window.__audio = { srcs: 0, oscs: 0 };
+      const AC = window.AudioContext, cbs = AC.prototype.createBufferSource, co = AC.prototype.createOscillator;
+      AC.prototype.createBufferSource = function () { window.__audio.srcs++; return cbs.call(this); };
+      AC.prototype.createOscillator = function () { window.__audio.oscs++; return co.call(this); };
+    } };
+    const route = (page) => page.route('**/sounds/**', (r) => r.abort());
+    const { ctx, page, errors } = await open(base + '#random', { init, route });
+    await page.click('#startRandom');
+    await page.waitForTimeout(500);
+    const m = await curMidi(page);
+    await press(page, m);
+    const a = await page.evaluate(() => window.__audio);
+    check('записи недоступны — клавиша звучит синтезом', a.srcs === 0 && a.oscs === 4, JSON.stringify(a));
+    check('записи недоступны — ответ засчитан', (await text(page, '#msg')).startsWith('Верно'));
+    check('страница без ошибок JS (без записей)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
   // 10б. Поворот экрана: посреди пьесы и в момент смены строки текущая нота остаётся на экране
   {
     const { ctx, page, errors } = await open(base + '#pieces');

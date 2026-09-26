@@ -295,6 +295,7 @@ padding-block: 14px 10px; border-bottom: 1px solid var(--line);
 .group + .group { border-top: 1px solid var(--line); }
 .group h3 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
 .note { margin: 0; font-size: 13.5px; color: var(--muted); max-width: 60ch; }
+.note a { color: inherit; }
 .seg { display: flex; background: var(--ground); border-radius: 10px; padding: 3px; gap: 2px; }
 .seg label { flex: 1 1 0; position: relative; min-width: 0; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
@@ -564,6 +565,7 @@ border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 
     <label class="switch" for="optSound"><span>Звук при нажатии на экране</span><input type="checkbox" id="optSound"></label>
     <button class="btn" type="button" id="midiBtn">Подключить MIDI-клавиатуру</button>
     <p class="note" id="midiNote">Цифровое пианино можно подключить кабелем USB: ноты будут приходить без микрофона.</p>
+    <p class="note">Звук рояля — записи <a href="https://archive.org/details/SalamanderGrandPianoV3" target="_blank" rel="noopener">Salamander Grand Piano V3</a> (Alexander Holm, <a href="https://creativecommons.org/licenses/by/3.0/deed.ru" target="_blank" rel="noopener">CC BY 3.0</a>): один микрофон, начало и хвост обрезаны, пережато в MP3.</p>
   </section>
 </aside>
 
@@ -1713,9 +1715,15 @@ stopPlayback();
 busy = false; ghost = null; anim = null; lastDone = null;
 clearTimeout(ghostTimer);
 buildKeys(ex.lo, ex.hi);
+preloadPiano();
 applyListener();
 setHintKey(null);
 lastW = $('sheet').clientWidth;
+}
+function preloadPiano() {
+if (!ex || !keyEls.size || !(S.keySound || ex.mode === 'piece')) return;
+const ks = [...keyEls.keys()];
+loadPiano(Math.min(...ks), Math.max(...ks));
 }
 function leavePlay() {
 stopPlayback();
@@ -1824,28 +1832,85 @@ if (hintMidi != null && keyEls.get(hintMidi)) keyEls.get(hintMidi).classList.rem
 hintMidi = midi;
 if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('hint');
 }
-let outCtx = null;
+let outCtx = null, outBus = null;
 function audioOut() {
-outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
+if (!outCtx) {
+outCtx = new (window.AudioContext || window.webkitAudioContext)();
+outBus = outCtx.createDynamicsCompressor();
+outBus.threshold.value = -10; outBus.knee.value = 6; outBus.ratio.value = 12;
+outBus.attack.value = 0.003; outBus.release.value = 0.25;
+outBus.connect(outCtx.destination);
+}
 if (outCtx.state === 'suspended') outCtx.resume();
 return outCtx;
 }
+const PIANO_LO = 24, PIANO_HI = 96, PIANO_GAIN = 0.9;
+const piano = new Map(); // опорная нота → { buf, off }; null — ещё грузится
+const pianoBase = (m) => Math.min(PIANO_HI, Math.max(PIANO_LO, PIANO_LO + 3 * Math.round((m - PIANO_LO) / 3)));
+const pianoFile = (b) => `sounds/piano/${['C', 'Ds', 'Fs', 'A'][((b - PIANO_LO) / 3) % 4]}${Math.floor(b / 12) - 1}.mp3`;
+function loadPiano(lo, hi) {
+let ctx;
+try { ctx = audioOut(); } catch (e) { return; }
+for (let b = pianoBase(lo); b <= pianoBase(hi); b += 3) {
+if (piano.has(b)) continue;
+piano.set(b, null);
+fetch(pianoFile(b))
+.then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+.then((data) => new Promise((ok, bad) => ctx.decodeAudioData(data, ok, bad)))
+.then((buf) => piano.set(b, { buf, off: onsetOf(buf) }))
+.catch(() => piano.delete(b)); // попробуем снова при следующей ноте, а пока — синтез
+}
+}
+function onsetOf(buf) {
+const x = buf.getChannelData(0), n = Math.min(x.length, Math.round(buf.sampleRate * 0.25));
+let peak = 0, i = 0;
+for (let k = 0; k < n; k++) peak = Math.max(peak, Math.abs(x[k]));
+while (i < n && Math.abs(x[i]) < peak * 0.05) i++;
+return Math.max(0, i / buf.sampleRate - 0.002);
+}
+function voice(ctx, midi, t, end, nodes) {
+const b = pianoBase(midi), s = piano.get(b);
+if (!s) { loadPiano(midi, midi); synthVoice(ctx, midi, t, end == null ? t + 1.6 : end, nodes); return; }
+const src = ctx.createBufferSource(), g = ctx.createGain();
+src.buffer = s.buf;
+src.playbackRate.value = Math.pow(2, (midi - b) / 12);
+g.gain.value = PIANO_GAIN;
+src.connect(g); g.connect(outBus);
+src.start(t, s.off);
+if (end != null) {
+const e = Math.max(end, t + 0.1);
+g.gain.setValueAtTime(PIANO_GAIN, e);
+g.gain.setTargetAtTime(0, e, 0.05);
+src.stop(e + 0.4);
+}
+nodes.push({ g, srcs: [src] });
+}
+function synthVoice(ctx, midi, t, end, nodes) {
+const f = midiToFreq(midi), g = ctx.createGain(), stop = Math.min(Math.max(end, t + 0.12), t + 1.6);
+const level = 0.22 * Math.pow(0.0008 / 0.22, (stop - t) / 1.6);
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
+g.gain.exponentialRampToValueAtTime(Math.max(0.0001, level), stop);
+g.gain.linearRampToValueAtTime(0, stop + 0.06);
+g.connect(outBus);
+const srcs = [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].map(([k, a]) => {
+const o = ctx.createOscillator(), og = ctx.createGain();
+o.frequency.value = f * k; og.gain.value = a;
+o.connect(og); og.connect(g);
+o.start(t); o.stop(stop + 0.08);
+return o;
+});
+nodes.push({ g, srcs });
+}
+const keyVoices = new Map();
 function playTone(midi) {
 if (!S.keySound || micState === 'on') return;
 try {
-audioOut();
-const t = outCtx.currentTime, f = midiToFreq(midi);
-const g = outCtx.createGain();
-g.gain.setValueAtTime(0.0001, t);
-g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
-g.gain.exponentialRampToValueAtTime(0.0008, t + 1.6);
-g.connect(outCtx.destination);
-[[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].forEach(([k, a]) => {
-const o = outCtx.createOscillator(), og = outCtx.createGain();
-o.frequency.value = f * k; og.gain.value = a;
-o.connect(og); og.connect(g);
-o.start(t); o.stop(t + 1.7);
-});
+const ctx = audioOut(), t = ctx.currentTime, prev = keyVoices.get(midi);
+if (prev) { prev.g.gain.cancelScheduledValues(t); prev.g.gain.setTargetAtTime(0, t, 0.015); }
+const nodes = [];
+voice(ctx, midi, t, null, nodes);
+keyVoices.set(midi, nodes[0]);
 } catch (e) { /* звук недоступен */ }
 }
 function record(note, clean, ms) {
@@ -1951,23 +2016,6 @@ let pb = null, micMuteUntil = 0;
 const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
 const STOP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/></svg>';
 $('playBtn').innerHTML = PLAY_ICON;
-function voice(ctx, midi, t, end, nodes) {
-const f = midiToFreq(midi), g = ctx.createGain(), stop = Math.min(Math.max(end, t + 0.12), t + 1.6);
-const level = 0.22 * Math.pow(0.0008 / 0.22, (stop - t) / 1.6);
-g.gain.setValueAtTime(0.0001, t);
-g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
-g.gain.exponentialRampToValueAtTime(Math.max(0.0001, level), stop);
-g.gain.linearRampToValueAtTime(0, stop + 0.06);
-g.connect(ctx.destination);
-const oscs = [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].map(([k, a]) => {
-const o = ctx.createOscillator(), og = ctx.createGain();
-o.frequency.value = f * k; og.gain.value = a;
-o.connect(og); og.connect(g);
-o.start(t); o.stop(stop + 0.08);
-return o;
-});
-nodes.push({ g, oscs });
-}
 function setPlayUI(on) {
 const b = $('playBtn');
 b.classList.toggle('on', on);
@@ -2019,7 +2067,7 @@ pb = null;
 clearInterval(p.timer);
 const t = p.ctx.currentTime;
 for (const n of p.nodes) {
-try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.02); n.oscs.forEach((o) => o.stop(t + 0.1)); } catch (e) { /* уже отзвучала */ }
+try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.02); n.srcs.forEach((o) => o.stop(t + 0.1)); } catch (e) { /* уже отзвучала */ }
 }
 micMuteUntil = performance.now() + 1200;
 setPlayUI(false);
@@ -2360,7 +2408,7 @@ if (screen === 'random') renderSetup();
 }));
 $('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; save(); });
 $('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; save(); $('keysWrap').hidden = !S.showKeys; });
-$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; save(); });
+$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; save(); preloadPiano(); });
 $('sens').addEventListener('input', (e) => {
 S.gateDb = -(+e.target.value);
 $('sensVal').textContent = fmtDb(S.gateDb);
