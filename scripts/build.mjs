@@ -1,4 +1,4 @@
-// Сборка: src/app.html + src/detector.js + src/glyphs.json + assets/icon-180.png → index.html
+// Сборка: src/app.html + src/music.js + src/detector.js + src/glyphs.json + assets/icon-180.png → index.html
 // index.html лежит в корне репозитория, его раздаёт GitHub Pages.
 // Дополнительно пишет dist/artifact.html — фрагмент без <html>/<head> для публикации как артефакт Claude.
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -13,8 +13,10 @@ const used = Object.fromEntries(Object.entries(glyphs).map(([k, v]) => [k, { d: 
 
 let fragment = read('src/app.html')
   .replace('/*__GLYPHS__*/null', () => JSON.stringify(used))
+  .replace('/*__MUSIC__*/', () => read('src/music.js'))
   .replace('/*__DETECTOR__*/', () => read('src/detector.js'));
 if (fragment.includes('/*__')) throw new Error('В шаблоне остались незаполненные вставки /*__…__*/');
+fragment = compactBlock(compactBlock(fragment, 'style', false), 'script', true);
 
 const [head, body] = splitOnce(fragment, '<div class="app">');
 const iconPath = join(root, 'assets/icon-180.png');
@@ -51,6 +53,17 @@ writeFileSync(join(root, 'dist/artifact.html'), fragment);
 const kb = Buffer.byteLength(doc) / 1024;
 console.log(`index.html: ${kb.toFixed(1)} КБ`);
 if (kb > 150) { console.error('Больше 150 КБ — нарушено требование NFR-SIZE-01'); process.exitCode = 1; }
+
+// Сжатие без изменения смысла (NFR-SIZE-01): внутри <style> и <script> убираем отступы, пустые строки
+// и строки, целиком состоящие из комментария. Переносы строк остаются, комментарии — только в исходниках.
+function compactBlock(html, tag, js) {
+  const open = `<${tag}>`, close = `</${tag}>`;
+  const i = html.indexOf(open), j = html.indexOf(close);
+  if (i < 0 || j < i) throw new Error(`Не найден блок ${open}`);
+  const body = html.slice(i + open.length, j).split('\n').map((l) => l.trim())
+    .filter((l) => l && !(js && l.startsWith('//')) && !/^\/\*.*\*\/$/.test(l)).join('\n');
+  return html.slice(0, i + open.length) + '\n' + body + '\n' + html.slice(j);
+}
 
 function splitOnce(s, sep) {
   const i = s.indexOf(sep);

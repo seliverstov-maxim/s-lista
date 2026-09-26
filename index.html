@@ -21,146 +21,170 @@ img { max-width: 100%; }
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Oranienbaum&display=swap">
 <style>
 :root {
-  --ground: #E7E5E0;
-  --sheet: #FFFEFB;
-  --panel: #F4F3EF;
-  --ink: #17161B;
-  --staff: #4B4851;
-  --muted: #6A665F;
-  --line: #D2CEC6;
-  --accent: #855810;
-  --accent-ink: #FFFFFF;
-  --accent-soft: rgba(133, 88, 16, 0.15);
-  --ok: #17703F;
-  --bad: #B23024;
-  --key-label: #57534C;
-  --felt: #6F1F24;
-  --key-w: #FFFFFF;
-  --key-w-edge: #BCB7AE;
-  --key-b: #19181C;
-  --key-b-top: #3B3941;
-  --scrim: rgba(18, 16, 14, 0.42);
-  --shadow: 0 1px 2px rgba(40, 30, 10, 0.08), 0 10px 28px rgba(40, 30, 10, 0.09);
-  --display: "Oranienbaum", "Cormorant Garamond", Georgia, "Times New Roman", serif;
-  --ui: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+--ground: #E7E5E0;
+--sheet: #FFFEFB;
+--panel: #F4F3EF;
+--ink: #17161B;
+--staff: #4B4851;
+--muted: #6A665F;
+--line: #D2CEC6;
+--accent: #855810;
+--accent-ink: #FFFFFF;
+--accent-soft: rgba(133, 88, 16, 0.15);
+--ok: #17703F;
+--bad: #B23024;
+--key-label: #57534C;
+--felt: #6F1F24;
+--key-w: #FFFFFF;
+--key-w-edge: #BCB7AE;
+--key-b: #19181C;
+--key-b-top: #3B3941;
+--scrim: rgba(18, 16, 14, 0.42);
+--shadow: 0 1px 2px rgba(40, 30, 10, 0.08), 0 10px 28px rgba(40, 30, 10, 0.09);
+--display: "Oranienbaum", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+--ui: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --ground: #0F0F11;
-    --sheet: #1A1A1E;
-    --panel: #18181B;
-    --ink: #ECE8E0;
-    --staff: #A29E96;
-    --muted: #9A958C;
-    --line: #2E2D33;
-    --accent: #D9A94F;
-    --accent-ink: #1A1408;
-    --accent-soft: rgba(217, 169, 79, 0.17);
-    --ok: #4FCB8C;
-    --bad: #FF6F5F;
-    --felt: #5C1A1E;
-    --key-w: #D9D5CC;
-    --key-w-edge: #7F7A72;
-    --key-b: #09090A;
-    --key-b-top: #2B2B30;
-    --scrim: rgba(0, 0, 0, 0.55);
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
-  }
+:root:not([data-theme="light"]) {
+color-scheme: dark;
+--ground: #0F0F11;
+--sheet: #1A1A1E;
+--panel: #18181B;
+--ink: #ECE8E0;
+--staff: #A29E96;
+--muted: #9A958C;
+--line: #2E2D33;
+--accent: #D9A94F;
+--accent-ink: #1A1408;
+--accent-soft: rgba(217, 169, 79, 0.17);
+--ok: #4FCB8C;
+--bad: #FF6F5F;
+--felt: #5C1A1E;
+--key-w: #D9D5CC;
+--key-w-edge: #7F7A72;
+--key-b: #09090A;
+--key-b-top: #2B2B30;
+--scrim: rgba(0, 0, 0, 0.55);
+--shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
+}
 }
 :root[data-theme="dark"] {
-  color-scheme: dark;
-  --ground: #0F0F11;
-  --sheet: #1A1A1E;
-  --panel: #18181B;
-  --ink: #ECE8E0;
-  --staff: #A29E96;
-  --muted: #9A958C;
-  --line: #2E2D33;
-  --accent: #D9A94F;
-  --accent-ink: #1A1408;
-  --accent-soft: rgba(217, 169, 79, 0.17);
-  --ok: #4FCB8C;
-  --bad: #FF6F5F;
-  --felt: #5C1A1E;
-  --key-w: #D9D5CC;
-  --key-w-edge: #7F7A72;
-  --key-b: #09090A;
-  --key-b-top: #2B2B30;
-  --scrim: rgba(0, 0, 0, 0.55);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
+color-scheme: dark;
+--ground: #0F0F11;
+--sheet: #1A1A1E;
+--panel: #18181B;
+--ink: #ECE8E0;
+--staff: #A29E96;
+--muted: #9A958C;
+--line: #2E2D33;
+--accent: #D9A94F;
+--accent-ink: #1A1408;
+--accent-soft: rgba(217, 169, 79, 0.17);
+--ok: #4FCB8C;
+--bad: #FF6F5F;
+--felt: #5C1A1E;
+--key-w: #D9D5CC;
+--key-w-edge: #7F7A72;
+--key-b: #09090A;
+--key-b-top: #2B2B30;
+--scrim: rgba(0, 0, 0, 0.55);
+--shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
 }
-
 html, body { min-height: 100%; }
 [hidden] { display: none !important; }
 body {
-  background: var(--ground);
-  color: var(--ink);
-  font-family: var(--ui);
-  font-size: 15px;
-  line-height: 1.45;
-  -webkit-tap-highlight-color: transparent;
+background: var(--ground);
+color: var(--ink);
+font-family: var(--ui);
+font-size: 15px;
+line-height: 1.45;
+-webkit-tap-highlight-color: transparent;
 }
 button, select, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
 .app {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding-inline: 16px;
-  padding-block: 10px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-  min-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+max-width: 1000px;
+margin: 0 auto;
+padding-inline: 16px;
+padding-block: 10px 0;
+display: flex;
+flex-direction: column;
+min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+min-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 }
-
-/* ---- шапка ---- */
+.screen { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-width: 0; }
 .top { display: flex; align-items: center; gap: 12px; min-height: 44px; }
 .logo {
-  font-family: var(--display);
-  font-size: 30px;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
+font-family: var(--display);
+font-size: 30px;
+line-height: 1;
+letter-spacing: 0.01em;
+white-space: nowrap;
 }
+.title { margin: 0; font-family: var(--display); font-weight: 400; font-size: 27px; line-height: 1.1; min-width: 0; }
 .level {
-  display: flex; flex-direction: column; align-items: flex-start;
-  min-width: 0; flex: 1 1 auto;
-  background: none; border: 0; padding: 4px 8px; border-radius: 8px;
-  text-align: left;
+display: flex; flex-direction: column; align-items: flex-start;
+min-width: 0; flex: 1 1 auto; padding: 4px 2px;
 }
-.level:hover { background: var(--accent-soft); }
 .level-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.level-range { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
-.top-actions { display: flex; gap: 6px; }
+.level-range { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.top-actions { display: flex; gap: 6px; margin-left: auto; }
 .icon-btn {
-  width: 44px; height: 44px; display: grid; place-items: center;
-  border-radius: 10px; border: 1px solid var(--line); background: var(--panel);
+width: 44px; height: 44px; display: grid; place-items: center; flex: none;
+border-radius: 10px; border: 1px solid var(--line); background: var(--panel);
 }
 .icon-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-
-/* ---- статистика ---- */
+.lead { margin: 2px 0 6px; color: var(--muted); max-width: 46ch; text-wrap: pretty; }
+.modes { display: grid; gap: 12px; }
+@media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
+.card {
+display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+width: 100%; padding: 16px 18px; text-align: left;
+border-radius: 14px; border: 1px solid var(--line); background: var(--sheet); box-shadow: var(--shadow);
+}
+.card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.card b { font-family: var(--display); font-weight: 400; font-size: 25px; line-height: 1.1; }
+.card .sub { color: var(--muted); font-size: 14px; text-wrap: pretty; }
+.card .kicker { font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); }
+.card.continue { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.card .staff-ico { width: 64px; height: 30px; margin-bottom: 4px; stroke: var(--staff); fill: none; stroke-width: 1.2; }
+.card .staff-ico .h { fill: var(--ink); stroke: none; }
+.setup { display: flex; flex-direction: column; gap: 4px; }
+.preview { background: var(--sheet); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 12px 12px; display: grid; justify-items: center; gap: 2px; }
+#rangeSvg { width: 100%; max-width: 300px; }
+#rangeSvg svg { display: block; width: 100%; height: auto; }
+.range-text { margin: 0; font-size: 14.5px; color: var(--muted); text-align: center; }
+.range-text b { color: var(--ink); font-weight: 600; }
+.field { display: grid; grid-template-columns: 4.6em 1fr; align-items: center; gap: 10px; }
+.field > span { font-size: 14px; color: var(--muted); }
+.btn.big { height: 52px; font-size: 16.5px; justify-content: center; width: 100%; margin-top: auto; }
+.screen-foot { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); margin-top: auto; }
+.pieces { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.piece {
+background: var(--sheet); border-radius: 14px; box-shadow: var(--shadow); padding: 14px 16px;
+display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between;
+}
+.piece-t { display: flex; flex-direction: column; min-width: 0; flex: 1 1 12em; }
+.piece-t b { font-family: var(--display); font-weight: 400; font-size: 22px; line-height: 1.15; }
+.piece-t span { color: var(--muted); font-size: 13.5px; }
+.piece-b { display: flex; gap: 8px; flex-wrap: wrap; }
 .stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-  background: none; border: 0; padding: 0; text-align: left; width: 100%;
+display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+background: none; border: 0; padding: 0; text-align: left; width: 100%;
 }
 .stat { display: flex; flex-direction: column; gap: 1px; padding: 2px 4px; min-width: 0; }
 .stat b { font-size: 21px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stat span { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-
-/* ---- лист ---- */
 .sheet {
-  background: var(--sheet);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 10px 8px;
-  display: grid;
-  place-items: center;
-  min-height: 180px;
-  flex: 1 1 auto;
+background: var(--sheet);
+border-radius: 14px;
+box-shadow: var(--shadow);
+padding: 10px 8px;
+display: grid;
+place-items: center;
+min-height: 180px;
+flex: 1 1 auto;
 }
 #score { width: 100%; }
 #score svg { display: block; width: 100%; height: auto; max-height: min(48vh, 460px); margin-inline: auto; }
@@ -179,8 +203,6 @@ button { cursor: pointer; }
 @keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
 @keyframes rowIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
-
-/* ---- пульт ---- */
 .console { display: flex; flex-direction: column; gap: 10px; }
 .msg { margin: 0; min-height: 1.45em; font-size: 15.5px; text-wrap: balance; }
 .msg.ok { color: var(--ok); }
@@ -188,9 +210,9 @@ button { cursor: pointer; }
 .msg.hint { color: var(--accent); }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .btn {
-  height: 44px; padding: 0 16px; border-radius: 10px;
-  border: 1px solid var(--line); background: var(--panel);
-  font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
+height: 44px; padding: 0 16px; border-radius: 10px;
+border: 1px solid var(--line); background: var(--panel);
+font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
 }
 .btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
@@ -203,34 +225,32 @@ button { cursor: pointer; }
 .meter-bar b { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: 0.5; }
 .heard { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); white-space: nowrap; min-width: 7.5em; }
 .heard strong { color: var(--ink); font-weight: 600; }
-
-/* ---- клавиатура ---- */
 .keys-wrap {
-  margin-inline: -16px;
-  padding-inline: 16px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+margin-inline: -16px;
+padding-inline: 16px;
+padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+overflow-x: auto;
+overscroll-behavior-x: contain;
 }
 .keys {
-  position: relative; display: flex; height: clamp(110px, 17vh, 160px);
-  min-width: calc(var(--nw) * 28px);
-  border-top: 5px solid var(--felt);
-  border-radius: 3px 3px 0 0;
-  touch-action: manipulation;
-  user-select: none; -webkit-user-select: none;
+position: relative; display: flex; height: clamp(110px, 17vh, 160px);
+min-width: calc(var(--nw) * 28px);
+border-top: 5px solid var(--felt);
+border-radius: 3px 3px 0 0;
+touch-action: manipulation;
+user-select: none; -webkit-user-select: none;
 }
 .wk {
-  flex: 1 1 0; position: relative;
-  background: var(--key-w);
-  border: 1px solid var(--key-w-edge); border-top: 0;
-  margin-right: -1px; border-radius: 0 0 6px 6px;
-  padding: 0;
+flex: 1 1 0; position: relative;
+background: var(--key-w);
+border: 1px solid var(--key-w-edge); border-top: 0;
+margin-right: -1px; border-radius: 0 0 6px 6px;
+padding: 0;
 }
 .bk {
-  position: absolute; top: 0; height: 60%; z-index: 2; padding: 0;
-  background: linear-gradient(180deg, var(--key-b-top), var(--key-b) 70%);
-  border: 1px solid var(--key-b); border-top: 0; border-radius: 0 0 4px 4px;
+position: absolute; top: 0; height: 60%; z-index: 2; padding: 0;
+background: linear-gradient(180deg, var(--key-b-top), var(--key-b) 70%);
+border: 1px solid var(--key-b); border-top: 0; border-radius: 0 0 4px 4px;
 }
 .wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 10.5px; color: var(--key-label); pointer-events: none; }
 .wk.heard { background: color-mix(in srgb, var(--accent) 26%, var(--key-w)); }
@@ -241,54 +261,44 @@ button { cursor: pointer; }
 .bk.bad { background: var(--bad); }
 .wk.hint, .bk.hint { box-shadow: inset 0 0 0 3px var(--accent); }
 .wk:active { background: color-mix(in srgb, var(--ink) 8%, var(--key-w)); }
-
-/* ---- панели ---- */
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 20; }
 .panel {
-  position: fixed; z-index: 21; left: 0; right: 0; bottom: 0;
-  max-height: 88vh; overflow-y: auto; overscroll-behavior: contain;
-  background: var(--panel); color: var(--ink);
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
-  padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
+position: fixed; z-index: 21; left: 0; right: 0; bottom: 0;
+max-height: 88vh; overflow-y: auto; overscroll-behavior: contain;
+background: var(--panel); color: var(--ink);
+border-radius: 18px 18px 0 0;
+box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
+padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
 }
 @media (min-width: 760px) {
-  .panel { left: auto; top: 0; width: 420px; max-height: none; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); }
+.panel { left: auto; top: 0; width: 420px; max-height: none; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); }
 }
 .panel-head {
-  position: sticky; top: 0; z-index: 1; background: var(--panel);
-  display: flex; align-items: center; justify-content: space-between;
-  padding-block: 14px 10px; border-bottom: 1px solid var(--line);
+position: sticky; top: 0; z-index: 1; background: var(--panel);
+display: flex; align-items: center; justify-content: space-between;
+padding-block: 14px 10px; border-bottom: 1px solid var(--line);
 }
 .panel-head h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.1; }
 .group { padding-block: 16px 4px; display: flex; flex-direction: column; gap: 10px; }
 .group + .group { border-top: 1px solid var(--line); }
 .group h3 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
 .note { margin: 0; font-size: 13.5px; color: var(--muted); max-width: 60ch; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--sheet); font-size: 14px; }
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
 .seg { display: flex; background: var(--ground); border-radius: 10px; padding: 3px; gap: 2px; }
 .seg label { flex: 1 1 0; position: relative; min-width: 0; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg span { display: block; text-align: center; padding: 12px 6px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.seg span small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 1px; }
 .seg input:checked + span { background: var(--sheet); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
 .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -2px; }
-.range-row { display: flex; gap: 10px; }
-.range-row label { flex: 1 1 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
-select {
-  height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet);
-  padding: 0 10px; font-size: 15px; color: var(--ink); width: 100%;
-}
 .switch { display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer; padding-block: 8px; }
 .switch input {
-  appearance: none; -webkit-appearance: none; flex: none;
-  width: 46px; height: 28px; border-radius: 14px; background: var(--line); position: relative; cursor: pointer;
-  transition: background 0.15s;
+appearance: none; -webkit-appearance: none; flex: none;
+width: 46px; height: 28px; border-radius: 14px; background: var(--line); position: relative; cursor: pointer;
+transition: background 0.15s;
 }
 .switch input::before {
-  content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
-  background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.15s;
+content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
+background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.15s;
 }
 .switch input:checked { background: var(--accent); }
 .switch input:checked::before { transform: translateX(18px); }
@@ -296,8 +306,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st; }
 .steps li { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; align-items: center; color: var(--muted); counter-increment: st; }
 .steps li::before {
-  content: counter(st); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
-  border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--muted);
+content: counter(st); grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
+border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--muted);
 }
 .steps li b { color: var(--ink); font-weight: 600; line-height: 1.25; }
 .steps li span { font-size: 13px; line-height: 1.3; }
@@ -336,71 +346,172 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 .hard-item span { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .btn.danger { color: var(--bad); }
-
+.done-actions { padding-top: 16px; }
 @media (max-width: 420px) {
-  .logo { font-size: 26px; }
-  .stat b { font-size: 19px; }
-  .btn { padding: 0 13px; }
+.logo { font-size: 26px; }
+.stat b { font-size: 19px; }
+.btn { padding: 0 13px; }
 }
 @media (max-height: 520px) and (orientation: landscape) {
-  .stats { display: none; }
-  .keys { height: 84px; }
-  #score svg { max-height: 56vh; }
+.stats { display: none; }
+.keys { height: 84px; }
+#score svg { max-height: 56vh; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pop, .shake, .row-in { animation: none; }
-  .switch input, .switch input::before { transition: none; }
+.pop, .shake, .row-in { animation: none; }
+.switch input, .switch input::before { transition: none; }
 }
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top">
-    <span class="logo">С листа</span>
-    <button class="level" id="levelBtn" type="button" aria-label="Уровень и настройки">
-      <span class="level-name" id="levelName">Скрипичный ключ</span>
-      <span class="level-range" id="levelRange"></span>
-    </button>
-    <div class="top-actions">
-      <button class="icon-btn" id="progressBtn" type="button" aria-label="Прогресс">
-        <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
-      </button>
-      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Настройки">
-        <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <button class="stats" id="stats" type="button" aria-label="Статистика занятия, открыть прогресс">
-    <span class="stat"><b id="stAcc">—</b><span>Точность</span></span>
-    <span class="stat"><b id="stStreak">0</b><span>Серия</span></span>
-    <span class="stat"><b id="stTime">—</b><span>Реакция</span></span>
-    <span class="stat"><b id="stCount">0</b><span>Нот</span></span>
-  </button>
-
-  <main class="sheet" id="sheet">
-    <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
-  </main>
-
-  <section class="console">
-    <p class="msg" id="msg" aria-live="polite"></p>
-    <div class="controls">
-      <button class="btn primary" id="micBtn" type="button">
-        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-        <span id="micLabel">Включить микрофон</span>
-      </button>
-      <div class="meter" id="meter" hidden>
-        <div class="meter-bar" aria-hidden="true"><i id="meterFill"></i><b id="meterGate"></b></div>
-        <span class="heard" id="heard">Тишина</span>
+  <!-- Главный экран -->
+  <section class="screen" id="homeScreen">
+    <header class="top">
+      <span class="logo">С листа</span>
+      <div class="top-actions">
+        <button class="icon-btn" type="button" data-panel="progressPanel" aria-label="Прогресс">
+          <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+        </button>
+        <button class="icon-btn" type="button" data-panel="settingsPanel" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+        </button>
       </div>
-      <span class="spacer" id="spacer"></span>
-      <button class="btn" id="hintBtn" type="button">Подсказка</button>
-      <button class="btn" id="skipBtn" type="button">Пропустить</button>
+    </header>
+    <p class="lead">Тренажёр чтения нот. Поставьте телефон на пюпитр и играйте на пианино: приложение слушает и отмечает, та ли нота сыграна.</p>
+    <button class="card continue" type="button" id="continueBtn" hidden>
+      <span class="kicker">Продолжить</span>
+      <b id="continueTitle"></b>
+      <span class="sub" id="continueSub"></span>
+    </button>
+    <div class="modes">
+      <button class="card" type="button" data-go="random">
+        <svg class="staff-ico" viewBox="0 0 64 30" aria-hidden="true"><path d="M2 5h60M2 11h60M2 17h60M2 23h60"/><ellipse class="h" cx="16" cy="20" rx="4" ry="3" transform="rotate(-20 16 20)"/><ellipse class="h" cx="34" cy="11" rx="4" ry="3" transform="rotate(-20 34 11)"/><ellipse class="h" cx="52" cy="17" rx="4" ry="3" transform="rotate(-20 52 17)"/></svg>
+        <b>Случайные ноты</b>
+        <span class="sub">Ноты по одной. Выберите ключ и сколько добавочных линеек.</span>
+      </button>
+      <button class="card" type="button" data-go="pieces">
+        <svg class="staff-ico" viewBox="0 0 64 30" aria-hidden="true"><path d="M2 5h60M2 11h60M2 17h60M2 23h60M31 3v24"/><ellipse class="h" cx="12" cy="23" rx="4" ry="3" transform="rotate(-20 12 23)"/><ellipse class="h" cx="22" cy="17" rx="4" ry="3" transform="rotate(-20 22 17)"/><ellipse class="h" cx="42" cy="14" rx="4" ry="3" transform="rotate(-20 42 14)"/><ellipse class="h" cx="53" cy="11" rx="4" ry="3" transform="rotate(-20 53 11)"/></svg>
+        <b>Пьесы</b>
+        <span class="sub">Мелодии для одной руки — в скрипичном или басовом ключе.</span>
+      </button>
     </div>
   </section>
 
-  <section class="keys-wrap" id="keysWrap" aria-label="Клавиатура">
-    <div class="keys" id="keys"></div>
+  <!-- Настройка случайных нот -->
+  <section class="screen" id="randomScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 class="title">Случайные ноты</h1>
+    </header>
+    <div class="preview">
+      <div id="rangeSvg" role="img" aria-label="Диапазон нот"></div>
+      <p class="range-text" id="rangeText"></p>
+    </div>
+    <div class="setup">
+      <section class="group">
+        <h3>Ключ</h3>
+        <div class="seg" role="radiogroup" aria-label="Ключ">
+          <label><input type="radio" name="clef" value="treble"><span>Скрипичный<small>правая рука</small></span></label>
+          <label><input type="radio" name="clef" value="bass"><span>Басовый<small>левая рука</small></span></label>
+        </div>
+      </section>
+      <section class="group">
+        <h3>Добавочные линейки</h3>
+        <div class="field">
+          <span>Снизу</span>
+          <div class="seg" role="radiogroup" aria-label="Добавочные линейки снизу">
+            <label><input type="radio" name="below" value="0"><span>0</span></label>
+            <label><input type="radio" name="below" value="1"><span>1</span></label>
+            <label><input type="radio" name="below" value="2"><span>2</span></label>
+            <label><input type="radio" name="below" value="3"><span>3</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span>Сверху</span>
+          <div class="seg" role="radiogroup" aria-label="Добавочные линейки сверху">
+            <label><input type="radio" name="above" value="0"><span>0</span></label>
+            <label><input type="radio" name="above" value="1"><span>1</span></label>
+            <label><input type="radio" name="above" value="2"><span>2</span></label>
+            <label><input type="radio" name="above" value="3"><span>3</span></label>
+          </div>
+        </div>
+        <p class="note">0 — только ноты на стане. Иначе крайняя нота стоит на последней добавочной линейке.</p>
+      </section>
+      <section class="group">
+        <label class="switch" for="optAdaptive"><span>Чаще давать трудные ноты</span><input type="checkbox" id="optAdaptive"></label>
+      </section>
+    </div>
+    <div class="screen-foot">
+      <button class="btn primary big" type="button" id="startRandom">Начать</button>
+    </div>
+  </section>
+
+  <!-- Список пьес -->
+  <section class="screen" id="piecesScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 class="title">Пьесы</h1>
+    </header>
+    <p class="note" id="piecesMsg" aria-live="polite"></p>
+    <ul class="pieces" id="piecesList"></ul>
+  </section>
+
+  <!-- Тренажёр -->
+  <section class="screen" id="playScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="level">
+        <span class="level-name" id="levelName"></span>
+        <span class="level-range" id="levelRange"></span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" type="button" data-panel="progressPanel" aria-label="Прогресс">
+          <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+        </button>
+        <button class="icon-btn" type="button" data-panel="settingsPanel" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <button class="stats" id="stats" type="button" data-panel="progressPanel" aria-label="Статистика занятия, открыть прогресс">
+      <span class="stat"><b id="stAcc">—</b><span>Точность</span></span>
+      <span class="stat"><b id="stStreak">0</b><span>Серия</span></span>
+      <span class="stat"><b id="stTime">—</b><span>Реакция</span></span>
+      <span class="stat"><b id="stCount">0</b><span>Нот</span></span>
+    </button>
+
+    <main class="sheet" id="sheet">
+      <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
+    </main>
+
+    <section class="console">
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <div class="controls">
+        <button class="btn primary" id="micBtn" type="button">
+          <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <span id="micLabel">Включить микрофон</span>
+        </button>
+        <div class="meter" id="meter" hidden>
+          <div class="meter-bar" aria-hidden="true"><i id="meterFill"></i><b id="meterGate"></b></div>
+          <span class="heard" id="heard">Тишина</span>
+        </div>
+        <span class="spacer" id="spacer"></span>
+        <button class="btn" id="hintBtn" type="button">Подсказка</button>
+        <button class="btn" id="skipBtn" type="button">Пропустить</button>
+      </div>
+    </section>
+
+    <section class="keys-wrap" id="keysWrap" aria-label="Клавиатура">
+      <div class="keys" id="keys"></div>
+    </section>
   </section>
 </div>
 
@@ -415,40 +526,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   </div>
 
   <section class="group">
-    <h3>Уровень</h3>
-    <div class="chips" id="presetChips"></div>
-  </section>
-
-  <section class="group">
-    <h3>Ключ</h3>
-    <div class="seg" role="radiogroup" aria-label="Ключ">
-      <label><input type="radio" name="clef" id="clefTreble" value="treble"><span>Скрипичный</span></label>
-      <label><input type="radio" name="clef" id="clefBass" value="bass"><span>Басовый</span></label>
-      <label><input type="radio" name="clef" id="clefGrand" value="grand"><span>Оба</span></label>
-    </div>
-    <div class="range-row">
-      <label for="loSel">Самая низкая нота<select id="loSel"></select></label>
-      <label for="hiSel">Самая высокая нота<select id="hiSel"></select></label>
-    </div>
-  </section>
-
-  <section class="group">
-    <h3>Упражнение</h3>
-    <label class="switch" for="optAcc"><span>Диезы и бемоли</span><input type="checkbox" id="optAcc"></label>
-    <div class="seg" role="radiogroup" aria-label="Ходы между нотами">
-      <label><input type="radio" name="motion" id="motionAny" value="any"><span>Любые скачки</span></label>
-      <label><input type="radio" name="motion" id="motionStep" value="step"><span>Плавно, до квинты</span></label>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Сколько нот на экране">
-      <label><input type="radio" name="perRow" id="perRowRow" value="row"><span>Строкой</span></label>
-      <label><input type="radio" name="perRow" id="perRowOne" value="one"><span>По одной</span></label>
-    </div>
+    <h3>Ноты</h3>
     <div class="seg" role="radiogroup" aria-label="Названия нот">
       <label><input type="radio" name="naming" id="namingSolf" value="solfege"><span>до, ре, ми</span></label>
       <label><input type="radio" name="naming" id="namingLet" value="letters"><span>C, D, E</span></label>
     </div>
     <label class="switch" for="optOctave"><span>Требовать точную октаву</span><input type="checkbox" id="optOctave"></label>
-    <label class="switch" for="optAdaptive"><span>Чаще давать трудные ноты</span><input type="checkbox" id="optAdaptive"></label>
   </section>
 
   <section class="group">
@@ -519,1145 +602,1620 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   </section>
 </aside>
 
+<aside class="panel" id="donePanel" role="dialog" aria-modal="true" aria-labelledby="doneTitle" hidden>
+  <div class="panel-head">
+    <h2 id="doneTitle">Пьеса сыграна</h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <section class="group">
+    <p class="note" id="donePiece"></p>
+    <dl class="kv" id="doneKv"></dl>
+  </section>
+  <div class="controls done-actions">
+    <button class="btn primary" type="button" id="doneAgain">Ещё раз</button>
+    <button class="btn" type="button" id="doneList">К списку</button>
+  </div>
+</aside>
+
 <script>
 (() => {
 'use strict';
-
-const GLYPH = {"gClef":{"d":"M1.504 -1.66C1.496 -1.708 1.504 -1.712 1.528 -1.736C1.96 -2.14 2.288 -2.648 2.288 -3.26C2.288 -3.608 2.192 -3.952 2.028 -4.192C1.968 -4.28 1.864 -4.392 1.82 -4.392C1.764 -4.392 1.64 -4.288 1.56 -4.2C1.264 -3.872 1.168 -3.372 1.168 -2.956C1.168 -2.724 1.196 -2.464 1.224 -2.3C1.232 -2.252 1.236 -2.244 1.188 -2.204C0.612 -1.728 0 -1.156 0 -0.348C0 0.348 0.476 1.008 1.456 1.008C1.548 1.008 1.652 1 1.732 0.984C1.776 0.976 1.784 0.972 1.792 1.02C1.84 1.288 1.9 1.636 1.9 1.824C1.9 2.416 1.5 2.488 1.264 2.488C1.048 2.488 0.944 2.424 0.944 2.372C0.944 2.344 0.98 2.332 1.072 2.304C1.196 2.268 1.34 2.16 1.34 1.928C1.34 1.708 1.2 1.52 0.956 1.52C0.688 1.52 0.528 1.732 0.528 1.98C0.528 2.24 0.684 2.632 1.288 2.632C1.556 2.632 2.076 2.512 2.076 1.832C2.076 1.604 2.004 1.224 1.96 0.976C1.952 0.928 1.956 0.932 2.012 0.908C2.416 0.748 2.684 0.408 2.684 -0.044C2.684 -0.556 2.308 -1.008 1.72 -1.008C1.616 -1.008 1.616 -1.008 1.604 -1.08ZM1.88 -3.772C2.012 -3.772 2.12 -3.664 2.12 -3.444C2.12 -3 1.74 -2.64 1.424 -2.364C1.396 -2.34 1.38 -2.344 1.372 -2.396C1.356 -2.5 1.348 -2.636 1.348 -2.764C1.348 -3.388 1.636 -3.772 1.88 -3.772ZM1.444 -1.048C1.456 -0.972 1.456 -0.976 1.384 -0.952C1.032 -0.832 0.804 -0.516 0.804 -0.176C0.804 0.184 0.992 0.44 1.264 0.532C1.296 0.544 1.344 0.556 1.372 0.556C1.404 0.556 1.42 0.536 1.42 0.512C1.42 0.484 1.388 0.472 1.36 0.46C1.192 0.388 1.072 0.216 1.072 0.032C1.072 -0.196 1.228 -0.368 1.472 -0.436C1.536 -0.452 1.544 -0.448 1.552 -0.404L1.752 0.788C1.76 0.832 1.756 0.832 1.696 0.844C1.632 0.856 1.552 0.864 1.472 0.864C0.772 0.864 0.32 0.476 0.32 -0.08C0.32 -0.316 0.36 -0.632 0.692 -1.008C0.932 -1.276 1.116 -1.424 1.304 -1.576C1.344 -1.608 1.352 -1.604 1.36 -1.56ZM1.72 -0.412C1.712 -0.46 1.716 -0.472 1.764 -0.468C2.088 -0.44 2.356 -0.168 2.356 0.184C2.356 0.436 2.204 0.64 1.98 0.752C1.932 0.776 1.924 0.776 1.916 0.728Z","adv":2.684},"fClef":{"d":"M1.008 -1.048C0.312 -1.048 0 -0.54 0 -0.156C0 0.164 0.168 0.44 0.492 0.44C0.744 0.44 0.916 0.264 0.916 0.016C0.916 -0.24 0.728 -0.4 0.532 -0.4C0.424 -0.4 0.384 -0.372 0.332 -0.372C0.28 -0.372 0.268 -0.404 0.268 -0.444C0.268 -0.604 0.508 -0.896 0.916 -0.896C1.34 -0.896 1.524 -0.48 1.524 0.148C1.524 1.264 0.972 1.888 0.04 2.42C0.004 2.44 -0.02 2.46 -0.02 2.492C-0.02 2.516 -0.004 2.54 0.032 2.54C0.052 2.54 0.076 2.532 0.1 2.52C1.084 2.04 2.124 1.328 2.124 0.112C2.124 -0.584 1.7 -1.048 1.008 -1.048ZM2.516 -0.72C2.392 -0.72 2.296 -0.624 2.296 -0.5C2.296 -0.376 2.392 -0.28 2.516 -0.28C2.64 -0.28 2.736 -0.376 2.736 -0.5C2.736 -0.624 2.64 -0.72 2.516 -0.72ZM2.52 0.284C2.396 0.284 2.304 0.376 2.304 0.5C2.304 0.624 2.396 0.716 2.52 0.716C2.644 0.716 2.736 0.624 2.736 0.5C2.736 0.376 2.644 0.284 2.52 0.284Z","adv":2.736},"brace":{"d":"M0.08 -1.992C0.196 -2.064 0.328 -2.348 0.328 -2.584C0.328 -2.604 0.328 -2.628 0.324 -2.648C0.296 -2.888 0.176 -3.26 0.176 -3.476C0.176 -3.684 0.268 -3.884 0.288 -3.92C0.3 -3.944 0.308 -3.948 0.308 -3.96C0.308 -3.972 0.296 -3.988 0.284 -3.988C0.276 -3.988 0.268 -3.98 0.252 -3.96C0.164 -3.852 0.056 -3.62 0.056 -3.22C0.056 -2.824 0.196 -2.664 0.196 -2.412C0.196 -2.224 0.12 -2.12 0.008 -1.992C0.08 -1.912 0.196 -1.848 0.196 -1.588C0.196 -1.308 0.056 -1.06 0.056 -0.768C0.056 -0.368 0.164 -0.136 0.252 -0.024C0.268 -0.004 0.276 0 0.284 0C0.296 0 0.308 -0.012 0.308 -0.024C0.308 -0.036 0.304 -0.044 0.288 -0.068C0.268 -0.1 0.176 -0.3 0.176 -0.512C0.176 -0.724 0.296 -1.1 0.324 -1.336C0.328 -1.356 0.328 -1.376 0.328 -1.4C0.328 -1.636 0.196 -1.92 0.08 -1.992Z","adv":0.336},"noteheadBlack":{"d":"M0.388 0.5C0.744 0.5 1.18 0.172 1.18 -0.168C1.18 -0.372 1.02 -0.5 0.792 -0.5C0.352 -0.5 0 -0.176 0 0.168C0 0.376 0.172 0.5 0.388 0.5Z","adv":1.18},"accidentalSharp":{"d":"M0.948 -0.472C0.976 -0.484 0.996 -0.516 0.996 -0.54V-0.824C0.996 -0.844 0.984 -0.856 0.968 -0.856C0.96 -0.856 0.956 -0.856 0.948 -0.852C0.948 -0.852 0.868 -0.82 0.848 -0.816C0.82 -0.816 0.792 -0.836 0.792 -0.868V-1.356C0.792 -1.38 0.768 -1.4 0.736 -1.4C0.696 -1.4 0.672 -1.38 0.672 -1.356V-0.836C0.668 -0.796 0.656 -0.744 0.62 -0.72C0.572 -0.692 0.436 -0.636 0.368 -0.62C0.332 -0.62 0.32 -0.668 0.32 -0.7V-1.18C0.32 -1.204 0.292 -1.224 0.264 -1.224C0.224 -1.224 0.2 -1.204 0.2 -1.18V-0.64C0.2 -0.584 0.176 -0.544 0.152 -0.532C0.128 -0.52 0.048 -0.488 0.048 -0.488C0.02 -0.48 0 -0.448 0 -0.424V-0.14C0 -0.116 0.012 -0.104 0.036 -0.104L0.044 -0.108C0.048 -0.108 0.108 -0.132 0.14 -0.148L0.144 -0.152C0.176 -0.152 0.2 -0.112 0.2 -0.08V0.316C0.2 0.36 0.18 0.396 0.156 0.408C0.132 0.416 0.048 0.452 0.048 0.452C0.02 0.46 0 0.492 0 0.516V0.8C0 0.824 0.012 0.836 0.036 0.836L0.044 0.832C0.048 0.832 0.104 0.808 0.14 0.796C0.144 0.792 0.148 0.792 0.152 0.792C0.18 0.792 0.2 0.836 0.2 0.856V1.348C0.2 1.372 0.224 1.392 0.252 1.392C0.292 1.392 0.32 1.372 0.32 1.348V0.792C0.32 0.74 0.34 0.712 0.36 0.704L0.604 0.604C0.604 0.604 0.608 0.604 0.608 0.604L0.616 0.6C0.652 0.6 0.672 0.648 0.672 0.672V1.172C0.672 1.196 0.696 1.216 0.724 1.216C0.768 1.216 0.792 1.196 0.792 1.172V0.604C0.792 0.572 0.808 0.524 0.836 0.512C0.864 0.5 0.948 0.468 0.948 0.468C0.976 0.456 0.996 0.424 0.996 0.4V0.116C0.996 0.096 0.984 0.084 0.968 0.084C0.96 0.084 0.956 0.084 0.948 0.088L0.844 0.128C0.82 0.128 0.792 0.104 0.792 0.056V-0.316C0.792 -0.344 0.812 -0.42 0.844 -0.432ZM0.672 0.18C0.648 0.26 0.46 0.34 0.368 0.34C0.344 0.34 0.324 0.332 0.32 0.32C0.312 0.304 0.308 0.216 0.308 0.12C0.308 -0.004 0.312 -0.144 0.32 -0.176C0.328 -0.244 0.512 -0.328 0.612 -0.328C0.64 -0.328 0.664 -0.32 0.672 -0.304C0.68 -0.284 0.688 -0.184 0.688 -0.076C0.688 0.032 0.68 0.144 0.672 0.18Z","adv":0.996},"accidentalFlat":{"d":"M0.048 0.68C0.06 0.696 0.072 0.7 0.084 0.7C0.096 0.7 0.108 0.692 0.108 0.692C0.228 0.624 0.324 0.516 0.424 0.448C0.78 0.2 0.904 -0.044 0.904 -0.228C0.904 -0.456 0.728 -0.6 0.544 -0.612C0.476 -0.612 0.38 -0.58 0.324 -0.544C0.3 -0.524 0.256 -0.488 0.236 -0.488C0.228 -0.488 0.224 -0.488 0.216 -0.492C0.188 -0.504 0.172 -0.532 0.172 -0.56C0.176 -0.648 0.2 -1.608 0.2 -1.688C0.2 -1.732 0.164 -1.756 0.124 -1.756C0.068 -1.756 0.004 -1.716 0 -1.644C0 -1.644 0.016 0.64 0.048 0.68ZM0.188 0.324C0.188 0.324 0.176 0.084 0.176 -0.076C0.176 -0.14 0.18 -0.188 0.184 -0.204C0.212 -0.284 0.372 -0.4 0.464 -0.4C0.58 -0.4 0.628 -0.268 0.628 -0.168C0.628 0.048 0.444 0.264 0.272 0.372C0.256 0.38 0.244 0.384 0.232 0.384C0.196 0.384 0.188 0.344 0.188 0.324Z","adv":0.904},"accidentalNatural":{"d":"M0.564 -0.724C0.556 -0.724 0.552 -0.72 0.548 -0.72C0.548 -0.72 0.292 -0.628 0.188 -0.628C0.164 -0.628 0.148 -0.632 0.148 -0.648V-1.316C0.148 -1.344 0.124 -1.364 0.1 -1.364H0.048C0.02 -1.364 0 -1.344 0 -1.316V0.744C0 0.768 0.012 0.78 0.036 0.78L0.044 0.776C0.048 0.776 0.056 0.776 0.06 0.772C0.116 0.748 0.34 0.652 0.456 0.652C0.496 0.652 0.524 0.664 0.524 0.696V1.292C0.524 1.32 0.544 1.34 0.572 1.34H0.624C0.648 1.34 0.672 1.32 0.672 1.292V-0.716C0.672 -0.736 0.656 -0.748 0.64 -0.748C0.636 -0.748 0.628 -0.748 0.624 -0.744ZM0.148 -0.156C0.148 -0.212 0.392 -0.316 0.488 -0.316C0.512 -0.316 0.524 -0.312 0.524 -0.296V0.116C0.524 0.188 0.296 0.28 0.196 0.28C0.168 0.28 0.148 0.272 0.148 0.256Z","adv":0.672}};
-
-/* ---------- Распознавание высоты звука (YIN) и нажатий ---------- */
-const A4 = 440;
-const midiToFreq = (m) => A4 * Math.pow(2, (m - 69) / 12);
-const freqToMidiF = (f) => 69 + 12 * Math.log2(f / A4);
-
-/* YIN: x — буфер, off — начало окна, W — длина окна.
-   Возвращает период (в отсчётах, с дробной частью) и апериодичность (0 — чистый тон). */
-function yinDetect(x, off, W, tauMin, tauMax, d, cmnd, thr) {
-  for (let tau = 1; tau <= tauMax; tau++) {
-    let s = 0;
-    const o2 = off + tau;
-    for (let j = 0; j < W; j++) {
-      const v = x[off + j] - x[o2 + j];
-      s += v * v;
-    }
-    d[tau] = s;
-  }
-  cmnd[0] = 1;
-  let run = 0;
-  for (let tau = 1; tau <= tauMax; tau++) {
-    run += d[tau];
-    cmnd[tau] = run > 0 ? (d[tau] * tau) / run : 1;
-  }
-  const localMin = (t) => { while (t + 1 <= tauMax && cmnd[t + 1] < cmnd[t]) t++; return t; };
-  let tau = -1;
-  for (let t = tauMin; t <= tauMax; t++) {
-    if (cmnd[t] < thr) { tau = localMin(t); break; }
-  }
-  if (tau < 0) {
-    // порог не пройден (например, звучат две ноты): берём глобальный минимум,
-    // но предпочитаем более короткий период, если он почти так же хорош (защита от ошибки на октаву вниз)
-    let m = Infinity;
-    for (let t = tauMin; t <= tauMax; t++) if (cmnd[t] < m) { m = cmnd[t]; tau = t; }
-    for (let k = 4; k >= 2; k--) {
-      const c = tau / k;
-      if (c < tauMin) continue;
-      const r = Math.max(2, Math.round(c * 0.04));
-      let bt = -1, bv = Infinity;
-      for (let t = Math.max(tauMin, Math.floor(c - r)); t <= Math.min(tauMax, Math.ceil(c + r)); t++) {
-        if (cmnd[t] < bv) { bv = cmnd[t]; bt = t; }
-      }
-      if (bt > 0 && bv < m + 0.12 && bv < 0.5) { tau = bt; break; }
-    }
-  }
-  let better = tau;
-  if (tau > 1 && tau < tauMax) {
-    const a = cmnd[tau - 1], b = cmnd[tau], c = cmnd[tau + 1];
-    const den = a - 2 * b + c;
-    if (den !== 0) better = tau + (a - c) / (2 * den);
-  }
-  return { tau: better, ap: cmnd[tau] };
-}
-
-/* Быстрое преобразование Фурье (радикс-2) с окном Ханна; возвращает амплитудный спектр */
-function makeSpectrum(N) {
-  const bits = Math.log2(N) | 0;
-  const rev = new Uint32Array(N);
-  for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); rev[i] = r; }
-  const win = new Float32Array(N);
-  for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1));
-  const cos = new Float32Array(N / 2), sin = new Float32Array(N / 2);
-  for (let i = 0; i < N / 2; i++) { cos[i] = Math.cos((2 * Math.PI * i) / N); sin[i] = -Math.sin((2 * Math.PI * i) / N); }
-  const re = new Float32Array(N), im = new Float32Array(N);
-  return (x, out) => {
-    for (let i = 0; i < N; i++) { re[rev[i]] = x[i] * win[i]; im[rev[i]] = 0; }
-    for (let size = 2; size <= N; size <<= 1) {
-      const half = size >> 1, step = N / size;
-      for (let i = 0; i < N; i += size) {
-        for (let j = 0, k = 0; j < half; j++, k += step) {
-          const a = i + j, b = a + half;
-          const tr = re[b] * cos[k] - im[b] * sin[k];
-          const ti = re[b] * sin[k] + im[b] * cos[k];
-          re[b] = re[a] - tr; im[b] = im[a] - ti;
-          re[a] += tr; im[a] += ti;
-        }
-      }
-    }
-    for (let i = 0; i < N / 2; i++) out[i] = Math.hypot(re[i], im[i]);
-    return out;
-  };
-}
-
-/* Гармоническая сумма по спектру "новой" энергии: какая нота только что прозвучала */
-function harmonicPick(Y, binHz, lo, hi) {
-  const nb = Y.length;
-  const peak = (f, tol) => {
-    const b0 = Math.max(1, Math.floor((f * (1 - tol)) / binHz)), b1 = Math.min(nb - 1, Math.max(b0 + 1, Math.ceil((f * (1 + tol)) / binHz)));
-    let m = 0; for (let b = b0; b <= b1; b++) if (Y[b] > m) m = Y[b];
-    return m;
-  };
-  let best = null, bestS = 0, second = 0;
-  for (let m = lo; m <= hi; m++) {
-    const f0 = midiToFreq(m);
-    let s = 0, half = 0, third = 0;
-    for (let k = 1; k <= 12; k++) {
-      const f = k * f0;
-      if (f > 5000) break;
-      const tol = 0.015 + 0.002 * k, w = 1 / Math.pow(k, 0.6);
-      s += w * peak(f, tol);
-      half += w * peak((k - 0.5) * f0, tol);
-      third += w * 0.5 * (peak((k - 1 / 3) * f0, tol) + peak((k - 2 / 3) * f0, tol));
-    }
-    const score = s - 0.7 * Math.max(half, third);
-    if (score > bestS) { second = Math.max(second, bestS); bestS = score; best = m; }
-    else if (score > second) second = score;
-  }
-  return { midi: best, score: bestS };
-}
-
-/* Слушатель: получает последние отсчёты с микрофона на каждом кадре,
-   находит начало нового звука (удар по клавише) и определяет ноту. */
-class PitchListener {
-  constructor(sampleRate, bufferLength, onEvent) {
-    this.sr = sampleRate;
-    this.dec = sampleRate >= 32000 ? 2 : 1;
-    this.dsr = sampleRate / this.dec;
-    this.maxDec = Math.floor(bufferLength / this.dec);
-    this.dbuf = new Float32Array(this.maxDec);
-    this.d = new Float32Array(this.maxDec);
-    this.cmnd = new Float32Array(this.maxDec);
-    this.onEvent = onEvent;
-    this.N = bufferLength;
-    this.spectrum = makeSpectrum(bufferLength);
-    this.prevBuf = new Float32Array(bufferLength);
-    this.specPre = new Float32Array(bufferLength / 2);
-    this.specCur = new Float32Array(bufferLength / 2);
-    this.specNew = new Float32Array(bufferLength / 2);
-    this.gateDb = -50;
-    this.floorDb = -90;          // шумовой фон: минимум громкости за последние ~3 с
-    this.floorBins = new Array(30).fill(0);
-    this.floorBinT = 0;
-    this.floorIdx = 0;
-    this.env = 0;
-    this.lastT = null;
-    this.lastOnset = -1e9;
-    this.collect = null;
-    this.stableMidi = null;
-    this.stableSince = 0;
-    this.lastEmitted = null;
-    this.silentSince = 0;
-    this.setRange(36, 96);
-  }
-
-  setRange(lowMidi, highMidi) {
-    const fmin = Math.max(45, midiToFreq(lowMidi - 5) * 0.97);
-    const fmax = Math.min(this.dsr / 4, midiToFreq(highMidi + 12) * 1.06);
-    this.tauMax = Math.min(Math.ceil(this.dsr / fmin), Math.floor(this.maxDec / 3));
-    this.tauMin = Math.max(2, Math.floor(this.dsr / fmax));
-    this.W = Math.max(256, Math.min(3 * this.tauMax, this.maxDec - this.tauMax - 1));
-    this.windowMs = ((this.W + this.tauMax) / this.dsr) * 1000;
-    this.settleMs = Math.max(30, this.windowMs * 0.85);
-    this.candLo = Math.max(21, lowMidi - 5);
-    this.candHi = Math.min(108, highMidi + 12);
-  }
-
-  process(buf, t) {
-    const n = buf.length;
-    const dt = this.lastT == null ? 16.7 : Math.max(1, t - this.lastT);
-    this.lastT = t;
-    if (this.startT == null) this.startT = t;
-    const warm = t - this.startT < 600; // первые 0,6 с только слушаем фон
-
-    // быстрая громкость по последним ~11 мс
-    const fastN = Math.min(512, n);
-    let s = 0;
-    for (let i = n - fastN; i < n; i++) s += buf[i] * buf[i];
-    const rms = Math.sqrt(s / fastN);
-    const db = 20 * Math.log10(rms + 1e-9);
-
-    // рабочий порог (посчитан на прошлом кадре): из настройки, но не ниже «фон + 8 дБ»
-    const gateDb = Math.max(this.gateDb, this.floorDb + 8);
-    const gate = Math.pow(10, gateDb / 20);
-
-    const onset = !warm && rms > gate && rms > this.env * 1.4 + gate * 0.25 && t - this.lastOnset > 90;
-    this.env = Math.max(rms, this.env * Math.pow(0.93, dt / 16.7));
-    if (onset) {
-      this.lastOnset = t;
-      this.collect = { t0: t, votes: new Map(), peak: rms };
-      this.spectrum(this.prevBuf, this.specPre);
-    }
-
-    // высота тона
-    let midi = null, cents = 0, valid = false, ap = 1;
-    if (rms > gate * 0.6) {
-      const need = this.W + this.tauMax + 1;
-      const start = n - need * this.dec;
-      const dbuf = this.dbuf;
-      if (this.dec === 2) {
-        for (let i = 0; i < need; i++) dbuf[i] = 0.5 * (buf[start + 2 * i] + buf[start + 2 * i + 1]);
-      } else {
-        for (let i = 0; i < need; i++) dbuf[i] = buf[start + i];
-      }
-      const r = yinDetect(dbuf, 0, this.W, this.tauMin, this.tauMax, this.d, this.cmnd, 0.15);
-      if (r.tau > 0) {
-        const f = this.dsr / r.tau;
-        const mf = freqToMidiF(f);
-        midi = Math.round(mf);
-        cents = Math.round((mf - midi) * 100);
-        ap = r.ap;
-        valid = r.ap < 0.25 && rms > gate;
-      }
-    }
-    // шумовой фон: минимум по корзинам (100 мс) за последние ~3 с «немузыкальных» кадров —
-    // без тона и не сразу после удара, чтобы фон не подстраивался под само пианино
-    if (warm || (t - this.lastOnset > 1200 && ap > 0.3)) {
-      if (!this.floorBinT) { this.floorBins.fill(db); this.floorBinT = t; }
-      if (t - this.floorBinT >= 100) { this.floorBinT = t; this.floorIdx = (this.floorIdx + 1) % this.floorBins.length; this.floorBins[this.floorIdx] = db; }
-      else if (db < this.floorBins[this.floorIdx]) this.floorBins[this.floorIdx] = db;
-      this.floorDb = Math.min.apply(null, this.floorBins);
-    }
-    this.onEvent('level', { rms, db, t, gateDb, floorDb: this.floorDb, midi: valid ? midi : null, cents });
-
-    // решение после удара
-    if (this.collect) {
-      const c = this.collect;
-      const age = t - c.t0;
-      if (rms > c.peak) c.peak = rms;
-      if (age >= this.settleMs && rms > gate) {
-        let vm = this.newNote(buf);
-        // спектр грубоват на низких нотах: если YIN уверен и близок — берём его точное значение
-        if (vm != null && midi != null && ap < 0.2 && Math.abs(midi - vm) <= 2) vm = midi;
-        if (vm != null) {
-          const v = (c.votes.get(vm) || 0) + 1;
-          c.votes.set(vm, v);
-          if (v >= 3) this.emit(vm, 'onset', c.peak > gate * 2);
-        }
-      }
-      if (this.collect && age > 420) {
-        let best = null, bv = 0;
-        c.votes.forEach((v, m) => { if (v > bv) { bv = v; best = m; } });
-        if (bv >= 2) this.emit(best, 'onset', false);
-        this.collect = null;
-      }
-    }
-
-    // плавный переход без явного удара (легато)
-    if (valid && !warm) {
-      if (midi !== this.stableMidi) { this.stableMidi = midi; this.stableSince = t; }
-      else if (!this.collect && t - this.stableSince >= 130 && midi !== this.lastEmitted &&
-               (this.lastEmitted == null || Math.abs(midi - this.lastEmitted) % 12 !== 0)) {
-        this.emit(midi, 'legato');
-      }
-    } else {
-      this.stableMidi = null;
-    }
-
-    this.prevBuf.set(buf);
-
-    if (rms < gate) {
-      if (!this.silentSince) this.silentSince = t;
-      if (t - this.silentSince > 200) this.lastEmitted = null;
-    } else this.silentSince = 0;
-  }
-
-  // нота, которая появилась после удара: спектр сейчас минус спектр до удара
-  newNote(buf) {
-    const cur = this.spectrum(buf, this.specCur), pre = this.specPre, Y = this.specNew;
-    let eNew = 0, eCur = 0;
-    for (let i = 0; i < Y.length; i++) {
-      const v = cur[i] - pre[i];
-      Y[i] = v > 0 ? Math.sqrt(v) : 0;
-      eNew += v > 0 ? v : 0; eCur += cur[i];
-    }
-    if (eNew < eCur * 0.12) return null;
-    const r = harmonicPick(Y, this.sr / this.N, this.candLo, this.candHi);
-    return r.midi;
-  }
-
-  // strong — уверенное распознавание: громкий удар (на 6 дБ выше порога) и три совпавших замера
-  emit(midi, via, strong = false) {
-    this.collect = null;
-    this.lastEmitted = midi;
-    this.stableMidi = midi;
-    this.onEvent('note', { midi, via, strong });
-  }
-}
-
-
-/* ---------- Теория ---------- */
+const GLYPH = {"gClef":{"d":"M1.5-1.66C1.5-1.71 1.5-1.71 1.53-1.74C1.96-2.14 2.29-2.65 2.29-3.26C2.29-3.61 2.19-3.95 2.03-4.19C1.97-4.28 1.86-4.39 1.82-4.39C1.76-4.39 1.64-4.29 1.56-4.2C1.26-3.87 1.17-3.37 1.17-2.96C1.17-2.72 1.2-2.46 1.22-2.3C1.23-2.25 1.24-2.24 1.19-2.2C.61-1.73 0-1.16 0-.35C0 .35 .48 1.01 1.46 1.01C1.55 1.01 1.65 1 1.73 .98C1.78 .98 1.78 .97 1.79 1.02C1.84 1.29 1.9 1.64 1.9 1.82C1.9 2.42 1.5 2.49 1.26 2.49C1.05 2.49 .94 2.42 .94 2.37C.94 2.34 .98 2.33 1.07 2.3C1.2 2.27 1.34 2.16 1.34 1.93C1.34 1.71 1.2 1.52 .96 1.52C.69 1.52 .53 1.73 .53 1.98C.53 2.24 .68 2.63 1.29 2.63C1.56 2.63 2.08 2.51 2.08 1.83C2.08 1.6 2 1.22 1.96 .98C1.95 .93 1.96 .93 2.01 .91C2.42 .75 2.68 .41 2.68-.04C2.68-.56 2.31-1.01 1.72-1.01C1.62-1.01 1.62-1.01 1.6-1.08ZM1.88-3.77C2.01-3.77 2.12-3.66 2.12-3.44C2.12-3 1.74-2.64 1.42-2.36C1.4-2.34 1.38-2.34 1.37-2.4C1.36-2.5 1.35-2.64 1.35-2.76C1.35-3.39 1.64-3.77 1.88-3.77ZM1.44-1.05C1.46-.97 1.46-.98 1.38-.95C1.03-.83 .8-.52 .8-.18C.8 .18 .99 .44 1.26 .53C1.3 .54 1.34 .56 1.37 .56C1.4 .56 1.42 .54 1.42 .51C1.42 .48 1.39 .47 1.36 .46C1.19 .39 1.07 .22 1.07 .03C1.07-.2 1.23-.37 1.47-.44C1.54-.45 1.54-.45 1.55-.4L1.75 .79C1.76 .83 1.76 .83 1.7 .84C1.63 .86 1.55 .86 1.47 .86C.77 .86 .32 .48 .32-.08C.32-.32 .36-.63 .69-1.01C.93-1.28 1.12-1.42 1.3-1.58C1.34-1.61 1.35-1.6 1.36-1.56ZM1.72-.41C1.71-.46 1.72-.47 1.76-.47C2.09-.44 2.36-.17 2.36 .18C2.36 .44 2.2 .64 1.98 .75C1.93 .78 1.92 .78 1.92 .73Z","adv":2.684},"fClef":{"d":"M1.01-1.05C.31-1.05 0-.54 0-.16C0 .16 .17 .44 .49 .44C.74 .44 .92 .26 .92 .02C.92-.24 .73-.4 .53-.4C.42-.4 .38-.37 .33-.37C.28-.37 .27-.4 .27-.44C.27-.6 .51-.9 .92-.9C1.34-.9 1.52-.48 1.52 .15C1.52 1.26 .97 1.89 .04 2.42C0 2.44-.02 2.46-.02 2.49C-.02 2.52-0 2.54 .03 2.54C.05 2.54 .08 2.53 .1 2.52C1.08 2.04 2.12 1.33 2.12 .11C2.12-.58 1.7-1.05 1.01-1.05ZM2.52-.72C2.39-.72 2.3-.62 2.3-.5C2.3-.38 2.39-.28 2.52-.28C2.64-.28 2.74-.38 2.74-.5C2.74-.62 2.64-.72 2.52-.72ZM2.52 .28C2.4 .28 2.3 .38 2.3 .5C2.3 .62 2.4 .72 2.52 .72C2.64 .72 2.74 .62 2.74 .5C2.74 .38 2.64 .28 2.52 .28Z","adv":2.736},"noteheadWhole":{"d":"M.86-.5C.33-.5 0-.28 0-.01C0 .26 .23 .5 .82 .5C1.48 .5 1.69 .27 1.69-.01C1.69-.29 1.24-.5 .86-.5ZM.44-.25C.49-.39 .64-.41 .76-.41C1.04-.41 1.26-.12 1.26 .12C1.26 .25 1.2 .36 1.07 .39C1.03 .4 .99 .41 .95 .41C.8 .41 .66 .31 .57 .2C.49 .11 .43-.03 .43-.16C.43-.19 .44-.22 .44-.25Z","adv":1.688},"noteheadHalf":{"d":"M.39 .5C1.05 .5 1.18-.04 1.18-.17C1.18-.37 1.02-.5 .78-.5C.19-.5 0-.04 0 .17C0 .38 .17 .5 .39 .5ZM.3 .35C.22 .35 .17 .3 .14 .26C.13 .23 .12 .2 .12 .18C.12-.02 .7-.34 .88-.34C.96-.34 1-.3 1.03-.25C1.04-.23 1.06-.2 1.06-.18C1.06-0 .49 .35 .3 .35Z","adv":1.18},"noteheadBlack":{"d":"M.39 .5C.74 .5 1.18 .17 1.18-.17C1.18-.37 1.02-.5 .79-.5C.35-.5 0-.18 0 .17C0 .38 .17 .5 .39 .5Z","adv":1.18},"accidentalSharp":{"d":"M.95-.47C.98-.48 1-.52 1-.54V-.82C1-.84 .98-.86 .97-.86C.96-.86 .96-.86 .95-.85C.95-.85 .87-.82 .85-.82C.82-.82 .79-.84 .79-.87V-1.36C.79-1.38 .77-1.4 .74-1.4C.7-1.4 .67-1.38 .67-1.36V-.84C.67-.8 .66-.74 .62-.72C.57-.69 .44-.64 .37-.62C.33-.62 .32-.67 .32-.7V-1.18C.32-1.2 .29-1.22 .26-1.22C.22-1.22 .2-1.2 .2-1.18V-.64C.2-.58 .18-.54 .15-.53C.13-.52 .05-.49 .05-.49C.02-.48 0-.45 0-.42V-.14C0-.12 .01-.1 .04-.1L.04-.11C.05-.11 .11-.13 .14-.15L.14-.15C.18-.15 .2-.11 .2-.08V.32C.2 .36 .18 .4 .16 .41C.13 .42 .05 .45 .05 .45C.02 .46 0 .49 0 .52V.8C0 .82 .01 .84 .04 .84L.04 .83C.05 .83 .1 .81 .14 .8C.14 .79 .15 .79 .15 .79C.18 .79 .2 .84 .2 .86V1.35C.2 1.37 .22 1.39 .25 1.39C.29 1.39 .32 1.37 .32 1.35V.79C.32 .74 .34 .71 .36 .7L.6 .6C.6 .6 .61 .6 .61 .6L.62 .6C.65 .6 .67 .65 .67 .67V1.17C.67 1.2 .7 1.22 .72 1.22C.77 1.22 .79 1.2 .79 1.17V.6C.79 .57 .81 .52 .84 .51C.86 .5 .95 .47 .95 .47C.98 .46 1 .42 1 .4V.12C1 .1 .98 .08 .97 .08C.96 .08 .96 .08 .95 .09L.84 .13C.82 .13 .79 .1 .79 .06V-.32C.79-.34 .81-.42 .84-.43ZM.67 .18C.65 .26 .46 .34 .37 .34C.34 .34 .32 .33 .32 .32C.31 .3 .31 .22 .31 .12C.31-0 .31-.14 .32-.18C.33-.24 .51-.33 .61-.33C.64-.33 .66-.32 .67-.3C.68-.28 .69-.18 .69-.08C.69 .03 .68 .14 .67 .18Z","adv":0.996},"accidentalFlat":{"d":"M.05 .68C.06 .7 .07 .7 .08 .7C.1 .7 .11 .69 .11 .69C.23 .62 .32 .52 .42 .45C.78 .2 .9-.04 .9-.23C.9-.46 .73-.6 .54-.61C.48-.61 .38-.58 .32-.54C.3-.52 .26-.49 .24-.49C.23-.49 .22-.49 .22-.49C.19-.5 .17-.53 .17-.56C.18-.65 .2-1.61 .2-1.69C.2-1.73 .16-1.76 .12-1.76C.07-1.76 0-1.72 0-1.64C0-1.64 .02 .64 .05 .68ZM.19 .32C.19 .32 .18 .08 .18-.08C.18-.14 .18-.19 .18-.2C.21-.28 .37-.4 .46-.4C.58-.4 .63-.27 .63-.17C.63 .05 .44 .26 .27 .37C.26 .38 .24 .38 .23 .38C.2 .38 .19 .34 .19 .32Z","adv":0.904},"accidentalNatural":{"d":"M.56-.72C.56-.72 .55-.72 .55-.72C.55-.72 .29-.63 .19-.63C.16-.63 .15-.63 .15-.65V-1.32C.15-1.34 .12-1.36 .1-1.36H.05C.02-1.36 0-1.34 0-1.32V.74C0 .77 .01 .78 .04 .78L.04 .78C.05 .78 .06 .78 .06 .77C.12 .75 .34 .65 .46 .65C.5 .65 .52 .66 .52 .7V1.29C.52 1.32 .54 1.34 .57 1.34H.62C.65 1.34 .67 1.32 .67 1.29V-.72C.67-.74 .66-.75 .64-.75C.64-.75 .63-.75 .62-.74ZM.15-.16C.15-.21 .39-.32 .49-.32C.51-.32 .52-.31 .52-.3V.12C.52 .19 .3 .28 .2 .28C.17 .28 .15 .27 .15 .26Z","adv":0.672},"flag8thUp":{"d":"M.95 3.16C.95 3.16 1.06 2.78 1.06 2.47C1.06 1.97 .85 1.5 .6 1.1C.39 .78 .22 .44 .16 .05C.15-.01 .12-.04 .08-.04C.03-.04 0-.02 0 .02V.98C.26 1.03 .64 1.57 .79 1.91C.85 2.05 .88 2.28 .88 2.51C.88 2.69 .86 2.88 .79 3.06C.78 3.08 .78 3.1 .78 3.12C.78 3.18 .82 3.22 .84 3.24C.86 3.25 .93 3.23 .95 3.16Z","adv":1.056},"flag8thDown":{"d":"M.96-3.04C1.02-2.87 1.04-2.67 1.04-2.49C1.04-2.26 .94-1.92 .88-1.78C.74-1.45 .54-1.12 0-.94V-0C0 .04 .03 .06 .06 .06C.1 .06 .15 .03 .16-.03C.23-.41 .52-.76 .73-1.08C.98-1.47 1.22-1.95 1.22-2.45C1.22-2.76 1.14-3.04 1.11-3.17C1.1-3.22 1.08-3.23 1.05-3.23C.99-3.23 .92-3.16 .96-3.04Z","adv":1.224},"flag16thUp":{"d":"M1.09 3.18C1.1 3.16 1.12 2.94 1.12 2.74V2.66C1.12 2.49 1.07 2.32 1 2.18C1 2.16 1 2.16 1 2.14C1 2.13 1 2.12 1 2.11C1.01 2.09 1.1 1.85 1.1 1.6C1.1 1.55 1.1 1.51 1.09 1.46C1.05 1.19 .94 1.08 .66 .76C.44 .53 .22 .47 .15 .04C.14 0 .09-.01 .07-.01C.04-.01 0 0 0 .03V1.58H.02C.27 1.59 .55 1.6 .83 2.16C.92 2.35 .96 2.55 .96 2.76C.96 2.87 .94 2.99 .92 3.11C.92 3.13 .92 3.14 .92 3.15C.92 3.2 .95 3.25 1.01 3.25C1.04 3.25 1.06 3.24 1.09 3.18ZM.84 1.84C.77 1.74 .7 1.66 .62 1.56C.43 1.34 .25 1.25 .16 .92C.16 .92 .16 .91 .16 .91C.16 .89 .18 .87 .22 .87H.25C.49 .87 .71 1.09 .84 1.29C.91 1.39 .95 1.52 .95 1.64C.95 1.67 .95 1.7 .94 1.72C.94 1.76 .94 1.8 .92 1.83C.91 1.84 .88 1.85 .86 1.85C.85 1.85 .84 1.85 .84 1.84Z","adv":1.116},"flag16thDown":{"d":"M.96-3.14C1.02-2.81 1.02-2.44 .87-2.13C.59-1.57 .27-1.56 .02-1.55H0V-0C0 .02 .03 .04 .07 .04C.1 .04 .14 .03 .15-.02C.24-.63 1.03-.8 1.13-1.43C1.14-1.48 1.14-1.52 1.14-1.58C1.14-1.82 1.05-2.06 1.04-2.08C1.04-2.09 1.04-2.1 1.04-2.11C1.04-2.13 1.04-2.14 1.04-2.15C1.18-2.45 1.19-2.84 1.12-3.16C1.1-3.25 1.08-3.25 1.03-3.25C.98-3.24 .95-3.21 .96-3.14ZM.9-1.82C.92-1.82 .95-1.81 .96-1.8C.98-1.77 .98-1.73 .98-1.7C.99-1.67 .99-1.64 .99-1.62C.99-1.48 .95-1.36 .88-1.26C.75-1.06 .49-.84 .25-.84H.22C.18-.84 .16-.86 .16-.88C.16-.88 .16-.89 .16-.89C.25-1.22 .47-1.31 .66-1.53C.74-1.62 .81-1.7 .88-1.81C.88-1.82 .89-1.82 .9-1.82Z","adv":1.168},"restWhole":{"d":"M1.13 .44V.07C1.13 .01 1.08-.04 1.02-.04H.1C.04-.04 0 .01 0 .07V.44C0 .49 .04 .54 .1 .54H1.02C1.08 .54 1.13 .49 1.13 .44Z","adv":1.132},"restHalf":{"d":"M1.13-.1V-.46C1.13-.52 1.08-.57 1.02-.57H.1C.04-.57 0-.52 0-.46V-.1C0-.04 .04 .01 .1 .01H1.02C1.08 .01 1.13-.04 1.13-.1Z","adv":1.132},"restQuarter":{"d":"M.31 .15C.38 .23 .43 .31 .48 .39C.49 .41 .51 .44 .51 .45C.51 .45 .51 .46 .5 .46C.5 .48 .48 .48 .46 .48C.44 .48 .41 .48 .4 .47C.39 .47 .38 .47 .38 .47L.35 .46C.14 .46 0 .65 0 .84C0 1.04 .18 1.24 .47 1.46C.5 1.49 .54 1.5 .57 1.5C.6 1.5 .63 1.49 .63 1.48C.64 1.46 .64 1.46 .64 1.45C.64 1.41 .61 1.38 .58 1.35C.52 1.35 .48 1.24 .47 1.21C.46 1.18 .46 1.14 .46 1.1C.46 .94 .54 .81 .71 .81C.82 .81 .96 .86 1.02 .88L1.03 .88C1.04 .89 1.05 .89 1.06 .89C1.07 .89 1.08 .88 1.08 .87C1.08 .82 .98 .69 .93 .64C.78 .46 .66 .31 .66 .09C.66 .08 .66 .08 .66 .08L.66 .05C.66 .04 .66 .04 .66 .04C.68-.2 .82-.39 .92-.55C.94-.57 .94-.59 .94-.61C.94-.65 .92-.69 .92-.69C.92-.69 .33-1.39 .26-1.46C.24-1.48 .22-1.49 .19-1.49C.15-1.49 .11-1.46 .11-1.41C.11-1.39 .12-1.37 .13-1.34C.14-1.3 .37-1.1 .37-.81C.37-.66 .31-.49 .13-.3C.09-.26 .08-.22 .08-.18C.08-.13 .12-.09 .12-.09Z","adv":1.08},"rest8th":{"d":"M.54-.43C.54-.58 .42-.7 .27-.7C.12-.7 0-.58 0-.43C0-.34 .05-.27 .11-.22C.17-.18 .25-.16 .32-.16C.38-.16 .44-.17 .48-.18C.54-.2 .57-.22 .62-.24C.63-.25 .64-.25 .64-.25C.66-.25 .66-.23 .66-.21C.66-.2 .66-.18 .66-.17C.65-.11 .36 .69 .29 .95C.29 1 .38 1 .4 1C.45 1 .5 1 .54 .96C.56 .96 .95-.45 .95-.45C.96-.52 .98-.58 .99-.6C.99-.64 .95-.66 .94-.67C.93-.67 .92-.67 .9-.65C.87-.63 .67-.39 .54-.39Z","adv":1},"rest16th":{"d":"M.83-.44C.83-.6 .71-.72 .56-.72C.41-.72 .29-.6 .29-.44C.29-.28 .46-.17 .61-.17C.72-.17 .83-.21 .92-.26C.93-.26 .94-.27 .95-.27C.96-.27 .97-.26 .97-.24C.97-.18 .76 .42 .74 .48C.7 .56 .6 .6 .54 .6C.54 .59 .54 .58 .54 .56C.54 .41 .42 .29 .27 .29C.12 .29 0 .41 0 .56C0 .73 .17 .84 .32 .84C.42 .84 .53 .8 .62 .75C.63 .75 .64 .76 .64 .78L.63 .78C.63 .78 .63 .78 .63 .78L.25 1.92C.25 1.92 .25 1.92 .25 1.92L.25 1.92C.25 1.96 .28 2 .37 2C.49 2 .51 1.95 .52 1.91L.99 .38C1.09 .04 1.17-.22 1.17-.22C1.17-.22 1.27-.58 1.28-.63C1.28-.64 1.28-.64 1.28-.64C1.28-.67 1.25-.68 1.24-.69C1.22-.69 1.21-.68 1.2-.67C1.17-.65 .97-.41 .83-.4Z","adv":1.28},"augmentationDot":{"d":"M.4 0C.4-.11 .31-.2 .2-.2C.09-.2 0-.11 0 0C0 .11 .09 .2 .2 .2C.31 .2 .4 .11 .4 0Z","adv":0.4},"timeSig0":{"d":"M1.8 0C1.8-.56 1.42-1 .94-1C.46-1 .08-.56 .08 0C.08 .55 .46 1 .94 1C1.42 1 1.8 .55 1.8 0ZM.94-.88C1.1-.88 1.24-.5 1.24-.03C1.24 .44 1.1 .82 .94 .82C.77 .82 .64 .44 .64-.03C.64-.5 .77-.88 .94-.88Z","adv":1.88},"timeSig1":{"d":"M.1-.05C.1-.05 .08-.03 .08 0C.08 .02 .09 .04 .12 .06C.14 .06 .16 .06 .16 .06C.2 .06 .22 .03 .22 .03C.22 .03 .39-.25 .43-.32C.45-.35 .46-.36 .47-.36C.49-.36 .5-.33 .5-.31V.72C.5 .82 .4 .88 .32 .88C.29 .88 .25 .89 .25 .94C.25 .98 .29 1 .34 1H1.19C1.26 1 1.26 .94 1.26 .94C1.26 .94 1.26 .88 1.2 .88C1.14 .88 1.07 .8 1.07 .74V-.91C1.07-.98 1.04-1 .99-1C.93-1 .83-.99 .78-.99C.7-.99 .63-.99 .57-1C.56-1 .56-1 .55-1C.51-1 .5-.96 .48-.93Z","adv":1.336},"timeSig2":{"d":"M1.68 .36C1.68 .32 1.66 .31 1.64 .31C1.6 .31 1.59 .32 1.58 .35L1.58 .36C1.54 .46 1.51 .53 1.42 .53C1.4 .53 1.38 .53 1.36 .52C1.3 .5 1.28 .5 1.24 .48C1.16 .44 .97 .38 .8 .38C.75 .38 .7 .39 .66 .4C.74 .26 1.08 .14 1.17 .12C1.45 .04 1.7-.08 1.7-.41C1.7-.83 1.29-1.02 .92-1.02C.64-1.02 .39-.99 .19-.76C.12-.68 .08-.58 .08-.47C.08-.42 .09-.36 .12-.3C.18-.18 .3-.08 .44-.08C.69-.08 .72-.33 .72-.43C.72-.67 .45-.68 .45-.76C.46-.82 .53-.92 .76-.92C1.12-.92 1.12-.65 1.12-.53C1.12-.17 .82 .11 .54 .28C.32 .42 .16 .62 .09 .88L.09 .89C.09 .94 .13 1.03 .19 1.03C.28 1.03 .33 .78 .56 .78C.72 .78 .78 1 1.14 1C1.31 1 1.62 .98 1.68 .36Z","adv":1.784},"timeSig3":{"d":"M.85-.99C.85-.99 .84-.99 .84-.99L.81-1C.8-1 .8-1 .79-1C.45-1 .1-.77 .1-.56C.1-.42 .18-.25 .43-.23H.45C.62-.23 .71-.36 .71-.49V-.52C.7-.67 .6-.68 .58-.69C.56-.7 .5-.69 .5-.74V-.76C.51-.83 .63-.86 .67-.86C1.01-.86 1.04-.65 1.04-.55V-.52C1.04-.23 .8-.11 .55-.1C.51-.1 .46-.08 .46-.03C.46 .02 .52 .02 .56 .02C1.02 .02 1.05 .33 1.05 .38C1.05 .8 .84 .85 .75 .85C.73 .85 .72 .85 .71 .85C.68 .84 .6 .84 .6 .78V.76C.6 .68 .69 .62 .69 .5C.69 .33 .58 .21 .4 .21C.39 .21 .38 .21 .36 .22C.29 .23 .22 .27 .17 .32C.1 .38 .08 .48 .08 .56C.09 .88 .37 1 .76 1H.8C1.2 1 1.6 .8 1.6 .45V.42C1.6 .3 1.57 .23 1.49 .14C1.47 .11 1.44 .08 1.4 .06L1.31 .01L1.18-.03C1.16-.03 1.15-.03 1.14-.05C1.14-.06 1.14-.06 1.14-.07C1.14-.08 1.14-.1 1.15-.1C1.2-.12 1.24-.12 1.28-.14C1.44-.22 1.52-.32 1.52-.5C1.52-.87 1.02-.98 .85-.99Z","adv":1.684},"timeSig4":{"d":"M1.45 .3V-.56C1.45-.59 1.44-.63 1.4-.63C1.36-.63 1.34-.62 1.32-.59L.94-.13C.92-.11 .9-.09 .9-.04V.3H.36C.68 .02 1.32-.88 1.34-.93L1.34-.94C1.34-.98 1.31-1 1.28-1C1.24-1 1.08-1 1.01-1C.94-1 .76-1 .72-1C.69-1 .63-.99 .63-.93C.63-.43 .24 .12 .12 .29L.1 .32C.1 .32 .1 .33 .1 .33L.09 .33C.08 .35 .08 .37 .08 .38C.08 .42 .11 .45 .16 .45H.9V.7C.9 .81 .82 .84 .74 .84C.68 .84 .65 .88 .65 .92C.65 .96 .67 1 .73 1H1.58C1.62 1 1.66 .97 1.66 .92C1.66 .86 1.61 .84 1.57 .84C1.53 .84 1.45 .81 1.45 .68V.45H1.74C1.78 .45 1.8 .42 1.8 .37C1.8 .32 1.78 .3 1.74 .3Z","adv":1.88},"timeSig5":{"d":"M.3-.24C.3-.24 .32-.46 .32-.5C.33-.53 .35-.55 .38-.55H.4C.44-.54 .63-.51 .79-.51C1.35-.51 1.37-.83 1.37-.9C1.37-.95 1.36-.98 1.31-.98C1.26-.98 .95-.94 .82-.94C.69-.94 .35-.98 .28-.98C.21-.98 .19-.95 .18-.92L.14-.03V-.02C.14 .03 .18 .04 .22 .04C.26 .04 .26 0 .31-.04C.35-.08 .44-.17 .58-.17C.72-.17 .99-.1 .99 .35C.99 .79 .76 .84 .65 .84C.62 .84 .59 .84 .56 .83C.54 .82 .52 .8 .51 .78C.51 .75 .54 .73 .56 .72C.65 .66 .71 .56 .71 .45C.71 .28 .57 .14 .4 .14C.18 .14 .1 .3 .08 .44C.08 .46 .08 .48 .08 .51C.08 .84 .3 1 .79 1C1.27 1 1.53 .71 1.53 .35C1.53-.02 1.24-.31 .87-.31C.64-.31 .47-.27 .34-.2C.33-.19 .32-.19 .32-.19C.3-.19 .3-.21 .3-.22Z","adv":1.612},"timeSig6":{"d":"M1.22-.33C1.39-.33 1.54-.46 1.54-.64C1.54-.65 1.54-.66 1.54-.68C1.5-.94 1.18-1 .97-1C.66-1 .38-.85 .24-.58C.15-.41 .08-.2 .08-.01V0C.08 .19 .12 .4 .2 .56C.37 .85 .56 1 .9 1C1.08 1 1.28 .97 1.42 .85C1.56 .74 1.66 .56 1.66 .38C1.66 .07 1.36-.2 1.05-.2C.92-.2 .79-.15 .69-.06C.68-.05 .67-.05 .66-.05C.64-.05 .63-.08 .63-.15C.64-.89 .88-.91 .96-.91C1.04-.91 1.09-.89 1.09-.85C1.09-.79 1.02-.74 .99-.7C.97-.66 .96-.62 .96-.58C.96-.52 .98-.46 1.02-.42C1.05-.36 1.17-.33 1.22-.33ZM.89-.01C1.02-.01 1.12 .19 1.12 .44C1.12 .69 1.02 .89 .89 .89C.76 .89 .66 .69 .66 .44C.66 .19 .76-.01 .89-.01Z","adv":1.736},"timeSig7":{"d":"M1.68-.82C1.68-.92 1.68-.98 1.62-.98C1.61-.98 1.55-.96 1.53-.93C1.5-.88 1.45-.66 1.35-.66C1.25-.66 1.06-1 .73-1C.5-1 .44-.9 .38-.85C.32-.8 .3-.78 .27-.78C.24-.78 .19-.84 .17-.88C.16-.89 .14-.9 .12-.9C.1-.9 .08-.89 .08-.86V-.2C.08-.2 .08-.13 .12-.13C.16-.13 .17-.17 .18-.21C.22-.31 .28-.54 .46-.54C.62-.54 .81-.24 1.04-.24C1.15-.24 1.21-.3 1.24-.33C1.25-.34 1.27-.34 1.28-.34C1.29-.34 1.3-.33 1.3-.31C1.3-.2 1 .03 .76 .31C.6 .49 .48 .72 .48 .88C.48 .96 .48 1 .56 1C.63 1 .72 .96 .82 .96C.92 .96 1.1 1 1.14 1C1.18 1 1.21 .97 1.21 .85C1.21 .18 1.68-.39 1.68-.8Z","adv":1.764},"timeSig8":{"d":"M1.34-.14C1.48-.24 1.58-.37 1.58-.57C1.58-.98 .99-1.04 .88-1.04C.42-1.04 .1-.82 .1-.49C.1-.21 .26-.06 .45 .04C.24 .14 .08 .28 .08 .53C.08 .88 .44 1.04 .84 1.04C1.24 1.04 1.66 .86 1.66 .32C1.66 .08 1.52-.05 1.34-.14ZM1.13-.24C.81-.35 .47-.42 .47-.67C.47-.84 .7-.92 .87-.92C1-.92 1.34-.86 1.34-.58C1.34-.42 1.26-.31 1.13-.24ZM.82 .9C.55 .9 .31 .77 .31 .51C.31 .35 .45 .2 .62 .13C.92 .26 1.21 .34 1.21 .61C1.21 .77 1.09 .9 .82 .9Z","adv":1.744},"timeSig9":{"d":"M.52 .32C.35 .32 .2 .46 .2 .63C.2 .64 .2 .66 .2 .67C.24 .93 .55 1 .77 1C1.07 .99 1.36 .84 1.5 .57C1.59 .4 1.66 .19 1.66 0V-.01C1.65-.2 1.62-.4 1.53-.56C1.37-.86 1.17-1 .84-1C.66-1 .46-.98 .31-.86C.17-.75 .08-.57 .08-.39C.08-.08 .38 .19 .68 .19C.81 .19 .94 .14 1.05 .05C1.06 .04 1.06 .04 1.07 .04C1.1 .04 1.11 .08 1.11 .14C1.1 .88 .86 .9 .78 .9C.7 .9 .64 .88 .64 .84C.64 .78 .72 .74 .74 .69C.76 .65 .77 .61 .77 .57C.77 .51 .75 .45 .71 .41C.68 .36 .57 .32 .52 .32ZM.85 0C.72 0 .61-.2 .61-.45C.61-.7 .72-.9 .85-.9C.98-.9 1.08-.7 1.08-.45C1.08-.2 .98 0 .85 0Z","adv":1.736}};
 const STEP = [0, 2, 4, 5, 7, 9, 11];
 const SOLF = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
 const LET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const OCT_GEN = ['субконтроктавы', 'контроктавы', 'большой октавы', 'малой октавы', 'первой октавы', 'второй октавы', 'третьей октавы', 'четвёртой октавы', 'пятой октавы'];
 const SUP = ['₂', '₁', '', '', '¹', '²', '³', '⁴', '⁵'];
-const CLEFS = { treble: { bottomD: 30, name: 'Скрипичный' }, bass: { bottomD: 18, name: 'Басовый' } };
+const CLEFS = {
+treble: { bottomD: 30, name: 'Скрипичный', hand: 'правая рука' },
+bass: { bottomD: 18, name: 'Басовый', hand: 'левая рука' },
+};
 const midiOf = (d, acc = 0) => (Math.floor(d / 7) + 1) * 12 + STEP[d % 7] + acc;
 const accMark = (acc) => (acc > 0 ? '♯' : acc < 0 ? '♭' : '');
-
-function shortName(d, acc = 0, naming = S.naming) {
-  const oct = Math.floor(d / 7), li = d % 7;
-  if (naming === 'letters') return LET[li] + accMark(acc) + oct;
-  let n = SOLF[li];
-  if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
-  return n + accMark(acc) + (SUP[oct] || '');
+function shortName(d, acc = 0, naming = 'solfege') {
+const oct = Math.floor(d / 7), li = d % 7;
+if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+let n = SOLF[li];
+if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
+return n + accMark(acc) + (SUP[oct] || '');
 }
-function fullName(d, acc = 0) {
-  const oct = Math.floor(d / 7), li = d % 7;
-  if (S.naming === 'letters') return LET[li] + accMark(acc) + oct;
-  return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
+function fullName(d, acc = 0, naming = 'solfege') {
+const oct = Math.floor(d / 7), li = d % 7;
+if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
 }
 function spellMidi(midi, preferFlat) {
-  const pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
-  const WHITE = { 0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6 };
-  if (pc in WHITE) return { d: oct * 7 + WHITE[pc], acc: 0 };
-  if (preferFlat) return { d: oct * 7 + WHITE[pc + 1], acc: -1 };
-  return { d: oct * 7 + WHITE[pc - 1], acc: 1 };
+const pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
+const WHITE = { 0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6 };
+if (pc in WHITE) return { d: oct * 7 + WHITE[pc], acc: 0 };
+if (preferFlat) return { d: oct * 7 + WHITE[pc + 1], acc: -1 };
+return { d: oct * 7 + WHITE[pc - 1], acc: 1 };
 }
-
-/* ---------- Настройки и хранение ---------- */
-const store = {
-  get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* хранилище недоступно */ } },
+function ledgerRange(clef, below, above) {
+const b = CLEFS[clef].bottomD;
+return { lo: b - 2 * below, hi: b + 8 + 2 * above };
+}
+function linesNeeded(clef, d) {
+const b = CLEFS[clef].bottomD;
+if (d < b) return Math.ceil((b - d) / 2);
+if (d > b + 8) return Math.ceil((d - b - 8) / 2);
+return 0;
+}
+function candidates(clef, below, above) {
+const r = ledgerRange(clef, below, above), out = [];
+for (let d = r.lo; d <= r.hi; d++) out.push({ d, acc: 0, midi: midiOf(d), clef, w: 1 });
+return out;
+}
+function pickNote(prev, cands, weight, rnd = Math.random) {
+let list = cands.filter((c) => !prev || c.midi !== prev.midi);
+if (!list.length) list = cands;
+const ws = list.map((c) => c.w * (weight ? weight(c) : 1));
+let r = rnd() * ws.reduce((a, b) => a + b, 0);
+for (let i = 0; i < list.length; i++) { r -= ws[i]; if (r <= 0) return list[i]; }
+return list[list.length - 1];
+}
+const ECHO_MS = 1500, REPEAT_MS = 250;
+function isEcho(midi, via, strong, lastDone, now, hit) {
+if ((via !== 'onset' && via !== 'legato') || !lastDone || lastDone.midi !== midi) return false;
+if (hit) return via !== 'onset' || !strong || now - lastDone.t < REPEAT_MS;
+return now - lastDone.t < ECHO_MS;
+}
+const SETTINGS_DEFAULTS = {
+clef: 'treble', below: 1, above: 1, adaptive: true,
+naming: 'solfege', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
 };
-const PRESETS = [
-  { id: 'first', name: 'Первая октава', clef: 'treble', lo: 28, hi: 35 },
-  { id: 'treble', name: 'Скрипичный ключ', clef: 'treble', lo: 28, hi: 39 },
-  { id: 'bass', name: 'Басовый ключ', clef: 'bass', lo: 17, hi: 28 },
-  { id: 'grand', name: 'Оба ключа', clef: 'grand', lo: 17, hi: 39 },
-  { id: 'ledger', name: 'Добавочные линейки', clef: 'grand', lo: 14, hi: 42 },
-];
-const D_MIN = 12, D_MAX = 49; // ля контроктавы (A1) … до четвёртой октавы (C7)
-const DEFAULTS = { clef: 'treble', lo: 28, hi: 39, acc: false, motion: 'any', perRow: 'row', naming: 'solfege', octave: true, adaptive: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true };
-const saved = store.get('slista.settings.v1', {}) || {};
-if (saved.gateDb == null && typeof saved.sens === 'number') saved.gateDb = -30 - saved.sens; // старая шкала ползунка
-delete saved.sens;
-const S = Object.assign({}, DEFAULTS, saved);
+function migrateSettings(old) {
+if (!old || typeof old !== 'object') return {};
+const out = {};
+for (const k of ['adaptive', 'naming', 'octave', 'gateDb', 'calibrated', 'showKeys', 'keySound']) if (old[k] != null) out[k] = old[k];
+if (out.gateDb == null && typeof old.sens === 'number') out.gateDb = -30 - old.sens; // шкала ползунка до калибровки
+out.clef = old.clef === 'bass' ? 'bass' : 'treble';
+if (typeof old.lo === 'number' && typeof old.hi === 'number') {
+const clamp = (v) => Math.max(0, Math.min(3, v));
+out.below = clamp(linesNeeded(out.clef, Math.min(old.lo, old.hi)));
+out.above = clamp(linesNeeded(out.clef, Math.max(old.lo, old.hi)));
+}
+out.last = { mode: 'random' };
+return out;
+}
+const TPQ = 48; // тиков на четверть: хватает для шестнадцатой с двумя точками
+const durOf = (len, dots = 0) => Math.round(((4 * TPQ) / len) * (2 - Math.pow(0.5, dots || 0)));
+const sameTime = (a, b) => !!a && !!b && a[0] === b[0] && a[1] === b[1];
+function beatOf(time) {
+if (!time) return TPQ;
+const [n, t] = time;
+if (t === 8 && n % 3 === 0 && n > 3) return 3 * durOf(8);
+if (t === 8) return n * durOf(8);
+return durOf(t);
+}
+function makeNote(f) {
+return Object.assign({
+type: 'note', acc: 0, len: 4, dots: 0, dur: TPQ, start: 0, mark: null, tie: false, tieFrom: false,
+head: null, tieTo: null, beam: null, stem: null, group: null, status: 'todo', errors: 0, hinted: false, startAt: 0, idx: -1,
+}, f);
+}
+function buildScore(piece, clef) {
+const shift = 7 * ((piece.shift && piece.shift[clef]) || 0);
+let time = null, key = 0, open = null;
+const measures = [], notes = [];
+piece.measures.forEach((m, mi) => {
+const prevKey = key;
+const showTime = !!m.time && (mi === 0 || !sameTime(m.time, time));
+const showKey = m.key != null && mi > 0 && m.key !== key;
+if (m.time) time = m.time;
+if (m.key != null) key = m.key;
+const full = time ? time[0] * durOf(time[1]) : 4 * TPQ;
+let t = 0;
+const items = m.items.map((it) => {
+if (it.rest) {
+const dur = it.measure ? full : durOf(it.len, it.dots);
+const r = { type: 'rest', len: it.measure ? 1 : it.len, dots: it.measure ? 0 : it.dots || 0, dur, start: t, measure: !!it.measure };
+t += dur;
+open = null;
+return r;
+}
+const d = it.d + shift, acc = it.acc || 0;
+const n = makeNote({ d, acc, midi: midiOf(d, acc), clef, len: it.len, dots: it.dots || 0, dur: durOf(it.len, it.dots), start: t,
+mark: it.mark == null ? null : it.mark, tie: !!it.tie, beam: it.beam || null });
+if (open && open.midi === n.midi) { n.tieFrom = true; n.head = open.head || open; open.tieTo = n; }
+open = n.tie ? n : null;
+if (!n.tieFrom) { n.idx = notes.length; notes.push(n); }
+t += n.dur;
+return n;
+});
+measures.push({ time, key, prevKey, showTime, showKey, full, pickup: !!m.pickup, items });
+});
+const score = { clef, measures, notes, title: piece.title };
+prepareScore(score);
+return score;
+}
+function randomScore(list, clef) {
+const notes = list.map((c, i) => makeNote({ d: c.d, acc: c.acc || 0, midi: midiOf(c.d, c.acc || 0), clef, idx: i }));
+const measures = [];
+for (let i = 0; i < notes.length; i += 4) {
+const items = notes.slice(i, i + 4);
+items.forEach((n, j) => { n.start = j * TPQ; });
+measures.push({ time: null, key: 0, prevKey: 0, showTime: false, showKey: false, full: 4 * TPQ, pickup: false, items });
+}
+const score = { clef, measures, notes, random: true };
+prepareScore(score);
+return score;
+}
+const allNotes = (score) => score.measures.flatMap((m) => m.items.filter((it) => it.type === 'note'));
+const SP = 10;          // межстрочный интервал в единицах SVG
+const STEM = 3.5 * SP;  // длина штиля
+const BEAM_T = 0.5 * SP, BEAM_GAP = 0.75 * SP;
+const yRel = (score, d) => ((CLEFS[score.clef].bottomD - d) * SP) / 2;
+function prepareScore(score) {
+const yMid = -2 * SP;
+for (const m of score.measures) {
+let group = null;
+const close = () => { if (group && group.length > 1) beamGroup(score, group); else if (group) group.forEach((n) => { n.group = null; }); group = null; };
+for (const it of m.items) {
+if (it.type !== 'note') { close(); continue; }
+const st = it.beam && it.beam[0];
+if (it.len >= 8 && st === 'begin') { close(); group = [it]; }
+else if (it.len >= 8 && group && (st === 'continue' || st === 'end')) { group.push(it); if (st === 'end') close(); }
+else close();
+}
+close();
+for (const it of m.items) {
+if (it.type !== 'note' || it.group) continue;
+if (it.len <= 1) { it.stem = null; continue; }
+const y = yRel(score, it.d), up = it.d < CLEFS[score.clef].bottomD + 4;
+it.stem = { up, end: up ? Math.min(y - STEM, yMid) : Math.max(y + STEM, yMid), beamed: false };
+}
+}
+}
+function beamGroup(score, g) {
+const mid = CLEFS[score.clef].bottomD + 4, yMid = -2 * SP;
+let far = 0;
+for (const n of g) { const dist = n.d - mid; if (Math.abs(dist) > Math.abs(far) || (Math.abs(dist) === Math.abs(far) && dist > far)) far = dist; }
+const up = far < 0;
+const ys = g.map((n) => yRel(score, n.d));
+const xs = [0];
+for (let i = 1; i < g.length; i++) xs.push(xs[i - 1] + spaceFor(g[i - 1].dur));
+const span = xs[xs.length - 1] || 1;
+const levels = g.some((n) => n.len >= 16) ? 2 : 1;
+const minLen = STEM - 0.5 * SP + (levels - 1) * BEAM_GAP;
+let rise = Math.max(-SP, Math.min(SP, (ys[ys.length - 1] - ys[0]) / 2));
+const inner = ys.slice(1, -1);
+if (inner.length && (up ? Math.min(...inner) < Math.min(ys[0], ys[ys.length - 1]) : Math.max(...inner) > Math.max(ys[0], ys[ys.length - 1]))) rise = 0;
+let c;
+if (up) {
+c = Math.min(...g.map((n, i) => ys[i] - minLen - (rise * xs[i]) / span));
+c = Math.min(c, yMid - Math.max(0, rise)); // ребро не ниже средней линии
+} else {
+c = Math.max(...g.map((n, i) => ys[i] + minLen - (rise * xs[i]) / span));
+c = Math.max(c, yMid - Math.min(0, rise)); // и не выше её
+}
+const G = { up, y0: c, y1: c + rise, notes: g, levels };
+g.forEach((n, i) => { n.group = G; n.stem = { up, end: c + (rise * xs[i]) / span, beamed: true }; });
+}
+const PAD_L = 1.6 * SP;   // от тактовой черты до первого знака такта
+const HEAD_END = 0.6 * SP; // от ключа, ключевых знаков и размера до такта
+const RIGHT = 0.8 * SP;    // поле справа: строка кончается тактовой чертой, а не краем рисунка
+const ACC_GLYPH = { '-1': 'accidentalFlat', 0: 'accidentalNatural', 1: 'accidentalSharp' };
+const HEAD_GLYPH = (len) => (len <= 1 ? 'noteheadWhole' : len === 2 ? 'noteheadHalf' : 'noteheadBlack');
+const REST_GLYPH = (r) => (r.measure || r.len <= 1 ? 'restWhole' : r.len === 2 ? 'restHalf' : r.len === 4 ? 'restQuarter' : r.len === 8 ? 'rest8th' : 'rest16th');
+const spaceFor = (dur) => (2.3 + 2.1 * Math.pow(dur / TPQ, 0.6)) * SP;
+const endSpring = (it) => Math.max(spaceFor(it.dur) - 1.4 * SP, 2 * SP);
+const headW = (it) => GLYPH[it.type === 'note' ? HEAD_GLYPH(it.len) : REST_GLYPH(it)].adv * SP;
+const leadOf = (it) => (it.type === 'note' && it.mark != null ? (GLYPH[ACC_GLYPH[it.mark]].adv + 0.45) * SP : 0);
+const dotsW = (it) => (it.dots ? (0.35 + 0.6 * it.dots) * SP : 0);
+const KEY_SHARPS = [38, 35, 39, 36, 33, 37, 34]; // скрипичный: фа² до² соль² ре² ля¹ ми² си¹
+const KEY_FLATS = [34, 37, 33, 36, 32, 35, 31];  // си¹ ми² ля¹ ре² соль¹ до² фа¹; у басового всё на две октавы ниже
+function keyPositions(clef, fifths) {
+const sh = clef === 'bass' ? -14 : 0;
+return (fifths > 0 ? KEY_SHARPS : KEY_FLATS).slice(0, Math.abs(fifths)).map((d) => d + sh);
+}
+function cancelledKey(clef, from, to) {
+if (!from) return [];
+if (to && Math.sign(to) === Math.sign(from) && Math.abs(to) >= Math.abs(from)) return [];
+const all = keyPositions(clef, from);
+return to && Math.sign(to) === Math.sign(from) ? all.slice(Math.abs(to)) : all;
+}
+const keyStep = (fifths) => (GLYPH[fifths > 0 ? 'accidentalSharp' : 'accidentalFlat'].adv + 0.12) * SP;
+const keyWidth = (fifths) => (fifths ? Math.abs(fifths) * keyStep(fifths) : 0);
+const digitsW = (v) => [...String(v)].reduce((a, ch) => a + GLYPH['timeSig' + ch].adv, 0) * SP;
+const timeWidth = (time) => (time ? Math.max(digitsW(time[0]), digitsW(time[1])) : 0);
+const clefW = (clef) => GLYPH[clef === 'bass' ? 'fClef' : 'gClef'].adv * SP;
+function headerWidth(clef, key, time) {
+let x = 1.5 * SP + clefW(clef);
+if (key) x += 1.0 * SP + keyWidth(key);
+if (time) x += 1.0 * SP + timeWidth(time);
+return x + HEAD_END;
+}
+function changeWidth(clef, m) {
+let w = 0;
+if (m.showKey) {
+const nat = cancelledKey(clef, m.prevKey, m.key).length;
+if (nat) w += nat * (GLYPH.accidentalNatural.adv + 0.12) * SP + 0.3 * SP;
+w += keyWidth(m.key);
+}
+if (m.showTime) w += (w ? 0.8 * SP : 0) + timeWidth(m.time);
+return w ? w + 0.8 * SP : 0;
+}
+function partMetrics(clef, m, from, to, withChange) {
+let fixed = (withChange ? changeWidth(clef, m) : 0) + PAD_L + headW(m.items[from]) / 2, spring = 0;
+for (let i = from; i < to; i++) {
+const it = m.items[i];
+fixed += leadOf(it) + dotsW(it);
+spring += i < to - 1 ? spaceFor(it.dur) : endSpring(it);
+}
+return { fixed, spring };
+}
+function splitOk(m, k, strict) {
+const prev = m.items[k - 1], it = m.items[k];
+const inBeam = prev.type === 'note' && prev.group && it.type === 'note' && it.group === prev.group;
+if (inBeam) return strict === 0;
+return strict === 2 ? it.start % beatOf(m.time) === 0 : true;
+}
+function chooseSplit(m, from, fitFirst, fitRest, fill, minStrict = 0) {
+for (let strict = 2; strict >= minStrict; strict--) {
+const ok = [];
+for (let j = from + 1; j < m.items.length; j++) if (splitOk(m, j, strict) && fitFirst(j)) ok.push(j);
+if (!ok.length) continue;
+const two = ok.filter(fitRest).reverse(); // при равенстве — длиннее первая часть
+if (two.length) return two.reduce((best, j) => (fill(j) < fill(best) - 1e-6 ? j : best));
+return ok[ok.length - 1];
+}
+return -1;
+}
+const F_MIN = 0.85; // строку можно сжать до 85 %, чтобы не переносить такт, которому чуть не хватает места
+function layoutRows(score, W0) {
+const W = W0 - RIGHT, rows = [];
+const fits = (w) => w.fixed + w.spring * F_MIN <= W + 0.01;
+const sum = (a, b) => ({ fixed: a.fixed + b.fixed, spring: a.spring + b.spring });
+const part = (m, from, to, ch) => partMetrics(score.clef, m, from, to, ch);
+const fillOf = (w) => (w.fixed + w.spring) / W;
+let row = null;
+const open = (m, time) => { row = { parts: [], key: m.key, time, fixed: headerWidth(score.clef, m.key, time), spring: 0 }; rows.push(row); };
+const add = (mi, from, to, w) => { row.parts.push({ mi, from, to }); row.fixed += w.fixed; row.spring += w.spring; };
+score.measures.forEach((m, mi) => {
+const n = m.items.length;
+if (!n) return;
+const ch = m.showKey || m.showTime;
+const cont = { fixed: headerWidth(score.clef, m.key, null), spring: 0 };
+const time = m.showTime || mi === 0 ? m.time : null;
+const fresh = { fixed: headerWidth(score.clef, m.key, time), spring: 0 };
+let from = 0;
+if (row && row.parts.length) {
+const whole = part(m, 0, n, ch);
+if (fits(sum(row, whole))) { add(mi, 0, n, whole); return; }
+if (!fits(sum(fresh, part(m, 0, n, false)))) {
+const k = chooseSplit(m, 0, (j) => fits(sum(row, part(m, 0, j, ch))), (j) => fits(sum(cont, part(m, j, n, false))),
+(j) => Math.max(fillOf(sum(row, part(m, 0, j, ch))), fillOf(sum(cont, part(m, j, n, false)))), 2);
+if (k > 0) { add(mi, 0, k, part(m, 0, k, ch)); from = k; open(m, null); }
+}
+}
+if (from === 0) open(m, time);
+for (;;) {
+const w = part(m, from, n, false);
+if (fits(sum(row, w)) || from === n - 1) { add(mi, from, n, w); break; }
+const base = { fixed: row.fixed, spring: row.spring };
+let k = chooseSplit(m, from, (j) => fits(sum(base, part(m, from, j, false))), (j) => fits(sum(cont, part(m, j, n, false))),
+(j) => Math.max(fillOf(sum(base, part(m, from, j, false))), fillOf(sum(cont, part(m, j, n, false)))));
+if (k < 0) k = from + 1; // даже одна доля не влезает — строка сожмётся (см. rowFactor)
+add(mi, from, k, part(m, from, k, false));
+from = k;
+open(m, null);
+}
+});
+rows.forEach((r, i) => {
+r.last = i === rows.length - 1 && !score.random; // строку случайных нот растягиваем всегда
+const ns = r.parts.flatMap((p) => score.measures[p.mi].items.slice(p.from, p.to)).filter((it) => it.type === 'note' && !it.tieFrom);
+r.noteFrom = ns.length ? ns[0].idx : -1;
+r.noteTo = ns.length ? ns[ns.length - 1].idx + 1 : -1;
+});
+return rows;
+}
+const F_MAX = 1.35;
+function rowFactor(row, W0) {
+if (!row.spring) return 1;
+return Math.max(0.7, Math.min(F_MAX, (W0 - RIGHT - row.fixed) / row.spring));
+}
+const rowOfNote = (rows, idx) => Math.max(0, rows.findIndex((r) => r.noteFrom <= idx && idx < r.noteTo));
+function placeRow(score, row, f) {
+const x = new Map(), bars = [], changes = [];
+let cx = headerWidth(score.clef, row.key, row.time);
+row.parts.forEach((p, pi) => {
+const m = score.measures[p.mi];
+const withChange = pi > 0 && p.from === 0 && (m.showKey || m.showTime);
+if (withChange) { changes.push({ x: cx, m }); cx += changeWidth(score.clef, m); }
+const start = cx;
+cx += PAD_L;
+let c = 0;
+for (let i = p.from; i < p.to; i++) {
+const it = m.items[i];
+if (i === p.from) c = cx + leadOf(it) + headW(it) / 2;
+else { const prev = m.items[i - 1]; c += spaceFor(prev.dur) * f + dotsW(prev) + leadOf(it); }
+x.set(it, c);
+}
+const last = m.items[p.to - 1];
+cx = c + dotsW(last) + endSpring(last) * f;
+if (p.to - p.from === 1 && last.type === 'rest' && last.measure) x.set(last, (start + cx) / 2); // пауза на весь такт — посередине
+if (p.to === m.items.length) bars.push({ x: cx, final: p.mi === score.measures.length - 1 });
+});
+return { x, bars, changes, endX: cx };
+}
+function scoreVBox(score, notes = allNotes(score)) {
+let top = -4 * SP, bottom = 0;
+for (const n of notes) {
+const y = yRel(score, n.d);
+let t = y - 0.7 * SP, b = y + 0.7 * SP;
+if (n.mark != null || n.acc) { t = Math.min(t, y - 1.9 * SP); b = Math.max(b, y + 1.5 * SP); }
+if (n.stem) { t = Math.min(t, n.stem.end - 0.3 * SP); b = Math.max(b, n.stem.end + 0.3 * SP); }
+if (n.tie || n.tieFrom) { t = Math.min(t, y - 1.8 * SP); b = Math.max(b, y + 1.8 * SP); }
+top = Math.min(top, t - 2.2 * SP); // подпись-подсказка над нотой
+bottom = Math.max(bottom, b);
+}
+return { top: Math.min(top, -6.4 * SP), bottom: Math.max(bottom + 0.6 * SP, 2 * SP) };
+}
+const f1 = (v) => Math.round(v * 10) / 10;
+function glyph(name, x, y, cls, scale = SP) {
+return `<path class="${cls}" transform="translate(${f1(x)},${f1(y)}) scale(${scale})" d="${GLYPH[name].d}"/>`;
+}
+const rect = (x, y, w, h, cls) => `<rect class="${cls}" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}"/>`;
+const statusOf = (n) => (n.tieFrom ? n.head.status : n.status);
+const clsOf = (n) => { const s = statusOf(n); return s === 'ok' ? 'g-ok' : s === 'miss' ? 'g-miss' : 'g-ink'; };
+function noteHeadSVG(score, n, x, Y, cls) {
+const b = CLEFS[score.clef].bottomD, y = Y(n.d), hw = headW(n) / 2;
+const lw = hw * 2 + 0.8 * SP;
+let s = '';
+for (let p = b - 2; p >= n.d; p -= 2) s += rect(x - lw / 2, Y(p) - 0.8, lw, 1.6, cls + ' lg');
+for (let p = b + 10; p <= n.d; p += 2) s += rect(x - lw / 2, Y(p) - 0.8, lw, 1.6, cls + ' lg');
+if (n.mark != null) {
+const g = ACC_GLYPH[n.mark];
+s += glyph(g, x - hw - 0.32 * SP - GLYPH[g].adv * SP, y, cls);
+}
+s += glyph(HEAD_GLYPH(n.len), x - hw, y, cls);
+if (n.dots) {
+const dy = (n.d - b) % 2 === 0 ? -0.5 * SP : 0; // нота на линейке — точка в промежутке выше
+for (let k = 0; k < n.dots; k++) s += glyph('augmentationDot', x + hw + (0.35 + 0.6 * k) * SP, y + dy, cls);
+}
+return s;
+}
+function stemSVG(n, x, Y, baseY, cls) {
+if (!n.stem || n.stem.beamed) return '';
+const y = Y(n.d), hw = headW(n) / 2, end = baseY + n.stem.end;
+let s;
+if (n.stem.up) {
+const sx = x + hw - 1.2;
+s = rect(sx, end, 1.2, y - 0.17 * SP - end, cls);
+if (n.len >= 8) s += glyph(n.len >= 16 ? 'flag16thUp' : 'flag8thUp', sx, end - 0.4, cls);
+} else {
+const sx = x - hw;
+s = rect(sx, y + 0.17 * SP, 1.2, end - y - 0.17 * SP, cls);
+if (n.len >= 8) s += glyph(n.len >= 16 ? 'flag16thDown' : 'flag8thDown', sx, end + 1.3, cls);
+}
+return s;
+}
+function beamSVG(g, pos, Y, baseY) {
+const notes = g.notes.filter((n) => pos.x.has(n));
+if (notes.length < 2) return '';
+const stemX = (n) => (g.up ? pos.x.get(n) + headW(n) / 2 - 1.2 : pos.x.get(n) - headW(n) / 2);
+const xa = stemX(notes[0]), xb = stemX(notes[notes.length - 1]);
+const ya = baseY + g.y0, yb = baseY + g.y1;
+const beamY = (sx) => ya + ((yb - ya) * (sx - xa)) / (xb - xa || 1);
+const allOk = notes.every((n) => statusOf(n) === 'ok');
+const bcls = allOk ? 'g-ok' : 'g-ink';
+const t = g.up ? BEAM_T : -BEAM_T; // толщина ребра — к головкам нот
+const poly = (x1, y1, x2, y2) => `<path class="${bcls}" d="M${f1(x1)} ${f1(y1)}L${f1(x2)} ${f1(y2)}L${f1(x2)} ${f1(y2 + t)}L${f1(x1)} ${f1(y1 + t)}Z"/>`;
+let s = '';
+for (const n of notes) {
+const sx = stemX(n), y = Y(n.d), e = beamY(sx + 0.6);
+s += g.up ? rect(sx, e, 1.2, y - 0.17 * SP - e, clsOf(n)) : rect(sx, y + 0.17 * SP, 1.2, e - y - 0.17 * SP, clsOf(n));
+}
+s += poly(xa, ya, xb + 1.2, beamY(xb + 1.2));
+if (g.levels > 1) {
+const off = g.up ? BEAM_GAP : -BEAM_GAP;
+const at = (sx) => beamY(sx) + off;
+const lv2 = (n) => n.len >= 16;
+const b2 = (n) => (n.beam && n.beam[1]) || null;
+notes.forEach((n, i) => {
+if (!lv2(n)) return;
+const next = notes[i + 1], prev = notes[i - 1];
+const st = b2(n);
+const joinNext = next && lv2(next) && (st ? st === 'begin' || st === 'continue' : true);
+if (joinNext) { const x1 = stemX(n), x2 = stemX(next) + 1.2; s += poly(x1, at(x1), x2, at(x2)); return; }
+const joinedPrev = prev && lv2(prev) && (b2(prev) ? b2(prev) === 'begin' || b2(prev) === 'continue' : true);
+if (joinedPrev) return;
+const fwd = st === 'forward hook' || (st !== 'backward hook' && i < notes.length - 1);
+const x1 = fwd ? stemX(n) : stemX(n) - 1.1 * SP + 1.2, x2 = fwd ? stemX(n) + 1.1 * SP : stemX(n) + 1.2;
+s += poly(x1, at(x1), x2, at(x2));
+});
+}
+return s;
+}
+function restSVG(r, x, baseY, cls) {
+const g = REST_GLYPH(r), w = GLYPH[g].adv * SP;
+let s = glyph(g, x - w / 2, baseY - (g === 'restWhole' ? 3 : 2) * SP, cls);
+for (let k = 0; k < (r.dots || 0); k++) s += glyph('augmentationDot', x + w / 2 + (0.3 + 0.6 * k) * SP, baseY - 2.5 * SP, cls);
+return s;
+}
+function tieSVG(x1, x2, y, below, cls) {
+if (x2 - x1 < 0.6 * SP) return '';
+const s = below ? 1 : -1, y0 = y + s * 0.55 * SP, h = Math.min(1.1 * SP, 0.25 * SP + 0.12 * (x2 - x1));
+const dx = (x2 - x1) * 0.28;
+return `<path class="${cls}" d="M${f1(x1)} ${f1(y0)}C${f1(x1 + dx)} ${f1(y0 + s * h)} ${f1(x2 - dx)} ${f1(y0 + s * h)} ${f1(x2)} ${f1(y0)}` +
+`C${f1(x2 - dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1 + dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1)} ${f1(y0)}Z"/>`;
+}
+function keySigSVG(clef, fifths, x, Y, cls = 'g-ink') {
+let s = '';
+keyPositions(clef, fifths).forEach((d, i) => { s += glyph(fifths > 0 ? 'accidentalSharp' : 'accidentalFlat', x + i * keyStep(fifths), Y(d), cls); });
+return s;
+}
+function timeSigSVG(time, x, baseY) {
+const w = timeWidth(time);
+const num = (v, cy) => {
+let gx = x + (w - digitsW(v)) / 2, s = '';
+for (const ch of String(v)) { s += glyph('timeSig' + ch, gx, cy, 'g-ink'); gx += GLYPH['timeSig' + ch].adv * SP; }
+return s;
+};
+return num(time[0], baseY - 3 * SP) + num(time[1], baseY - SP);
+}
+function renderRow(score, row, o) {
+const b = CLEFS[score.clef].bottomD, baseY = -o.vb.top, H = o.vb.bottom - o.vb.top;
+const Y = (d) => baseY + ((b - d) * SP) / 2;
+const f = o.f != null ? o.f : rowFactor(row, o.W);
+const pos = placeRow(score, row, f);
+const left = 0.8 * SP;
+const endsBar = pos.bars.length > 0 && Math.abs(pos.bars[pos.bars.length - 1].x - pos.endX) < 0.5;
+const endX = endsBar ? pos.endX : Math.max(pos.endX, o.W - RIGHT);
+const width = Math.max(o.W, endX + RIGHT);
+const staffTop = baseY - 4 * SP;
+let s = `<svg viewBox="0 0 ${f1(width)} ${f1(H)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
+const cur = o.cur && pos.x.has(o.cur) ? o.cur : null;
+if (cur) {
+const x = pos.x.get(cur), yN = Y(cur.d);
+const bw = Math.max(2.6 * SP, Math.min(4.2 * SP, spaceFor(cur.dur) * f * 0.8)) + leadOf(cur);
+const top = Math.min(staffTop - 1.6 * SP, yN - 1.3 * SP), bot = Math.max(baseY + 1.6 * SP, yN + 1.3 * SP);
+s += `<rect class="band" x="${f1(x - bw / 2 - leadOf(cur) / 2)}" y="${f1(top)}" width="${f1(bw)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
+}
+for (let i = 0; i < 5; i++) s += rect(left, baseY - i * SP - 0.6, endX - left, 1.2, 'st');
+const clefX = 1.5 * SP;
+s += score.clef === 'bass' ? glyph('fClef', clefX, baseY - 3 * SP, 'g-ink') : glyph('gClef', clefX, baseY - SP, 'g-ink');
+let hx = clefX + clefW(score.clef);
+if (row.key) { hx += 1.0 * SP; s += keySigSVG(score.clef, row.key, hx, Y); hx += keyWidth(row.key); }
+if (row.time) { hx += 1.0 * SP; s += timeSigSVG(row.time, hx, baseY); }
+for (const c of pos.changes) {
+let cx = c.x;
+if (c.m.showKey) {
+const nat = cancelledKey(score.clef, c.m.prevKey, c.m.key);
+nat.forEach((d, i) => { s += glyph('accidentalNatural', cx + i * (GLYPH.accidentalNatural.adv + 0.12) * SP, Y(d), 'g-ink'); });
+if (nat.length) cx += nat.length * (GLYPH.accidentalNatural.adv + 0.12) * SP + 0.3 * SP;
+s += keySigSVG(score.clef, c.m.key, cx, Y); cx += keyWidth(c.m.key);
+}
+if (c.m.showTime) { if (cx > c.x) cx += 0.8 * SP; s += timeSigSVG(c.m.time, cx, baseY); }
+}
+if (o.bars !== false) {
+for (const bar of pos.bars) {
+if (bar.final || (score.random && bar === pos.bars[pos.bars.length - 1])) {
+s += rect(bar.x - 0.5 * SP, staffTop - 0.6, 0.5 * SP, 4 * SP + 1.2, 'st') + rect(bar.x - 0.9 * SP - 1.4, staffTop - 0.6, 1.4, 4 * SP + 1.2, 'st');
+} else s += rect(bar.x - (bar.x > endX - 1 ? 1.4 : 0.7), staffTop - 0.6, 1.4, 4 * SP + 1.2, 'st'); // в конце строки черта прижата к краю стана
+}
+}
+s += `<g class="${o.fresh ? 'row-in fx' : ''}">`;
+const groups = new Set();
+const content0 = headerWidth(score.clef, row.key, row.time) - HEAD_END;
+for (const p of row.parts) {
+const m = score.measures[p.mi];
+for (let i = p.from; i < p.to; i++) {
+const it = m.items[i], x = pos.x.get(it);
+if (it.type === 'rest') { s += restSVG(it, x, baseY, 'g-ink'); continue; }
+const cls = clsOf(it);
+const a = o.anim && (o.anim.note === it || (it.tieFrom && o.anim.note === it.head)) ? ` fx ${o.anim.type}` : '';
+const data = it.tieFrom ? '' : ` data-i="${it.idx}" data-midi="${it.midi}" data-d="${it.d}"`;
+s += `<g class="n${it === cur ? ' cur' : ''}${a}"${data}>${noteHeadSVG(score, it, x, Y, cls)}${stemSVG(it, x, Y, baseY, cls)}</g>`;
+if (it.group) groups.add(it.group);
+const below = it.stem ? it.stem.up : it.d < b + 4;
+const hw = headW(it) / 2;
+if (it.tie && it.tieTo) {
+const x2 = pos.x.has(it.tieTo) ? pos.x.get(it.tieTo) - headW(it.tieTo) / 2 - 0.15 * SP : endX - 0.3 * SP;
+s += tieSVG(x + hw + 0.15 * SP + dotsW(it), x2, Y(it.d), below, cls);
+}
+if (it.tieFrom && !row.parts.some((q) => { const mm = score.measures[q.mi]; return mm.items.slice(q.from, q.to).some((z) => z.tieTo === it); })) {
+s += tieSVG(content0 + 0.2 * SP, x - hw - 0.15 * SP, Y(it.d), below, cls);
+}
+}
+}
+for (const g of groups) s += beamSVG(g, pos, Y, baseY);
+s += '</g>';
+if (cur && o.hint) {
+let y = Math.min(staffTop, Y(cur.d) - 1.4 * SP);
+if (cur.stem && cur.stem.up) y = Math.min(y, baseY + cur.stem.end - 0.4 * SP);
+s += `<text class="hint-t" x="${f1(pos.x.get(cur))}" y="${f1(y - 0.9 * SP)}" text-anchor="middle">${shortName(cur.d, cur.acc, o.naming)}</text>`;
+}
+if (cur && o.ghost) {
+const gn = makeNote({ d: o.ghost.d, acc: o.ghost.acc, mark: o.ghost.acc || null, len: 4 });
+const y = Y(gn.d);
+if (y > 4 && y < H - 4) {
+const up = gn.d < b + 4;
+gn.stem = { up, end: up ? Math.min(y - baseY - STEM, -2 * SP) : Math.max(y - baseY + STEM, -2 * SP), beamed: false };
+const x = pos.x.get(cur) + (gn.mark != null ? 2.7 : 1.9) * SP;
+s += `<g class="ghost">${noteHeadSVG(score, gn, x, Y, 'g-bad')}${stemSVG(gn, x, Y, baseY, 'g-bad')}</g>`;
+}
+}
+return s + '</svg>';
+}
+function staffSVG(clef, list) {
+const items = list.map((c) => makeNote({ d: c.d, acc: c.acc || 0, midi: midiOf(c.d, c.acc || 0), clef, len: c.len || 4, dur: durOf(c.len || 4), mark: c.acc ? c.acc : null }));
+const score = { clef, measures: [{ time: null, key: 0, prevKey: 0, showTime: false, showKey: false, full: 4 * TPQ, items }], notes: items, random: true };
+prepareScore(score);
+const row = { parts: [{ mi: 0, from: 0, to: items.length }], key: 0, time: null, last: true };
+const m = partMetrics(clef, score.measures[0], 0, items.length, false);
+const W = headerWidth(clef, 0, null) + m.fixed + m.spring;
+row.fixed = W - m.spring; row.spring = m.spring;
+const vb = scoreVBox(score, items);
+vb.top = Math.min(-4.8 * SP, vb.top + 1.8 * SP); // без места для подсказки
+return renderRow(score, row, { W, vb, f: 1, bars: false });
+}
+const A4 = 440;
+const midiToFreq = (m) => A4 * Math.pow(2, (m - 69) / 12);
+const freqToMidiF = (f) => 69 + 12 * Math.log2(f / A4);
+/* YIN: x — буфер, off — начало окна, W — длина окна.
+Возвращает период (в отсчётах, с дробной частью) и апериодичность (0 — чистый тон). */
+function yinDetect(x, off, W, tauMin, tauMax, d, cmnd, thr) {
+for (let tau = 1; tau <= tauMax; tau++) {
+let s = 0;
+const o2 = off + tau;
+for (let j = 0; j < W; j++) {
+const v = x[off + j] - x[o2 + j];
+s += v * v;
+}
+d[tau] = s;
+}
+cmnd[0] = 1;
+let run = 0;
+for (let tau = 1; tau <= tauMax; tau++) {
+run += d[tau];
+cmnd[tau] = run > 0 ? (d[tau] * tau) / run : 1;
+}
+const localMin = (t) => { while (t + 1 <= tauMax && cmnd[t + 1] < cmnd[t]) t++; return t; };
+let tau = -1;
+for (let t = tauMin; t <= tauMax; t++) {
+if (cmnd[t] < thr) { tau = localMin(t); break; }
+}
+if (tau < 0) {
+let m = Infinity;
+for (let t = tauMin; t <= tauMax; t++) if (cmnd[t] < m) { m = cmnd[t]; tau = t; }
+for (let k = 4; k >= 2; k--) {
+const c = tau / k;
+if (c < tauMin) continue;
+const r = Math.max(2, Math.round(c * 0.04));
+let bt = -1, bv = Infinity;
+for (let t = Math.max(tauMin, Math.floor(c - r)); t <= Math.min(tauMax, Math.ceil(c + r)); t++) {
+if (cmnd[t] < bv) { bv = cmnd[t]; bt = t; }
+}
+if (bt > 0 && bv < m + 0.12 && bv < 0.5) { tau = bt; break; }
+}
+}
+let better = tau;
+if (tau > 1 && tau < tauMax) {
+const a = cmnd[tau - 1], b = cmnd[tau], c = cmnd[tau + 1];
+const den = a - 2 * b + c;
+if (den !== 0) better = tau + (a - c) / (2 * den);
+}
+return { tau: better, ap: cmnd[tau] };
+}
+function makeSpectrum(N) {
+const bits = Math.log2(N) | 0;
+const rev = new Uint32Array(N);
+for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); rev[i] = r; }
+const win = new Float32Array(N);
+for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1));
+const cos = new Float32Array(N / 2), sin = new Float32Array(N / 2);
+for (let i = 0; i < N / 2; i++) { cos[i] = Math.cos((2 * Math.PI * i) / N); sin[i] = -Math.sin((2 * Math.PI * i) / N); }
+const re = new Float32Array(N), im = new Float32Array(N);
+return (x, out) => {
+for (let i = 0; i < N; i++) { re[rev[i]] = x[i] * win[i]; im[rev[i]] = 0; }
+for (let size = 2; size <= N; size <<= 1) {
+const half = size >> 1, step = N / size;
+for (let i = 0; i < N; i += size) {
+for (let j = 0, k = 0; j < half; j++, k += step) {
+const a = i + j, b = a + half;
+const tr = re[b] * cos[k] - im[b] * sin[k];
+const ti = re[b] * sin[k] + im[b] * cos[k];
+re[b] = re[a] - tr; im[b] = im[a] - ti;
+re[a] += tr; im[a] += ti;
+}
+}
+}
+for (let i = 0; i < N / 2; i++) out[i] = Math.hypot(re[i], im[i]);
+return out;
+};
+}
+function harmonicPick(Y, binHz, lo, hi) {
+const nb = Y.length;
+const peak = (f, tol) => {
+const b0 = Math.max(1, Math.floor((f * (1 - tol)) / binHz)), b1 = Math.min(nb - 1, Math.max(b0 + 1, Math.ceil((f * (1 + tol)) / binHz)));
+let m = 0; for (let b = b0; b <= b1; b++) if (Y[b] > m) m = Y[b];
+return m;
+};
+let best = null, bestS = 0, second = 0;
+for (let m = lo; m <= hi; m++) {
+const f0 = midiToFreq(m);
+let s = 0, half = 0, third = 0;
+for (let k = 1; k <= 12; k++) {
+const f = k * f0;
+if (f > 5000) break;
+const tol = 0.015 + 0.002 * k, w = 1 / Math.pow(k, 0.6);
+s += w * peak(f, tol);
+half += w * peak((k - 0.5) * f0, tol);
+third += w * 0.5 * (peak((k - 1 / 3) * f0, tol) + peak((k - 2 / 3) * f0, tol));
+}
+const score = s - 0.7 * Math.max(half, third);
+if (score > bestS) { second = Math.max(second, bestS); bestS = score; best = m; }
+else if (score > second) second = score;
+}
+return { midi: best, score: bestS };
+}
+/* Слушатель: получает последние отсчёты с микрофона на каждом кадре,
+находит начало нового звука (удар по клавише) и определяет ноту. */
+class PitchListener {
+constructor(sampleRate, bufferLength, onEvent) {
+this.sr = sampleRate;
+this.dec = sampleRate >= 32000 ? 2 : 1;
+this.dsr = sampleRate / this.dec;
+this.maxDec = Math.floor(bufferLength / this.dec);
+this.dbuf = new Float32Array(this.maxDec);
+this.d = new Float32Array(this.maxDec);
+this.cmnd = new Float32Array(this.maxDec);
+this.onEvent = onEvent;
+this.N = bufferLength;
+this.spectrum = makeSpectrum(bufferLength);
+this.prevBuf = new Float32Array(bufferLength);
+this.specPre = new Float32Array(bufferLength / 2);
+this.specCur = new Float32Array(bufferLength / 2);
+this.specNew = new Float32Array(bufferLength / 2);
+this.gateDb = -50;
+this.floorDb = -90;          // шумовой фон: минимум громкости за последние ~3 с
+this.floorBins = new Array(30).fill(0);
+this.floorBinT = 0;
+this.floorIdx = 0;
+this.env = 0;
+this.lastT = null;
+this.lastOnset = -1e9;
+this.collect = null;
+this.stableMidi = null;
+this.stableSince = 0;
+this.lastEmitted = null;
+this.silentSince = 0;
+this.setRange(36, 96);
+}
+setRange(lowMidi, highMidi) {
+const fmin = Math.max(45, midiToFreq(lowMidi - 5) * 0.97);
+const fmax = Math.min(this.dsr / 4, midiToFreq(highMidi + 12) * 1.06);
+this.tauMax = Math.min(Math.ceil(this.dsr / fmin), Math.floor(this.maxDec / 3));
+this.tauMin = Math.max(2, Math.floor(this.dsr / fmax));
+this.W = Math.max(256, Math.min(3 * this.tauMax, this.maxDec - this.tauMax - 1));
+this.windowMs = ((this.W + this.tauMax) / this.dsr) * 1000;
+this.settleMs = Math.max(30, this.windowMs * 0.85);
+this.candLo = Math.max(21, lowMidi - 5);
+this.candHi = Math.min(108, highMidi + 12);
+}
+process(buf, t) {
+const n = buf.length;
+const dt = this.lastT == null ? 16.7 : Math.max(1, t - this.lastT);
+this.lastT = t;
+if (this.startT == null) this.startT = t;
+const warm = t - this.startT < 600; // первые 0,6 с только слушаем фон
+const fastN = Math.min(512, n);
+let s = 0;
+for (let i = n - fastN; i < n; i++) s += buf[i] * buf[i];
+const rms = Math.sqrt(s / fastN);
+const db = 20 * Math.log10(rms + 1e-9);
+const gateDb = Math.max(this.gateDb, this.floorDb + 8);
+const gate = Math.pow(10, gateDb / 20);
+const onset = !warm && rms > gate && rms > this.env * 1.4 + gate * 0.25 && t - this.lastOnset > 90;
+this.env = Math.max(rms, this.env * Math.pow(0.93, dt / 16.7));
+if (onset) {
+this.lastOnset = t;
+this.collect = { t0: t, votes: new Map(), peak: rms };
+this.spectrum(this.prevBuf, this.specPre);
+}
+let midi = null, cents = 0, valid = false, ap = 1;
+if (rms > gate * 0.6) {
+const need = this.W + this.tauMax + 1;
+const start = n - need * this.dec;
+const dbuf = this.dbuf;
+if (this.dec === 2) {
+for (let i = 0; i < need; i++) dbuf[i] = 0.5 * (buf[start + 2 * i] + buf[start + 2 * i + 1]);
+} else {
+for (let i = 0; i < need; i++) dbuf[i] = buf[start + i];
+}
+const r = yinDetect(dbuf, 0, this.W, this.tauMin, this.tauMax, this.d, this.cmnd, 0.15);
+if (r.tau > 0) {
+const f = this.dsr / r.tau;
+const mf = freqToMidiF(f);
+midi = Math.round(mf);
+cents = Math.round((mf - midi) * 100);
+ap = r.ap;
+valid = r.ap < 0.25 && rms > gate;
+}
+}
+if (warm || (t - this.lastOnset > 1200 && ap > 0.3)) {
+if (!this.floorBinT) { this.floorBins.fill(db); this.floorBinT = t; }
+if (t - this.floorBinT >= 100) { this.floorBinT = t; this.floorIdx = (this.floorIdx + 1) % this.floorBins.length; this.floorBins[this.floorIdx] = db; }
+else if (db < this.floorBins[this.floorIdx]) this.floorBins[this.floorIdx] = db;
+this.floorDb = Math.min.apply(null, this.floorBins);
+}
+this.onEvent('level', { rms, db, t, gateDb, floorDb: this.floorDb, midi: valid ? midi : null, cents });
+if (this.collect) {
+const c = this.collect;
+const age = t - c.t0;
+if (rms > c.peak) c.peak = rms;
+if (age >= this.settleMs && rms > gate) {
+let vm = this.newNote(buf);
+if (vm != null && midi != null && ap < 0.2 && Math.abs(midi - vm) <= 2) vm = midi;
+if (vm != null) {
+const v = (c.votes.get(vm) || 0) + 1;
+c.votes.set(vm, v);
+if (v >= 3) this.emit(vm, 'onset', c.peak > gate * 2);
+}
+}
+if (this.collect && age > 420) {
+let best = null, bv = 0;
+c.votes.forEach((v, m) => { if (v > bv) { bv = v; best = m; } });
+if (bv >= 2) this.emit(best, 'onset', false);
+this.collect = null;
+}
+}
+if (valid && !warm) {
+if (midi !== this.stableMidi) { this.stableMidi = midi; this.stableSince = t; }
+else if (!this.collect && t - this.stableSince >= 130 && midi !== this.lastEmitted &&
+(this.lastEmitted == null || Math.abs(midi - this.lastEmitted) % 12 !== 0)) {
+this.emit(midi, 'legato');
+}
+} else {
+this.stableMidi = null;
+}
+this.prevBuf.set(buf);
+if (rms < gate) {
+if (!this.silentSince) this.silentSince = t;
+if (t - this.silentSince > 200) this.lastEmitted = null;
+} else this.silentSince = 0;
+}
+newNote(buf) {
+const cur = this.spectrum(buf, this.specCur), pre = this.specPre, Y = this.specNew;
+let eNew = 0, eCur = 0;
+for (let i = 0; i < Y.length; i++) {
+const v = cur[i] - pre[i];
+Y[i] = v > 0 ? Math.sqrt(v) : 0;
+eNew += v > 0 ? v : 0; eCur += cur[i];
+}
+if (eNew < eCur * 0.12) return null;
+const r = harmonicPick(Y, this.sr / this.N, this.candLo, this.candHi);
+return r.midi;
+}
+emit(midi, via, strong = false) {
+this.collect = null;
+this.lastEmitted = midi;
+this.stableMidi = midi;
+this.onEvent('note', { midi, via, strong });
+}
+}
+const store = {
+get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
+set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* хранилище недоступно */ } },
+};
+const SETTINGS_KEY = 'slista.settings.v2';
+let saved = store.get(SETTINGS_KEY, null);
+if (!saved || typeof saved !== 'object') {
+const v1 = store.get('slista.settings.v1', null); // FR-RND-04: перенос настроек версии 1
+saved = migrateSettings(v1);
+if (v1) store.set(SETTINGS_KEY, Object.assign({}, SETTINGS_DEFAULTS, saved));
+}
+const S = Object.assign({}, SETTINGS_DEFAULTS, saved);
+const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v)) || 0));
+if (!CLEFS[S.clef]) S.clef = 'treble';
+S.below = clampInt(S.below, 0, 3);
+S.above = clampInt(S.above, 0, 3);
+const save = () => store.set(SETTINGS_KEY, S);
 let STATS = store.get('slista.stats.v1', null);
 if (!STATS || typeof STATS !== 'object' || !STATS.notes) STATS = { notes: {}, n: 0, first: 0 };
 const session = { n: 0, first: 0, streak: 0, best: 0, ms: 0 };
-
-const lowD = () => Math.min(S.lo, S.hi);
-const highD = () => Math.max(S.lo, S.hi);
-const clefFor = (midi) => (S.clef === 'grand' ? (midi < 60 ? 'bass' : 'treble') : S.clef);
-const presetId = () => { const p = PRESETS.find((p) => p.clef === S.clef && p.lo === lowD() && p.hi === highD()); return p ? p.id : null; };
-
-/* ---------- Генерация нот ---------- */
-function candidates() {
-  const lo = lowD(), hi = highD(), loM = midiOf(lo), hiM = midiOf(hi), out = [];
-  for (let d = lo; d <= hi; d++) {
-    const li = d % 7;
-    const push = (acc, w) => {
-      const midi = midiOf(d, acc);
-      if (midi < loM || midi > hiM) return;
-      out.push({ d, acc, midi, clef: clefFor(midi), w });
-    };
-    push(0, 1);
-    if (S.acc) {
-      if ([0, 1, 3, 4, 5].includes(li)) push(1, 0.45);
-      if ([1, 2, 4, 5, 6].includes(li)) push(-1, 0.45);
-    }
-  }
-  return out;
+const nm = (d, acc) => shortName(d, acc, S.naming);
+const fn = (d, acc) => fullName(d, acc, S.naming);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const linesLabel = (below, above) => (below || above ? `линейки: ${below} снизу, ${above} сверху` : 'без добавочных линеек');
+const clefLabel = (clef) => CLEFS[clef].name.toLowerCase() + ' ключ';
+const $ = (id) => document.getElementById(id);
+const SCREENS = { home: 'homeScreen', random: 'randomScreen', pieces: 'piecesScreen', play: 'playScreen' };
+let screen = 'home', afterPop = null;
+const hashScreen = () => { const h = location.hash.slice(1); return SCREENS[h] ? h : 'home'; };
+function show(name) {
+const was = screen;
+screen = name;
+for (const [k, id] of Object.entries(SCREENS)) $(id).hidden = k !== name;
+if (was === 'play' && name !== 'play') leavePlay();
+if (name === 'home') renderHome();
+if (name === 'random') renderSetup();
+if (name === 'pieces') renderPieces();
+window.scrollTo(0, 0);
+}
+function go(name) {
+history.pushState({ s: name }, '', '#' + name);
+show(name);
+}
+window.addEventListener('popstate', (e) => {
+const st = e.state && SCREENS[e.state.s] ? e.state : { s: hashScreen() };
+if (openPanelEl && !st.panel) hidePanel();
+if (st.s !== screen) { show(st.s); if (st.s === 'play' && !ex) continueLast(false); } // «Вперёд» в браузере — снова в тренажёр
+if (afterPop) { const f = afterPop; afterPop = null; f(); }
+});
+document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => history.back()));
+document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+function renderHome() {
+const l = S.last;
+$('continueBtn').hidden = !l;
+if (!l) return;
+if (l.mode === 'piece') {
+$('continueTitle').textContent = l.title || 'Пьеса';
+$('continueSub').textContent = 'Пьеса · ' + clefLabel(l.clef);
+} else {
+$('continueTitle').textContent = 'Случайные ноты';
+$('continueSub').textContent = CLEFS[S.clef].name + ' ключ · ' + linesLabel(S.below, S.above);
+}
+}
+function continueLast(push = true) {
+const l = S.last;
+if (!l) { history.replaceState({ s: 'home' }, '', location.pathname + location.search); show('home'); return; }
+if (push) { const parent = l.mode === 'piece' ? 'pieces' : 'random'; history.pushState({ s: parent }, '', '#' + parent); go('play'); }
+if (l.mode === 'piece') openPiece(l.id, l.clef, false);
+else startRandom();
+}
+$('continueBtn').addEventListener('click', () => continueLast(true));
+function renderSetup() {
+document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
+document.querySelectorAll('input[name="below"]').forEach((r) => { r.checked = +r.value === S.below; });
+document.querySelectorAll('input[name="above"]').forEach((r) => { r.checked = +r.value === S.above; });
+$('optAdaptive').checked = S.adaptive;
+const r = ledgerRange(S.clef, S.below, S.above);
+$('rangeSvg').innerHTML = staffSVG(S.clef, [{ d: r.lo, len: 1 }, { d: r.hi, len: 1 }]);
+$('rangeText').innerHTML = `от <b>${nm(r.lo)}</b> до <b>${nm(r.hi)}</b> · ${r.hi - r.lo + 1} нот`;
+}
+for (const name of ['clef', 'below', 'above']) {
+document.querySelectorAll(`input[name="${name}"]`).forEach((inp) => inp.addEventListener('change', () => {
+S[name] = name === 'clef' ? inp.value : +inp.value;
+save();
+renderSetup();
+}));
+}
+$('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; save(); });
+$('startRandom').addEventListener('click', () => {
+S.last = { mode: 'random' };
+save();
+go('play');
+startRandom();
+});
+let piecesIndex = null;
+const pieceCache = new Map();
+const fileMsg = 'Пьесы загружаются с сайта. Откройте приложение по адресу seliverstov-maxim.github.io/s-lista — случайные ноты работают и так.';
+async function fetchJSON(url) {
+const r = await fetch(url, { cache: 'no-cache' });
+if (!r.ok) throw new Error('HTTP ' + r.status);
+return r.json();
+}
+async function renderPieces() {
+const list = $('piecesList'), msg = $('piecesMsg');
+if (!piecesIndex) {
+msg.textContent = 'Загружаю список…';
+list.innerHTML = '';
+try { piecesIndex = (await fetchJSON('pieces/index.json')).pieces || []; } catch (e) {
+msg.textContent = location.protocol === 'file:' ? fileMsg : 'Не удалось загрузить список пьес. Проверьте интернет и откройте раздел ещё раз.';
+return;
+}
+}
+msg.textContent = piecesIndex.length ? 'Выберите пьесу и ключ: скрипичный — для правой руки, басовый — для левой.' : 'Пьес пока нет.';
+list.innerHTML = piecesIndex.map((p) => `<li class="piece"><div class="piece-t"><b>${esc(p.title)}</b><span>${esc(p.composer || '')}</span></div>` +
+`<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) =>
+`<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}">${CLEFS[c].name}</button>`).join('')}</div></li>`).join('');
+}
+$('piecesList').addEventListener('click', (e) => {
+const b = e.target.closest('[data-piece]');
+if (b) openPiece(b.dataset.piece, b.dataset.clef, true);
+});
+async function openPiece(id, clef, navigate) {
+let piece = pieceCache.get(id);
+if (!piece) {
+if (navigate) $('piecesMsg').textContent = 'Загружаю пьесу…';
+try { piece = await fetchJSON(`pieces/${encodeURIComponent(id)}.json`); pieceCache.set(id, piece); } catch (e) {
+const text = location.protocol === 'file:' ? fileMsg : 'Не удалось загрузить пьесу. Проверьте интернет и попробуйте ещё раз.';
+if (navigate) { $('piecesMsg').textContent = text; return; }
+history.replaceState({ s: 'pieces' }, '', '#pieces'); show('pieces'); $('piecesMsg').textContent = text;
+return;
+}
+}
+if (!piece.shift || piece.shift[clef] == null) clef = piece.shift && piece.shift.treble != null ? 'treble' : 'bass';
+S.last = { mode: 'piece', id, clef, title: piece.title };
+save();
+if (navigate) go('play');
+startPiece(piece, clef);
+}
+let ex = null, lastNote = null, ghost = null, ghostTimer = 0, anim = null, fresh = false, busy = false, paused = false;
+let micState = 'off';
+let midiNames = [], midiSeen = false;
+const minScale = () => (ex && ex.mode === 'piece' ? 1.1 : 1.25);
+function sheetUnits() {
+const w = Math.max(200, $('sheet').clientWidth - 16);
+return w / Math.max(minScale(), Math.min(1.7, w / 500));
 }
 const keyOf = (n) => `${n.clef}:${n.d}:${n.acc}`;
 function difficulty(n) {
-  const st = STATS.notes[keyOf(n)];
-  if (!st || !st.n) return 1.4;
-  const err = (st.e + 0.3) / (st.n + 1), avg = st.ms / st.n;
-  return 0.6 + 3 * err + Math.min(1.5, Math.max(0, (avg - 1200) / 1500));
+const st = STATS.notes[keyOf(n)];
+if (!st || !st.n) return 1.4;
+const err = (st.e + 0.3) / (st.n + 1), avg = st.ms / st.n;
+return 0.6 + 3 * err + Math.min(1.5, Math.max(0, (avg - 1200) / 1500));
 }
-function pickNote(prev, cands) {
-  let list = cands.filter((c) => !prev || c.midi !== prev.midi);
-  if (!list.length) list = cands;
-  if (S.motion === 'step' && prev) {
-    const near = list.filter((c) => Math.abs(c.d - prev.d) <= 4);
-    if (near.length) list = near;
-  }
-  const ws = list.map((c) => c.w * (S.adaptive ? difficulty(c) : 1));
-  let r = Math.random() * ws.reduce((a, b) => a + b, 0);
-  for (let i = 0; i < list.length; i++) { r -= ws[i]; if (r <= 0) return list[i]; }
-  return list[list.length - 1];
+function randomCount(W) {
+const r = ledgerRange(S.clef, S.below, S.above), mid = Math.round((r.lo + r.hi) / 2);
+for (let k = 8; k > 3; k--) {
+const rows = layoutRows(randomScore(Array.from({ length: k }, () => ({ d: mid })), S.clef), W);
+if (rows.length === 1 && rowFactor(rows[0], W) >= 1) return k;
 }
-
-/* ---------- Геометрия нотного стана ---------- */
-const SP = 10; // межстрочный интервал в единицах SVG
-function geometry(n, clefMode, lo, hi) {
-  const need = (clef, loD, hiD) => {
-    const b = CLEFS[clef].bottomD;
-    return { above: Math.max(3.4, (hiD - (b + 8)) / 2 + 2.9), below: Math.max(2.4, (b - loD) / 2 + 1.6) };
-  };
-  let staves, height;
-  if (clefMode === 'grand') {
-    const t = need('treble', 30, Math.max(hi, 38));
-    const b = need('bass', Math.min(lo, 18), 26);
-    const trebleBottom = (t.above + 4) * SP;
-    const bassBottom = trebleBottom + (6.5 + 4) * SP;
-    staves = [{ clef: 'treble', bottomY: trebleBottom }, { clef: 'bass', bottomY: bassBottom }];
-    height = bassBottom + b.below * SP;
-  } else {
-    const r = need(clefMode, lo, hi);
-    staves = [{ clef: clefMode, bottomY: (r.above + 4) * SP }];
-    height = (r.above + 4 + r.below) * SP;
-  }
-  const grand = clefMode === 'grand';
-  const left = grand ? 2.2 * SP : 0.8 * SP;
-  const clefX = left + 0.7 * SP;
-  const firstX = clefX + 2.7 * SP + 2.9 * SP;
-  const slot = 4.4 * SP, barGap = 1.2 * SP;
-  const xs = [], bars = [];
-  for (let i = 0; i < n; i++) xs.push(firstX + i * slot + Math.floor(i / 4) * barGap);
-  for (let g = 4; g < n; g += 4) bars.push((xs[g - 1] + xs[g]) / 2);
-  const endX = xs[n - 1] + slot * 0.62;
-  return { staves, height, width: endX + 0.8 * SP, xs, bars, left, clefX, endX, slot, grand };
+return 3;
 }
-const staffOf = (G, clef) => G.staves.find((s) => s.clef === clef) || G.staves[0];
-const yOf = (d, st) => st.bottomY - (d - CLEFS[st.clef].bottomD) * (SP / 2);
-const f1 = (v) => Math.round(v * 10) / 10;
-
-function glyph(name, x, y, cls, scale = SP) {
-  return `<path class="${cls}" transform="translate(${f1(x)},${f1(y)}) scale(${scale})" d="${GLYPH[name].d}"/>`;
+function startRandom() {
+const r = ledgerRange(S.clef, S.below, S.above);
+ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: null };
+ex.W = sheetUnits();
+ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
+startExercise();
+newRandomRow(false);
+renderAll();
 }
-function noteSVG(n, x, st, cls, showAcc) {
-  const b = CLEFS[st.clef].bottomD, y = yOf(n.d, st), hw = 0.59 * SP, lw = 2.1 * SP;
-  let s = '';
-  for (let p = b - 2; p >= n.d; p -= 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
-  for (let p = b + 10; p <= n.d; p += 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
-  if (showAcc != null) {
-    const g = showAcc > 0 ? 'accidentalSharp' : showAcc < 0 ? 'accidentalFlat' : 'accidentalNatural';
-    s += glyph(g, x - hw - 0.32 * SP - GLYPH[g].adv * SP, y, cls);
-  }
-  s += glyph('noteheadBlack', x - hw, y, cls);
-  const mid = b + 4, yMid = yOf(mid, st), len = 3.5 * SP;
-  if (n.d < mid) {
-    const top = Math.min(y - len, yMid);
-    s += `<rect class="${cls}" x="${f1(x + hw - 1.2)}" y="${f1(top)}" width="1.2" height="${f1(y - 0.17 * SP - top)}"/>`;
-  } else {
-    const bot = Math.max(y + len, yMid);
-    s += `<rect class="${cls}" x="${f1(x - hw)}" y="${f1(y + 0.17 * SP)}" width="1.2" height="${f1(bot - y - 0.17 * SP)}"/>`;
-  }
-  return s;
+function newRandomRow(regen) {
+const cands = candidates(S.clef, S.below, S.above);
+const before = regen ? ex.prev : lastNote;
+let prev = before;
+const list = [];
+for (let i = randomCount(ex.W); i > 0; i--) { prev = pickNote(prev, cands, S.adaptive ? difficulty : null); list.push(prev); }
+lastNote = prev;
+ex.prev = before;
+ex.score = randomScore(list, S.clef);
+ex.rows = layoutRows(ex.score, ex.W);
+ex.row = 0;
+ex.cur = 0;
+ex.score.notes[0].startAt = performance.now();
+fresh = true;
 }
-function staffFrame(G) {
-  let s = '';
-  const top = G.staves[0].bottomY - 4 * SP, bottom = G.staves[G.staves.length - 1].bottomY;
-  for (const st of G.staves) {
-    for (let i = 0; i < 5; i++) s += `<rect class="st" x="${f1(G.left)}" y="${f1(st.bottomY - i * SP - 0.6)}" width="${f1(G.endX - G.left)}" height="1.2"/>`;
-    if (st.clef === 'treble') s += glyph('gClef', G.clefX, st.bottomY - SP, 'g-ink');
-    else s += glyph('fClef', G.clefX, st.bottomY - 3 * SP, 'g-ink');
-  }
-  if (G.grand) {
-    const k = (bottom - top) / 3.988;
-    s += glyph('brace', G.left - 0.35 * SP - 0.33 * k, bottom, 'g-ink', f1(k));
-    s += `<rect class="st" x="${f1(G.left)}" y="${f1(top - 0.6)}" width="1.4" height="${f1(bottom - top + 1.2)}"/>`;
-  }
-  const bar = (x, w) => {
-    if (G.grand) return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(bottom - top + 1.2)}"/>`;
-    return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(4 * SP + 1.2)}"/>`;
-  };
-  for (const x of G.bars) s += bar(x - 0.6, 1.2);
-  s += bar(G.endX - 1.4, 1.4);
-  return s;
+function startPiece(piece, clef) {
+const score = buildScore(piece, clef);
+const midis = score.notes.map((n) => n.midi);
+ex = { mode: 'piece', clef, piece, score, lo: Math.min(...midis), hi: Math.max(...midis), elapsed: 0 };
+ex.W = sheetUnits();
+ex.vb = scoreVBox(score);
+ex.rows = layoutRows(score, ex.W);
+ex.cur = 0;
+ex.row = 0;
+startExercise();
+score.notes[0].startAt = performance.now();
+fresh = true;
+renderAll();
+if (ex.rows[0].noteFrom < 0) { busy = true; const e = ex; setTimeout(() => { if (ex === e) nextRow(); }, 1400); }
 }
-
-/* ---------- Состояние упражнения ---------- */
-let row = null, lastNote = null, ghost = null, ghostTimer = 0, anim = null, rowFresh = false, busy = false, paused = false;
-let micState = 'off';
-let midiNames = [], midiSeen = false;
-
-function autoCount() {
-  if (S.perRow === 'one') return 1;
-  const w = $('sheet').clientWidth - 16;
-  const lead = S.clef === 'grand' ? 111 : 97;
-  const n = Math.floor((w / 1.1 - lead) / 44);
-  return Math.max(3, Math.min(8, n));
+function startExercise() {
+busy = false; ghost = null; anim = null; lastDone = null;
+clearTimeout(ghostTimer);
+buildKeys(ex.lo, ex.hi);
+applyListener();
+setHintKey(null);
+lastW = $('sheet').clientWidth;
 }
-// regen — перестроить ещё не начатую строку (например, при повороте экрана):
-// тогда первая нота сравнивается с нотой, сыгранной перед этой строкой, а не с концом выброшенной строки
-function newRow(regen = false) {
-  const cands = candidates();
-  const n = autoCount();
-  const notes = [];
-  const before = regen && row ? row.prev : lastNote;
-  let prev = before;
-  for (let i = 0; i < n; i++) {
-    const c = pickNote(prev, cands);
-    notes.push({ d: c.d, acc: c.acc, midi: c.midi, clef: c.clef, status: 'todo', errors: 0, hinted: false, startAt: 0 });
-    prev = c;
-  }
-  lastNote = prev;
-  row = { notes, idx: 0, prev: before };
-  notes[0].startAt = performance.now();
-  rowFresh = true;
-  ghost = null;
-  setHintKey(null);
+function leavePlay() {
+ex = null;
+busy = false;
+clearTimeout(ghostTimer);
+setHeard(null);
 }
-
-/* ---------- Отрисовка ---------- */
-const $ = (id) => document.getElementById(id);
-
+const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 function renderScore() {
-  if (!row) return;
-  const n = row.notes.length;
-  const G = geometry(n, S.clef, lowD(), highD());
-  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
-  // подсветка текущей ноты (под линиями стана)
-  if (row.idx < n) {
-    const x = G.xs[row.idx];
-    const top = G.staves[0].bottomY - 4 * SP - 1.6 * SP, bot = G.staves[G.staves.length - 1].bottomY + 1.6 * SP;
-    s += `<rect class="band" x="${f1(x - G.slot / 2 + 0.35 * SP)}" y="${f1(top)}" width="${f1(G.slot - 0.7 * SP)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
-  }
-  s += staffFrame(G);
-  s += `<g class="${rowFresh ? 'row-in fx' : ''}">`;
-  let state = {};
-  row.notes.forEach((note, i) => {
-    if (i % 4 === 0) state = {};
-    const st = staffOf(G, note.clef);
-    const k = note.clef + note.d;
-    const cur = state[k] || 0;
-    const showAcc = note.acc !== cur ? note.acc : null;
-    state[k] = note.acc;
-    const cls = note.status === 'ok' ? 'g-ok' : note.status === 'miss' ? 'g-miss' : 'g-ink';
-    const a = anim && anim.idx === i ? ` fx ${anim.type}` : '';
-    s += `<g class="${a}">${noteSVG(note, G.xs[i], st, cls, showAcc)}</g>`;
-  });
-  s += '</g>';
-  // подсказка
-  if (row.idx < n && row.notes[row.idx].hinted) {
-    const note = row.notes[row.idx], st = staffOf(G, note.clef);
-    const y = Math.min(st.bottomY - 4 * SP, yOf(note.d, st) - 1.4 * SP) - 0.9 * SP;
-    s += `<text class="hint-t" x="${f1(G.xs[row.idx])}" y="${f1(y)}" text-anchor="middle">${shortName(note.d, note.acc)}</text>`;
-  }
-  // сыгранная неверная нота — «призрак» рядом с текущей
-  if (ghost && row.idx < n) {
-    const st = staffOf(G, ghost.clef);
-    const y = yOf(ghost.d, st);
-    if (y > 4 && y < G.height - 4) {
-      const x = G.xs[row.idx] + (ghost.acc ? 2.7 : 1.9) * SP;
-      s += `<g class="ghost">${noteSVG(ghost, x, st, 'g-bad', ghost.acc || null)}</g>`;
-    }
-  }
-  s += '</svg>';
-  $('score').innerHTML = s;
-  anim = null;
-  rowFresh = false;
+if (!ex || !ex.score) return;
+const row = ex.rows[ex.row], cur = busy ? null : curNote();
+$('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
+anim = null;
+fresh = false;
 }
-
 const fmtSec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' с';
+const fmtDur = (ms) => { const s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
-
 function renderStats() {
-  $('stAcc').textContent = pct(session.first, session.n);
-  $('stStreak').textContent = session.streak;
-  $('stTime').textContent = session.n ? fmtSec(session.ms / session.n) : '—';
-  $('stCount').textContent = session.n;
+$('stAcc').textContent = pct(session.first, session.n);
+$('stStreak').textContent = session.streak;
+$('stTime').textContent = session.n ? fmtSec(session.ms / session.n) : '—';
+$('stCount').textContent = session.n;
 }
-function renderLevel() {
-  const p = PRESETS.find((p) => p.id === presetId());
-  $('levelName').textContent = p ? p.name : 'Свой уровень';
-  const clefName = S.clef === 'grand' ? 'Оба ключа' : CLEFS[S.clef].name + ' ключ';
-  $('levelRange').textContent = (p ? '' : clefName + ' · ') + shortName(lowD()) + ' — ' + shortName(highD()) + (S.acc ? ' · ♯ ♭' : '');
+function renderTitle() {
+if (!ex) return;
+if (ex.mode === 'random') {
+const r = ledgerRange(ex.clef, S.below, S.above);
+$('levelName').textContent = 'Случайные ноты';
+$('levelRange').textContent = `${clefLabel(ex.clef)} · ${nm(r.lo)}–${nm(r.hi)}`;
+} else {
+const total = ex.score.notes.length;
+$('levelName').textContent = ex.piece.title;
+$('levelRange').textContent = `${clefLabel(ex.clef)} · нота ${Math.min(ex.cur + 1, total)} из ${total}`;
 }
+}
+function renderAll() { renderScore(); renderStats(); renderTitle(); idleMessage(); }
 function say(text, kind = '') {
-  const m = $('msg');
-  m.textContent = text;
-  m.className = 'msg' + (kind ? ' ' + kind : '');
+const m = $('msg');
+m.textContent = text;
+m.className = 'msg' + (kind ? ' ' + kind : '');
 }
 function idleMessage() {
-  if (midiNames.length) say(`Пианино подключено по MIDI (${midiNames.join(', ')}). Играйте отмеченную ноту.`);
-  else if (micState === 'on') say('Играйте отмеченную ноту.');
-  else say('Включите микрофон и играйте отмеченную ноту на пианино. Без микрофона можно нажимать клавиши внизу.');
+if (midiNames.length) say(`Пианино подключено по MIDI (${midiNames.join(', ')}). Играйте отмеченную ноту.`);
+else if (micState === 'on') say('Играйте отмеченную ноту.');
+else say('Включите микрофон и играйте отмеченную ноту на пианино. Без микрофона можно нажимать клавиши внизу.');
 }
-
-/* ---------- Клавиатура на экране ---------- */
 const keyEls = new Map();
 let heardMidi = null, hintMidi = null;
-function buildKeys() {
-  const lo = midiOf(lowD()), hi = midiOf(highD());
-  const start = Math.floor(lo / 12) * 12;
-  let end = Math.floor(hi / 12) * 12 + 11;
-  if (end - start + 1 < 24) end = start + 23;
-  const isWhite = (m) => [0, 2, 4, 5, 7, 9, 11].includes(m % 12);
-  const whites = [];
-  for (let m = start; m <= end; m++) if (isWhite(m)) whites.push(m);
-  const nw = whites.length, bw = (0.6 / nw) * 100;
-  let html = '';
-  whites.forEach((m) => {
-    const sp = spellMidi(m, false);
-    const lbl = m % 12 === 0 ? `<span class="lbl">${shortName(sp.d)}</span>` : '';
-    html += `<button type="button" class="wk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d)}">${lbl}</button>`;
-  });
-  let wi = 0;
-  for (let m = start; m <= end; m++) {
-    if (isWhite(m)) { wi++; continue; }
-    const sp = spellMidi(m, false);
-    const left = (wi / nw) * 100 - bw / 2;
-    html += `<button type="button" class="bk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d, sp.acc)}" style="left:${left.toFixed(3)}%;width:${bw.toFixed(3)}%"></button>`;
-  }
-  const k = $('keys');
-  k.style.setProperty('--nw', nw);
-  k.innerHTML = html;
-  keyEls.clear();
-  k.querySelectorAll('[data-midi]').forEach((el) => keyEls.set(+el.dataset.midi, el));
-  heardMidi = null;
-  requestAnimationFrame(() => {
-    const w = $('keysWrap');
-    w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2;
-  });
+function buildKeys(loMidi, hiMidi) {
+const start = Math.floor(loMidi / 12) * 12;
+let end = Math.floor(hiMidi / 12) * 12 + 11;
+if (end - start + 1 < 24) end = start + 23;
+const isWhite = (m) => [0, 2, 4, 5, 7, 9, 11].includes(m % 12);
+const whites = [];
+for (let m = start; m <= end; m++) if (isWhite(m)) whites.push(m);
+const nw = whites.length, bw = (0.6 / nw) * 100;
+let html = '';
+whites.forEach((m) => {
+const sp = spellMidi(m, false);
+const lbl = m % 12 === 0 ? `<span class="lbl">${nm(sp.d)}</span>` : '';
+html += `<button type="button" class="wk" tabindex="-1" data-midi="${m}" aria-label="${nm(sp.d)}">${lbl}</button>`;
+});
+let wi = 0;
+for (let m = start; m <= end; m++) {
+if (isWhite(m)) { wi++; continue; }
+const sp = spellMidi(m, false);
+const left = (wi / nw) * 100 - bw / 2;
+html += `<button type="button" class="bk" tabindex="-1" data-midi="${m}" aria-label="${nm(sp.d, sp.acc)}" style="left:${left.toFixed(3)}%;width:${bw.toFixed(3)}%"></button>`;
+}
+const k = $('keys');
+k.style.setProperty('--nw', nw);
+k.innerHTML = html;
+keyEls.clear();
+k.querySelectorAll('[data-midi]').forEach((el) => keyEls.set(+el.dataset.midi, el));
+heardMidi = null;
+hintMidi = null;
+requestAnimationFrame(() => {
+const w = $('keysWrap');
+const lo = keyEls.get(loMidi), hi = keyEls.get(hiMidi);
+w.scrollLeft = lo && hi ? (lo.offsetLeft + hi.offsetLeft + hi.offsetWidth - w.clientWidth) / 2 : (w.scrollWidth - w.clientWidth) / 2;
+});
 }
 const flashTimers = new Map();
 function flashKey(midi, cls) {
-  const el = keyEls.get(midi);
-  if (!el) return;
-  el.classList.remove('ok', 'bad');
-  void el.offsetWidth;
-  el.classList.add(cls);
-  clearTimeout(flashTimers.get(midi));
-  flashTimers.set(midi, setTimeout(() => el.classList.remove(cls), 650));
+const el = keyEls.get(midi);
+if (!el) return;
+el.classList.remove('ok', 'bad');
+void el.offsetWidth;
+el.classList.add(cls);
+clearTimeout(flashTimers.get(midi));
+flashTimers.set(midi, setTimeout(() => el.classList.remove(cls), 650));
 }
 function setHeard(midi) {
-  if (midi === heardMidi) return;
-  if (heardMidi != null && keyEls.get(heardMidi)) keyEls.get(heardMidi).classList.remove('heard');
-  heardMidi = midi;
-  if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('heard');
+if (midi === heardMidi) return;
+if (heardMidi != null && keyEls.get(heardMidi)) keyEls.get(heardMidi).classList.remove('heard');
+heardMidi = midi;
+if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('heard');
 }
 function setHintKey(midi) {
-  if (hintMidi != null && keyEls.get(hintMidi)) keyEls.get(hintMidi).classList.remove('hint');
-  hintMidi = midi;
-  if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('hint');
+if (hintMidi != null && keyEls.get(hintMidi)) keyEls.get(hintMidi).classList.remove('hint');
+hintMidi = midi;
+if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('hint');
 }
-
 let outCtx = null;
 function playTone(midi) {
-  if (!S.keySound || micState === 'on') return;
-  try {
-    outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (outCtx.state === 'suspended') outCtx.resume();
-    const t = outCtx.currentTime, f = midiToFreq(midi);
-    const g = outCtx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.6);
-    g.connect(outCtx.destination);
-    [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].forEach(([k, a]) => {
-      const o = outCtx.createOscillator(), og = outCtx.createGain();
-      o.frequency.value = f * k; og.gain.value = a;
-      o.connect(og); og.connect(g);
-      o.start(t); o.stop(t + 1.7);
-    });
-  } catch (e) { /* звук недоступен */ }
+if (!S.keySound || micState === 'on') return;
+try {
+outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
+if (outCtx.state === 'suspended') outCtx.resume();
+const t = outCtx.currentTime, f = midiToFreq(midi);
+const g = outCtx.createGain();
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
+g.gain.exponentialRampToValueAtTime(0.0008, t + 1.6);
+g.connect(outCtx.destination);
+[[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].forEach(([k, a]) => {
+const o = outCtx.createOscillator(), og = outCtx.createGain();
+o.frequency.value = f * k; og.gain.value = a;
+o.connect(og); og.connect(g);
+o.start(t); o.stop(t + 1.7);
+});
+} catch (e) { /* звук недоступен */ }
 }
-
-/* ---------- Проверка ответа ---------- */
 function record(note, clean, ms) {
-  session.n++; session.ms += ms;
-  if (clean) { session.first++; session.streak++; session.best = Math.max(session.best, session.streak); }
-  else session.streak = 0;
-  STATS.n++; if (clean) STATS.first++;
-  const k = keyOf(note);
-  const st = STATS.notes[k] || (STATS.notes[k] = { n: 0, e: 0, ms: 0 });
-  st.n++; if (!clean) st.e++; st.ms += ms;
-  store.set('slista.stats.v1', STATS);
+session.n++; session.ms += ms;
+if (clean) { session.first++; session.streak++; session.best = Math.max(session.best, session.streak); }
+else session.streak = 0;
+STATS.n++; if (clean) STATS.first++;
+const k = keyOf(note);
+const st = STATS.notes[k] || (STATS.notes[k] = { n: 0, e: 0, ms: 0 });
+st.n++; if (!clean) st.e++; st.ms += ms;
+store.set('slista.stats.v1', STATS);
 }
 function advance(status, midi) {
-  const cur = row.notes[row.idx], now = performance.now();
-  const ms = Math.min(10000, now - cur.startAt);
-  const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
-  cur.status = status;
-  record(cur, clean, ms);
-  ghost = null;
-  clearTimeout(ghostTimer);
-  setHintKey(null);
-  if (status === 'ok') { anim = { type: 'pop', idx: row.idx }; flashKey(midi, 'ok'); }
-  row.idx++;
-  if (row.idx >= row.notes.length) {
-    const good = row.notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
-    if (row.notes.length > 1) say(`Строка пройдена: ${good} из ${row.notes.length} с первого раза.`, 'ok');
-    else if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}` : 'Верно.', 'ok');
-    busy = true;
-    renderScore(); renderStats();
-    setTimeout(() => { busy = false; newRow(); renderScore(); }, row.notes.length > 1 ? 700 : 380);
-    return;
-  }
-  row.notes[row.idx].startAt = now;
-  if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
-  renderScore(); renderStats();
+const cur = curNote(), now = performance.now();
+const ms = Math.min(10000, now - cur.startAt);
+const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
+cur.status = status;
+record(cur, clean, ms);
+if (ex.mode === 'piece') ex.elapsed += now - cur.startAt;
+ghost = null;
+clearTimeout(ghostTimer);
+setHintKey(null);
+if (status === 'ok') { anim = { type: 'pop', note: cur }; flashKey(midi, 'ok'); }
+ex.cur++;
+const row = ex.rows[ex.row];
+if (ex.cur >= row.noteTo) {
+const notes = ex.score.notes.slice(row.noteFrom, row.noteTo);
+const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+const done = ex.mode === 'piece' && ex.cur >= ex.score.notes.length;
+if (!done) say(notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '', 'ok');
+busy = true;
+renderScore(); renderStats(); renderTitle();
+const e = ex;
+setTimeout(() => { if (ex === e) nextRow(); }, 700);
+return;
 }
-let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ошибкой
+ex.score.notes[ex.cur].startAt = now;
+if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
+renderScore(); renderStats(); renderTitle();
+}
+function nextRow() {
+const e = ex;
+if (ex.mode === 'random' && ex.cur >= ex.score.notes.length) newRandomRow(false);
+else if (ex.row + 1 >= ex.rows.length) { busy = false; finishPiece(); return; }
+else {
+ex.row++;
+fresh = true;
+if (ex.rows[ex.row].noteFrom < 0) {
+renderScore(); renderTitle();
+setTimeout(() => { if (ex === e) nextRow(); }, 1400);
+return;
+}
+}
+busy = false;
+ex.score.notes[ex.cur].startAt = performance.now();
+renderScore(); renderTitle();
+}
+let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ни ошибкой, ни новым ответом (isEcho)
 function handleInput(midi, via, strong = true) {
-  if (!row || busy || paused || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
-  const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
-  if (hit) { lastDone = { midi, t: performance.now() }; advance('ok', midi); return; }
-  if (via === 'legato') return; // плавный переход без удара не штрафуем
-  if (via === 'onset') {
-    if (!strong) return; // распознано неуверенно — не штрафуем
-    if (lastDone && lastDone.midi === midi && performance.now() - lastDone.t < 1500) return; // отголосок прошлой ноты
-  }
-  cur.errors++;
-  if (cur.errors === 1) { session.streak = 0; renderStats(); }
-  const sp = spellMidi(midi, cur.acc < 0);
-  ghost = { d: sp.d, acc: sp.acc, midi, clef: clefFor(midi) };
-  anim = { type: 'shake', idx: row.idx };
-  flashKey(midi, 'bad');
-  say(`Сыграно ${shortName(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
-  renderScore();
-  clearTimeout(ghostTimer);
-  ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
+const cur = curNote();
+if (!cur || screen !== 'play' || busy || paused) return;
+const now = performance.now();
+const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
+if (isEcho(midi, via, strong, lastDone, now, hit)) return;
+if (hit) { lastDone = { midi, t: now }; advance('ok', midi); return; }
+if (via === 'legato') return; // плавный переход без удара не штрафуем
+if (via === 'onset' && !strong) return; // распознано неуверенно — не штрафуем
+cur.errors++;
+if (cur.errors === 1) { session.streak = 0; renderStats(); }
+const sp = spellMidi(midi, cur.acc < 0);
+ghost = { d: sp.d, acc: sp.acc };
+anim = { type: 'shake', note: cur };
+flashKey(midi, 'bad');
+say(`Сыграно ${nm(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
+renderScore();
+clearTimeout(ghostTimer);
+ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
 }
-
-/* ---------- Микрофон ---------- */
+function finishPiece() {
+const notes = ex.score.notes;
+const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+$('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)}`;
+$('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
+say('Пьеса сыграна.', 'ok');
+openPanel('donePanel');
+}
+$('doneAgain').addEventListener('click', () => { const p = ex && ex.piece, c = ex && ex.clef; closePanel(() => { if (p) startPiece(p, c); }); });
+$('doneList').addEventListener('click', () => closePanel(() => history.back()));
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 let audio = null, wakeLock = null;
-
 function setMicUI() {
-  const on = micState === 'on';
-  const btn = $('micBtn');
-  btn.classList.toggle('primary', !on);
-  btn.classList.toggle('on', on);
-  btn.disabled = micState === 'starting';
-  $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
-  $('meter').hidden = !on;
-  $('spacer').hidden = on;
+const on = micState === 'on';
+const btn = $('micBtn');
+btn.classList.toggle('primary', !on);
+btn.classList.toggle('on', on);
+btn.disabled = micState === 'starting';
+$('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
+$('meter').hidden = !on;
+$('spacer').hidden = on;
 }
 function micError(e) {
-  const name = e && e.name;
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    say('Микрофон работает только на странице с адресом https:// или в файле, открытом на компьютере. Пока можно нажимать клавиши внизу.', 'bad');
-  } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
-    say('Микрофон не найден. Проверьте, что он подключён, и попробуйте ещё раз.', 'bad');
-  } else if (inFrame) {
-    say('Здесь браузер не даёт доступ к микрофону. Откройте приложение как отдельный сайт или нажимайте клавиши внизу.', 'bad');
-  } else {
-    say('Нет доступа к микрофону. Разрешите его в настройках сайта в браузере и нажмите «Включить микрофон» ещё раз.', 'bad');
-  }
+const name = e && e.name;
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+say('Микрофон работает только на странице с адресом https:// или в файле, открытом на компьютере. Пока можно нажимать клавиши внизу.', 'bad');
+} else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+say('Микрофон не найден. Проверьте, что он подключён, и попробуйте ещё раз.', 'bad');
+} else if (inFrame) {
+say('Здесь браузер не даёт доступ к микрофону. Откройте приложение как отдельный сайт или нажимайте клавиши внизу.', 'bad');
+} else {
+say('Нет доступа к микрофону. Разрешите его в настройках сайта в браузере и нажмите «Включить микрофон» ещё раз.', 'bad');
+}
 }
 async function startMic() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { micError(null); return; }
-  micState = 'starting'; setMicUI();
-  let ctx = null;
-  try {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
-    if (ctx.state === 'suspended') await ctx.resume();
-    const src = ctx.createMediaStreamSource(stream);
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 4096;
-    analyser.smoothingTimeConstant = 0;
-    src.connect(analyser);
-    const listener = new PitchListener(ctx.sampleRate, 4096, onDetector);
-    audio = { ctx, stream, analyser, listener, buf: new Float32Array(4096), raf: 0 };
-    applyListener();
-    micState = 'on'; setMicUI(); idleMessage();
-    requestWake();
-    if (!S.calibrated && !openPanelEl) openPanel('calibPanel');
-    const loop = () => {
-      if (!audio) return;
-      audio.analyser.getFloatTimeDomainData(audio.buf);
-      audio.listener.process(audio.buf, performance.now());
-      audio.raf = requestAnimationFrame(loop);
-    };
-    loop();
-  } catch (e) {
-    if (ctx) try { ctx.close(); } catch (_) { /* уже закрыт */ }
-    audio = null; micState = 'off'; setMicUI();
-    micError(e);
-  }
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { micError(null); return; }
+micState = 'starting'; setMicUI();
+let ctx = null;
+try {
+ctx = new (window.AudioContext || window.webkitAudioContext)();
+const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+if (ctx.state === 'suspended') await ctx.resume();
+const src = ctx.createMediaStreamSource(stream);
+const analyser = ctx.createAnalyser();
+analyser.fftSize = 4096;
+analyser.smoothingTimeConstant = 0;
+src.connect(analyser);
+const listener = new PitchListener(ctx.sampleRate, 4096, onDetector);
+audio = { ctx, stream, analyser, listener, buf: new Float32Array(4096), raf: 0 };
+applyListener();
+micState = 'on'; setMicUI(); idleMessage();
+requestWake();
+if (!S.calibrated && !openPanelEl) openPanel('calibPanel');
+const loop = () => {
+if (!audio) return;
+audio.analyser.getFloatTimeDomainData(audio.buf);
+audio.listener.process(audio.buf, performance.now());
+audio.raf = requestAnimationFrame(loop);
+};
+loop();
+} catch (e) {
+if (ctx) try { ctx.close(); } catch (_) { /* уже закрыт */ }
+audio = null; micState = 'off'; setMicUI();
+micError(e);
+}
 }
 function stopMic() {
-  if (audio) {
-    cancelAnimationFrame(audio.raf);
-    audio.stream.getTracks().forEach((t) => t.stop());
-    try { audio.ctx.close(); } catch (e) { /* уже закрыт */ }
-  }
-  audio = null; micState = 'off'; setMicUI(); setHeard(null); idleMessage();
-  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+if (audio) {
+cancelAnimationFrame(audio.raf);
+audio.stream.getTracks().forEach((t) => t.stop());
+try { audio.ctx.close(); } catch (e) { /* уже закрыт */ }
+}
+audio = null; micState = 'off'; setMicUI(); setHeard(null);
+if (ex) idleMessage();
+if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
 }
 function applyListener() {
-  if (!audio) return;
-  audio.listener.gateDb = S.gateDb;
-  audio.listener.setRange(midiOf(lowD()) - 1, midiOf(highD()) + 1);
+if (!audio) return;
+audio.listener.gateDb = S.gateDb;
+const r = ledgerRange(S.clef, S.below, S.above);
+audio.listener.setRange((ex ? ex.lo : midiOf(r.lo)) - 1, (ex ? ex.hi : midiOf(r.hi)) + 1);
 }
 async function requestWake() {
-  try { if ('wakeLock' in navigator && micState === 'on') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+try { if ('wakeLock' in navigator && micState === 'on') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWake(); });
-
 let heardUntil = 0;
 function onDetector(type, d) {
-  if (type === 'note') { if (!midiSeen && !calActive()) handleInput(d.midi, d.via, d.strong); return; }
-  if (calActive()) calFeed(d);
-  const pos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
-  $('meterFill').style.width = pos(d.db).toFixed(1) + '%';
-  $('meterGate').style.left = pos(d.gateDb).toFixed(1) + '%';
-  const now = performance.now();
-  if (d.midi != null) {
-    const sp = spellMidi(d.midi, false);
-    const c = d.cents > 0 ? '+' + d.cents : d.cents < 0 ? '−' + Math.abs(d.cents) : '±0';
-    $('heard').innerHTML = `Слышу <strong>${shortName(sp.d, sp.acc)}</strong> ${c}¢`;
-    heardUntil = now + 350;
-    setHeard(d.midi);
-  } else if (now > heardUntil) {
-    $('heard').textContent = d.db < d.gateDb ? 'Тишина' : 'Слушаю…';
-    setHeard(null);
-  }
+if (type === 'note') { if (!midiSeen && !calActive()) handleInput(d.midi, d.via, d.strong); return; }
+if (calActive()) calFeed(d);
+const pos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
+$('meterFill').style.width = pos(d.db).toFixed(1) + '%';
+$('meterGate').style.left = pos(d.gateDb).toFixed(1) + '%';
+const now = performance.now();
+if (d.midi != null) {
+const sp = spellMidi(d.midi, false);
+const c = d.cents > 0 ? '+' + d.cents : d.cents < 0 ? '−' + Math.abs(d.cents) : '±0';
+$('heard').innerHTML = `Слышу <strong>${nm(sp.d, sp.acc)}</strong> ${c}¢`;
+heardUntil = now + 350;
+setHeard(d.midi);
+} else if (now > heardUntil) {
+$('heard').textContent = d.db < d.gateDb ? 'Тишина' : 'Слушаю…';
+setHeard(null);
 }
-
-/* ---------- Калибровка микрофона ---------- */
-const fmtDb = (v) => (v < 0 ? '−' : '') + Math.abs(Math.round(v)) + '\u00a0дБ';
+}
+const fmtDb = (v) => (v < 0 ? '−' : '') + Math.abs(Math.round(v)) + ' дБ';
 const dbPos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
 const cal = { state: 'idle', t0: 0, lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null };
 const calActive = () => cal.state === 'silence' || cal.state === 'notes';
 const percentile = (arr, q) => { const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(q * a.length))]; };
-
 function calReset() {
-  Object.assign(cal, { state: 'intro', noise: [], noiseDb: null, peaks: [], cur: null, result: null });
-  renderCal();
+Object.assign(cal, { state: 'intro', noise: [], noiseDb: null, peaks: [], cur: null, result: null });
+renderCal();
 }
 async function calStart() {
-  if (micState !== 'on') {
-    await startMic();
-    if (micState !== 'on') { cal.state = 'fail'; renderCal($('msg').textContent); return; }
-  }
-  Object.assign(cal, { state: 'silence', t0: performance.now(), lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null });
-  renderCal();
+if (micState !== 'on') {
+await startMic();
+if (micState !== 'on') { cal.state = 'fail'; renderCal($('msg').textContent); return; }
+}
+Object.assign(cal, { state: 'silence', t0: performance.now(), lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null });
+renderCal();
 }
 function calFeed(d) {
-  const dt = cal.lastT ? d.t - cal.lastT : 16.7;
-  cal.lastT = d.t;
-  if (calActive()) $('calLevel').style.width = dbPos(d.db).toFixed(1) + '%';
-  if (cal.state === 'silence') {
-    cal.noise.push(d.db);
-    const left = Math.max(0, 3 - (d.t - cal.t0) / 1000);
-    $('calMsg').textContent = `Слушаю тишину… ещё ${Math.ceil(left)} с. Не играйте и не говорите.`;
-    if (d.t - cal.t0 >= 3000) {
-      cal.noiseDb = percentile(cal.noise, 0.95);
-      cal.state = 'notes'; cal.t0 = d.t; cal.env = cal.noiseDb;
-      renderCal();
-    }
-    return;
-  }
-  // ноты: резкий рост громкости заметно выше шума — это удар по клавише
-  if (cal.cur) {
-    cal.cur.peak = Math.max(cal.cur.peak, d.db);
-    if (d.t - cal.cur.t > 300) {
-      cal.peaks.push(cal.cur.peak);
-      cal.cur = null;
-      renderCal();
-      if (cal.peaks.length >= 5) { calFinish(); return; }
-    }
-  } else if (d.db > cal.noiseDb + 10 && d.db > cal.env + 4 && d.t - cal.lastOn > 350) {
-    cal.cur = { t: d.t, peak: d.db };
-    cal.lastOn = d.t;
-  }
-  cal.env = Math.max(d.db, cal.env - 0.6 * (dt / 16.7));
-  if (d.t - cal.t0 > 30000) calFinish();
+const dt = cal.lastT ? d.t - cal.lastT : 16.7;
+cal.lastT = d.t;
+if (calActive()) $('calLevel').style.width = dbPos(d.db).toFixed(1) + '%';
+if (cal.state === 'silence') {
+cal.noise.push(d.db);
+const left = Math.max(0, 3 - (d.t - cal.t0) / 1000);
+$('calMsg').textContent = `Слушаю тишину… ещё ${Math.ceil(left)} с. Не играйте и не говорите.`;
+if (d.t - cal.t0 >= 3000) {
+cal.noiseDb = percentile(cal.noise, 0.95);
+cal.state = 'notes'; cal.t0 = d.t; cal.env = cal.noiseDb;
+renderCal();
+}
+return;
+}
+if (cal.cur) {
+cal.cur.peak = Math.max(cal.cur.peak, d.db);
+if (d.t - cal.cur.t > 300) {
+cal.peaks.push(cal.cur.peak);
+cal.cur = null;
+renderCal();
+if (cal.peaks.length >= 5) { calFinish(); return; }
+}
+} else if (d.db > cal.noiseDb + 10 && d.db > cal.env + 4 && d.t - cal.lastOn > 350) {
+cal.cur = { t: d.t, peak: d.db };
+cal.lastOn = d.t;
+}
+cal.env = Math.max(d.db, cal.env - 0.6 * (dt / 16.7));
+if (d.t - cal.t0 > 30000) calFinish();
 }
 function calFinish() {
-  if (cal.peaks.length < 2) { cal.state = 'fail'; renderCal(); return; }
-  const noise = cal.noiseDb, soft = Math.min.apply(null, cal.peaks), span = soft - noise;
-  let gate = noise + 0.4 * span;
-  gate = span >= 14 ? Math.min(Math.max(gate, noise + 6), soft - 8) : noise + span / 2;
-  gate = Math.round(Math.max(-80, Math.min(-20, gate)));
-  cal.result = { noise, soft, gate, weak: span < 14 };
-  cal.state = 'done';
-  renderCal();
+if (cal.peaks.length < 2) { cal.state = 'fail'; renderCal(); return; }
+const noise = cal.noiseDb, soft = Math.min.apply(null, cal.peaks), span = soft - noise;
+let gate = noise + 0.4 * span;
+gate = span >= 14 ? Math.min(Math.max(gate, noise + 6), soft - 8) : noise + span / 2;
+gate = Math.round(Math.max(-80, Math.min(-20, gate)));
+cal.result = { noise, soft, gate, weak: span < 14 };
+cal.state = 'done';
+renderCal();
 }
 function calSave() {
-  S.gateDb = cal.result.gate;
-  S.calibrated = true;
-  store.set('slista.settings.v1', S);
-  applyListener();
-  closePanel();
-  say(`Микрофон настроен: порог ${fmtDb(S.gateDb)}. Играйте отмеченную ноту.`, 'ok');
+S.gateDb = cal.result.gate;
+S.calibrated = true;
+save();
+applyListener();
+closePanel();
+say(`Микрофон настроен: порог ${fmtDb(S.gateDb)}. Играйте отмеченную ноту.`, 'ok');
 }
 function renderCal(errText) {
-  const order = ['silence', 'notes', 'done'];
-  const stepIdx = { intro: -1, silence: 0, notes: 1, done: 3, fail: 1 }[cal.state];
-  $('calSteps').querySelectorAll('li').forEach((li) => {
-    const i = order.indexOf(li.dataset.step);
-    li.classList.toggle('done', i < stepIdx);
-    li.classList.toggle('active', i === stepIdx);
-  });
-  const msg = $('calMsg');
-  msg.classList.toggle('bad', cal.state === 'fail');
-  const actions = [];
-  if (cal.state === 'intro') {
-    msg.textContent = 'Поставьте телефон туда, где он будет стоять во время игры, и нажмите «Начать».';
-    actions.push('<button class="btn primary" type="button" data-cal="start">Начать</button>');
-  } else if (cal.state === 'silence') {
-    msg.textContent = 'Слушаю тишину… Не играйте и не говорите.';
-  } else if (cal.state === 'notes') {
-    msg.textContent = 'Теперь сыграйте пять любых нот по одной, с паузами, так тихо, как обычно играете.';
-  } else if (cal.state === 'done') {
-    const r = cal.result;
-    msg.textContent = `Шум около ${fmtDb(r.noise)}, самая тихая нота ${fmtDb(r.soft)}. Порог: ${fmtDb(r.gate)}.` +
-      (r.weak ? ' Пианино звучит ненамного громче шума, поэтому возможны пропуски. Поставьте телефон ближе к инструменту и повторите.' : ' Можно сохранять.');
-    actions.push('<button class="btn primary" type="button" data-cal="save">Сохранить</button>', '<button class="btn" type="button" data-cal="start">Повторить</button>');
-  } else if (cal.state === 'fail') {
-    msg.textContent = errText || 'Не удалось услышать ноты. Поставьте телефон ближе к пианино, играйте чуть громче и повторите.';
-    actions.push('<button class="btn primary" type="button" data-cal="start">Повторить</button>');
-  }
-  $('calActions').innerHTML = actions.join('');
-  $('calNoise').style.width = cal.noiseDb != null ? dbPos(cal.noiseDb).toFixed(1) + '%' : '0';
-  $('calPeaks').innerHTML = cal.peaks.map((p) => `<em style="left:${dbPos(p).toFixed(1)}%"></em>`).join('');
-  $('calGate').style.left = dbPos(cal.result ? cal.result.gate : S.gateDb).toFixed(1) + '%';
-  const dots = $('calDots');
-  dots.hidden = !(cal.state === 'notes' || cal.state === 'done' || (cal.state === 'fail' && cal.peaks.length));
-  dots.querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', i < cal.peaks.length));
-  $('calCount').textContent = `${Math.min(5, cal.peaks.length)} из 5`;
-  if (!calActive()) $('calLevel').style.width = '0';
+const order = ['silence', 'notes', 'done'];
+const stepIdx = { intro: -1, silence: 0, notes: 1, done: 3, fail: 1 }[cal.state];
+$('calSteps').querySelectorAll('li').forEach((li) => {
+const i = order.indexOf(li.dataset.step);
+li.classList.toggle('done', i < stepIdx);
+li.classList.toggle('active', i === stepIdx);
+});
+const msg = $('calMsg');
+msg.classList.toggle('bad', cal.state === 'fail');
+const actions = [];
+if (cal.state === 'intro') {
+msg.textContent = 'Поставьте телефон туда, где он будет стоять во время игры, и нажмите «Начать».';
+actions.push('<button class="btn primary" type="button" data-cal="start">Начать</button>');
+} else if (cal.state === 'silence') {
+msg.textContent = 'Слушаю тишину… Не играйте и не говорите.';
+} else if (cal.state === 'notes') {
+msg.textContent = 'Теперь сыграйте пять любых нот по одной, с паузами, так тихо, как обычно играете.';
+} else if (cal.state === 'done') {
+const r = cal.result;
+msg.textContent = `Шум около ${fmtDb(r.noise)}, самая тихая нота ${fmtDb(r.soft)}. Порог: ${fmtDb(r.gate)}.` +
+(r.weak ? ' Пианино звучит ненамного громче шума, поэтому возможны пропуски. Поставьте телефон ближе к инструменту и повторите.' : ' Можно сохранять.');
+actions.push('<button class="btn primary" type="button" data-cal="save">Сохранить</button>', '<button class="btn" type="button" data-cal="start">Повторить</button>');
+} else if (cal.state === 'fail') {
+msg.textContent = errText || 'Не удалось услышать ноты. Поставьте телефон ближе к пианино, играйте чуть громче и повторите.';
+actions.push('<button class="btn primary" type="button" data-cal="start">Повторить</button>');
+}
+$('calActions').innerHTML = actions.join('');
+$('calNoise').style.width = cal.noiseDb != null ? dbPos(cal.noiseDb).toFixed(1) + '%' : '0';
+$('calPeaks').innerHTML = cal.peaks.map((p) => `<em style="left:${dbPos(p).toFixed(1)}%"></em>`).join('');
+$('calGate').style.left = dbPos(cal.result ? cal.result.gate : S.gateDb).toFixed(1) + '%';
+const dots = $('calDots');
+dots.hidden = !(cal.state === 'notes' || cal.state === 'done' || (cal.state === 'fail' && cal.peaks.length));
+dots.querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', i < cal.peaks.length));
+$('calCount').textContent = `${Math.min(5, cal.peaks.length)} из 5`;
+if (!calActive()) $('calLevel').style.width = '0';
 }
 $('calActions').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-cal]');
-  if (!b) return;
-  if (b.dataset.cal === 'start') calStart();
-  if (b.dataset.cal === 'save') calSave();
+const b = e.target.closest('[data-cal]');
+if (!b) return;
+if (b.dataset.cal === 'start') calStart();
+if (b.dataset.cal === 'save') calSave();
 });
-
-/* ---------- MIDI ---------- */
 async function connectMidi() {
-  const note = $('midiNote');
-  if (!navigator.requestMIDIAccess) { note.textContent = 'Этот браузер не поддерживает MIDI. Подойдёт Chrome или Edge на компьютере или Android.'; return; }
-  try {
-    const access = await navigator.requestMIDIAccess();
-    const hook = () => {
-      const names = [];
-      access.inputs.forEach((inp) => {
-        if (inp.state === 'disconnected') return;
-        names.push(inp.name);
-        inp.onmidimessage = (e) => {
-          const [st, n, vel] = e.data;
-          if ((st & 0xf0) === 0x90 && vel > 0) { midiSeen = true; handleInput(n, 'midi'); }
-        };
-      });
-      midiNames = names;
-      if (!names.length) midiSeen = false;
-      if (names.length && micState === 'on') stopMic(); // иначе одна нота придёт дважды: по MIDI и через микрофон
-      note.textContent = names.length
-        ? 'Подключено: ' + names.join(', ') + '. Микрофон не нужен: ноты приходят по кабелю или Bluetooth.'
-        : 'MIDI-устройства не найдены. Проверьте кабель или Bluetooth и нажмите кнопку ещё раз.';
-      idleMessage();
-    };
-    hook();
-    access.onstatechange = hook;
-  } catch (e) {
-    note.textContent = 'Нет доступа к MIDI. Разрешите его в настройках сайта или откройте приложение как отдельный сайт.';
-  }
+const note = $('midiNote');
+if (!navigator.requestMIDIAccess) { note.textContent = 'Этот браузер не поддерживает MIDI. Подойдёт Chrome или Edge на компьютере или Android.'; return; }
+try {
+const access = await navigator.requestMIDIAccess();
+const hook = () => {
+const names = [];
+access.inputs.forEach((inp) => {
+if (inp.state === 'disconnected') return;
+names.push(inp.name);
+inp.onmidimessage = (e) => {
+const [st, n, vel] = e.data;
+if ((st & 0xf0) === 0x90 && vel > 0) { midiSeen = true; handleInput(n, 'midi'); }
+};
+});
+midiNames = names;
+if (!names.length) midiSeen = false;
+if (names.length && micState === 'on') stopMic(); // иначе одна нота придёт дважды: по MIDI и через микрофон
+note.textContent = names.length
+? 'Подключено: ' + names.join(', ') + '. Микрофон не нужен: ноты приходят по кабелю или Bluetooth.'
+: 'MIDI-устройства не найдены. Проверьте кабель или Bluetooth и нажмите кнопку ещё раз.';
+if (ex) idleMessage();
+};
+hook();
+access.onstatechange = hook;
+} catch (e) {
+note.textContent = 'Нет доступа к MIDI. Разрешите его в настройках сайта или откройте приложение как отдельный сайт.';
 }
-
-/* ---------- Панели ---------- */
+}
 let openPanelEl = null, returnFocus = null;
-function openPanel(id) {
-  closePanel();
-  returnFocus = document.activeElement;
-  openPanelEl = $(id);
-  if (id === 'progressPanel') renderProgress();
-  if (id === 'settingsPanel') syncForm();
-  if (id === 'calibPanel') calReset();
-  $('scrim').hidden = false;
-  openPanelEl.hidden = false;
-  paused = true;
-  const f = openPanelEl.querySelector('[data-close]');
-  if (f) f.focus();
+function showPanel(id) {
+returnFocus = document.activeElement;
+openPanelEl = $(id);
+if (id === 'progressPanel') renderProgress();
+if (id === 'settingsPanel') syncForm();
+if (id === 'calibPanel') calReset();
+$('scrim').hidden = false;
+openPanelEl.hidden = false;
+paused = true;
+const f = openPanelEl.querySelector('[data-close]');
+if (f) f.focus();
 }
-function closePanel() {
-  if (!openPanelEl) return;
-  if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
-  openPanelEl.hidden = true;
-  $('scrim').hidden = true;
-  openPanelEl = null;
-  paused = false;
-  if (row && row.idx < row.notes.length) row.notes[row.idx].startAt = performance.now();
-  if (returnFocus && returnFocus.focus) returnFocus.focus();
+function hidePanel() {
+if (!openPanelEl) return;
+if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
+openPanelEl.hidden = true;
+$('scrim').hidden = true;
+openPanelEl = null;
+paused = false;
+const cur = curNote();
+if (cur) cur.startAt = performance.now();
+if (returnFocus && returnFocus.focus) returnFocus.focus();
+}
+function openPanel(id) {
+if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
+else history.pushState({ s: screen, panel: id }, '');
+showPanel(id);
+}
+function closePanel(then) {
+if (!openPanelEl) { if (then) then(); return; }
+if (history.state && history.state.panel) { afterPop = then || null; history.back(); }
+else { hidePanel(); if (then) then(); }
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
-$('scrim').addEventListener('click', closePanel);
-document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePanel));
-
-function miniStaff(n) {
-  const G = geometry(1, n.clef, n.d, n.d);
-  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" aria-hidden="true">` + staffFrame(G);
-  s += noteSVG(n, G.xs[0], G.staves[0], 'g-ink', n.acc || null) + '</svg>';
-  return s;
-}
+$('scrim').addEventListener('click', () => closePanel());
+document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closePanel()));
+document.querySelectorAll('[data-panel]').forEach((b) => b.addEventListener('click', () => openPanel(b.dataset.panel)));
 function renderProgress() {
-  $('sessionKv').innerHTML = `
-    <dt>Сыграно нот</dt><dd>${session.n}</dd>
-    <dt>С первого раза</dt><dd>${pct(session.first, session.n)}</dd>
-    <dt>Лучшая серия</dt><dd>${session.best}</dd>
-    <dt>Средняя реакция</dt><dd>${session.n ? fmtSec(session.ms / session.n) : '—'}</dd>`;
-  $('allKv').innerHTML = `
-    <dt>Всего нот</dt><dd>${STATS.n}</dd>
-    <dt>С первого раза</dt><dd>${pct(STATS.first, STATS.n)}</dd>`;
-  const items = Object.entries(STATS.notes)
-    .filter(([, st]) => st.n >= 2)
-    .map(([k, st]) => {
-      const [clef, d, acc] = k.split(':');
-      const n = { clef, d: +d, acc: +acc };
-      const err = st.e / st.n, avg = st.ms / st.n;
-      return { n, st, err, avg, score: err * 0.7 + Math.min(1, avg / 4000) * 0.3 };
-    })
-    .filter((x) => x.err > 0 || x.avg > 1800)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 6);
-  $('hardList').innerHTML = items.length
-    ? items.map((x) => `<div class="hard-item">${miniStaff(x.n)}<div><b>${shortName(x.n.d, x.n.acc)}</b><span>${CLEFS[x.n.clef].name.toLowerCase()} · ошибки ${Math.round(x.err * 100)}% · ${fmtSec(x.avg)}</span></div></div>`).join('')
-    : '<p class="note">Пока мало данных. Сыграйте пару строк, и здесь появятся ноты, на которых вы ошибаетесь или думаете дольше всего.</p>';
-  renderReset(false);
+$('sessionKv').innerHTML = `
+<dt>Сыграно нот</dt><dd>${session.n}</dd>
+<dt>С первого раза</dt><dd>${pct(session.first, session.n)}</dd>
+<dt>Лучшая серия</dt><dd>${session.best}</dd>
+<dt>Средняя реакция</dt><dd>${session.n ? fmtSec(session.ms / session.n) : '—'}</dd>`;
+$('allKv').innerHTML = `
+<dt>Всего нот</dt><dd>${STATS.n}</dd>
+<dt>С первого раза</dt><dd>${pct(STATS.first, STATS.n)}</dd>`;
+const items = Object.entries(STATS.notes)
+.filter(([k, st]) => st.n >= 2 && CLEFS[k.split(':')[0]])
+.map(([k, st]) => {
+const [clef, d, acc] = k.split(':');
+const n = { clef, d: +d, acc: +acc };
+const err = st.e / st.n, avg = st.ms / st.n;
+return { n, st, err, avg, score: err * 0.7 + Math.min(1, avg / 4000) * 0.3 };
+})
+.filter((x) => x.err > 0 || x.avg > 1800)
+.sort((a, b) => b.score - a.score)
+.slice(0, 6);
+$('hardList').innerHTML = items.length
+? items.map((x) => `<div class="hard-item">${staffSVG(x.n.clef, [{ d: x.n.d, acc: x.n.acc }])}<div><b>${nm(x.n.d, x.n.acc)}</b><span>${CLEFS[x.n.clef].name.toLowerCase()} · ошибки ${Math.round(x.err * 100)}% · ${fmtSec(x.avg)}</span></div></div>`).join('')
+: '<p class="note">Пока мало данных. Сыграйте пару строк, и здесь появятся ноты, на которых вы ошибаетесь или думаете дольше всего.</p>';
+renderReset(false);
 }
 function renderReset(confirming) {
-  const a = $('resetArea');
-  a.innerHTML = confirming
-    ? '<span>Удалить всю статистику?</span><button class="btn danger" type="button" id="resetYes">Удалить</button><button class="btn" type="button" id="resetNo">Отмена</button>'
-    : '<button class="btn" type="button" id="resetBtn">Сбросить статистику</button>';
-  if (confirming) {
-    $('resetYes').onclick = () => {
-      STATS = { notes: {}, n: 0, first: 0 };
-      Object.assign(session, { n: 0, first: 0, streak: 0, best: 0, ms: 0 });
-      store.set('slista.stats.v1', STATS);
-      renderStats(); renderProgress();
-    };
-    $('resetNo').onclick = () => renderReset(false);
-  } else $('resetBtn').onclick = () => renderReset(true);
-}
-
-/* ---------- Форма настроек ---------- */
-function fillRangeSelects() {
-  const other = S.naming === 'letters' ? 'solfege' : 'letters';
-  let opts = '';
-  for (let d = D_MIN; d <= D_MAX; d++) opts += `<option value="${d}">${shortName(d)} · ${shortName(d, 0, other)}</option>`;
-  $('loSel').innerHTML = opts;
-  $('hiSel').innerHTML = opts;
+const a = $('resetArea');
+a.innerHTML = confirming
+? '<span>Удалить всю статистику?</span><button class="btn danger" type="button" id="resetYes">Удалить</button><button class="btn" type="button" id="resetNo">Отмена</button>'
+: '<button class="btn" type="button" id="resetBtn">Сбросить статистику</button>';
+if (confirming) {
+$('resetYes').onclick = () => {
+STATS = { notes: {}, n: 0, first: 0 };
+Object.assign(session, { n: 0, first: 0, streak: 0, best: 0, ms: 0 });
+store.set('slista.stats.v1', STATS);
+renderStats(); renderProgress();
+};
+$('resetNo').onclick = () => renderReset(false);
+} else $('resetBtn').onclick = () => renderReset(true);
 }
 function syncForm() {
-  const pid = presetId();
-  $('presetChips').innerHTML = PRESETS.map((p) => `<button type="button" class="chip" data-preset="${p.id}" aria-pressed="${p.id === pid}">${p.name}</button>`).join('');
-  document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
-  document.querySelectorAll('input[name="motion"]').forEach((r) => { r.checked = r.value === S.motion; });
-  document.querySelectorAll('input[name="perRow"]').forEach((r) => { r.checked = r.value === S.perRow; });
-  document.querySelectorAll('input[name="naming"]').forEach((r) => { r.checked = r.value === S.naming; });
-  $('loSel').value = String(lowD());
-  $('hiSel').value = String(highD());
-  $('optAcc').checked = S.acc;
-  $('optOctave').checked = S.octave;
-  $('optAdaptive').checked = S.adaptive;
-  $('optKeys').checked = S.showKeys;
-  $('optSound').checked = S.keySound;
-  $('sens').value = String(-S.gateDb);
-  $('sensVal').textContent = fmtDb(S.gateDb);
-  $('frameNote').hidden = !inFrame;
+document.querySelectorAll('input[name="naming"]').forEach((r) => { r.checked = r.value === S.naming; });
+$('optOctave').checked = S.octave;
+$('optKeys').checked = S.showKeys;
+$('optSound').checked = S.keySound;
+$('sens').value = String(-S.gateDb);
+$('sensVal').textContent = fmtDb(S.gateDb);
+$('frameNote').hidden = !inFrame;
 }
-function apply(kind) {
-  store.set('slista.settings.v1', S);
-  if (kind === 'exercise') { lastNote = row && row.idx > 0 ? row.notes[row.idx - 1] : row ? row.prev : null; buildKeys(); newRow(); applyListener(); }
-  if (kind === 'names') { fillRangeSelects(); buildKeys(); }
-  $('keysWrap').hidden = !S.showKeys;
-  renderLevel(); renderScore(); syncForm();
-  if (kind === 'exercise') idleMessage();
-}
-$('presetChips').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-preset]');
-  if (!b) return;
-  const p = PRESETS.find((x) => x.id === b.dataset.preset);
-  Object.assign(S, { clef: p.clef, lo: p.lo, hi: p.hi });
-  apply('exercise');
-});
-document.querySelectorAll('input[name="clef"]').forEach((r) => r.addEventListener('change', () => { S.clef = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="motion"]').forEach((r) => r.addEventListener('change', () => { S.motion = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="perRow"]').forEach((r) => r.addEventListener('change', () => { S.perRow = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="naming"]').forEach((r) => r.addEventListener('change', () => { S.naming = r.value; apply('names'); }));
-const onRange = () => {
-  let lo = +$('loSel').value, hi = +$('hiSel').value;
-  if (hi - lo < 2) { if (document.activeElement === $('loSel')) hi = Math.min(D_MAX, lo + 2); else lo = Math.max(D_MIN, hi - 2); }
-  S.lo = lo; S.hi = hi;
-  apply('exercise');
-};
-$('loSel').addEventListener('change', onRange);
-$('hiSel').addEventListener('change', onRange);
-$('optAcc').addEventListener('change', (e) => { S.acc = e.target.checked; apply('exercise'); });
-$('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; apply(); });
-$('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; apply(); });
-$('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; apply(); });
-$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; apply(); });
+document.querySelectorAll('input[name="naming"]').forEach((r) => r.addEventListener('change', () => {
+S.naming = r.value;
+save();
+if (ex) { buildKeys(ex.lo, ex.hi); renderScore(); }
+if (screen === 'random') renderSetup();
+}));
+$('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; save(); });
+$('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; save(); $('keysWrap').hidden = !S.showKeys; });
+$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; save(); });
 $('sens').addEventListener('input', (e) => {
-  S.gateDb = -(+e.target.value);
-  $('sensVal').textContent = fmtDb(S.gateDb);
-  store.set('slista.settings.v1', S);
-  applyListener();
+S.gateDb = -(+e.target.value);
+$('sensVal').textContent = fmtDb(S.gateDb);
+save();
+applyListener();
 });
 $('calibBtn').addEventListener('click', () => openPanel('calibPanel'));
 $('midiBtn').addEventListener('click', connectMidi);
-
-/* ---------- Кнопки ---------- */
 $('micBtn').addEventListener('click', () => (micState === 'on' ? stopMic() : startMic()));
 $('hintBtn').addEventListener('click', () => {
-  if (!row || busy || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
-  cur.hinted = true;
-  session.streak = 0;
-  setHintKey(cur.midi);
-  say(`Это ${fullName(cur.d, cur.acc)}.`, 'hint');
-  renderScore(); renderStats();
+const cur = curNote();
+if (!cur || busy) return;
+cur.hinted = true;
+session.streak = 0;
+setHintKey(cur.midi);
+say(`Это ${fn(cur.d, cur.acc)}.`, 'hint');
+renderScore(); renderStats();
 });
 $('skipBtn').addEventListener('click', () => {
-  if (!row || busy || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
-  say(`Пропущено. Это была нота ${fullName(cur.d, cur.acc)}.`, 'bad');
-  advance('miss');
+const cur = curNote();
+if (!cur || busy) return;
+say(`Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`, 'bad');
+advance('miss');
 });
-$('settingsBtn').addEventListener('click', () => openPanel('settingsPanel'));
-$('levelBtn').addEventListener('click', () => openPanel('settingsPanel'));
-$('progressBtn').addEventListener('click', () => openPanel('progressPanel'));
-$('stats').addEventListener('click', () => openPanel('progressPanel'));
-
 $('keys').addEventListener('click', (e) => {
-  const k = e.target.closest('[data-midi]');
-  if (!k) return;
-  const m = +k.dataset.midi;
-  playTone(m);
-  handleInput(m, 'screen');
+const k = e.target.closest('[data-midi]');
+if (!k) return;
+const m = +k.dataset.midi;
+playTone(m);
+handleInput(m, 'screen');
 });
-
-/* ---------- Запуск ---------- */
 let lastW = 0;
 const ro = new ResizeObserver(() => {
-  const w = $('sheet').clientWidth;
-  if (Math.abs(w - lastW) < 2) return;
-  lastW = w;
-  if (row && row.idx === 0 && !row.notes[0].errors && !row.notes[0].hinted && autoCount() !== row.notes.length) { newRow(true); renderScore(); }
-});
-
-fillRangeSelects();
-syncForm();
-buildKeys();
-$('keysWrap').hidden = !S.showKeys;
-renderLevel();
-newRow();
+const w = $('sheet').clientWidth;
+if (!ex || screen !== 'play' || !w || Math.abs(w - lastW) < 2) return;
+lastW = w;
+ex.W = sheetUnits();
+const first = ex.score.notes[0];
+if (ex.mode === 'random' && ex.cur === 0 && !first.errors && !first.hinted && !busy && randomCount(ex.W) !== ex.score.notes.length) newRandomRow(true);
+else {
+ex.rows = layoutRows(ex.score, ex.W);
+ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+}
 renderScore();
-renderStats();
-setMicUI();
-idleMessage();
-lastW = $('sheet').clientWidth;
+});
 ro.observe($('sheet'));
+$('keysWrap').hidden = !S.showKeys;
+setMicUI();
+const initial = hashScreen();
+history.replaceState({ s: 'home' }, '', location.pathname + location.search);
+if (initial === 'random' || initial === 'pieces') go(initial);
+else if (initial === 'play' && S.last) continueLast(true);
+else show('home');
 })();
 </script>
 

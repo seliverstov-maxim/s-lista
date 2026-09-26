@@ -95,10 +95,10 @@ button { cursor: pointer; }
   padding-block: 10px 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   min-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 }
+.screen { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-width: 0; }
 
 /* ---- шапка ---- */
 .top { display: flex; align-items: center; gap: 12px; min-height: 44px; }
@@ -109,21 +109,59 @@ button { cursor: pointer; }
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
+.title { margin: 0; font-family: var(--display); font-weight: 400; font-size: 27px; line-height: 1.1; min-width: 0; }
 .level {
   display: flex; flex-direction: column; align-items: flex-start;
-  min-width: 0; flex: 1 1 auto;
-  background: none; border: 0; padding: 4px 8px; border-radius: 8px;
-  text-align: left;
+  min-width: 0; flex: 1 1 auto; padding: 4px 2px;
 }
-.level:hover { background: var(--accent-soft); }
 .level-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.level-range { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
-.top-actions { display: flex; gap: 6px; }
+.level-range { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.top-actions { display: flex; gap: 6px; margin-left: auto; }
 .icon-btn {
-  width: 44px; height: 44px; display: grid; place-items: center;
+  width: 44px; height: 44px; display: grid; place-items: center; flex: none;
   border-radius: 10px; border: 1px solid var(--line); background: var(--panel);
 }
 .icon-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- главный экран ---- */
+.lead { margin: 2px 0 6px; color: var(--muted); max-width: 46ch; text-wrap: pretty; }
+.modes { display: grid; gap: 12px; }
+@media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
+.card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  width: 100%; padding: 16px 18px; text-align: left;
+  border-radius: 14px; border: 1px solid var(--line); background: var(--sheet); box-shadow: var(--shadow);
+}
+.card:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.card b { font-family: var(--display); font-weight: 400; font-size: 25px; line-height: 1.1; }
+.card .sub { color: var(--muted); font-size: 14px; text-wrap: pretty; }
+.card .kicker { font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); }
+.card.continue { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.card .staff-ico { width: 64px; height: 30px; margin-bottom: 4px; stroke: var(--staff); fill: none; stroke-width: 1.2; }
+.card .staff-ico .h { fill: var(--ink); stroke: none; }
+
+/* ---- настройка случайных нот ---- */
+.setup { display: flex; flex-direction: column; gap: 4px; }
+.preview { background: var(--sheet); border-radius: 14px; box-shadow: var(--shadow); padding: 10px 12px 12px; display: grid; justify-items: center; gap: 2px; }
+#rangeSvg { width: 100%; max-width: 300px; }
+#rangeSvg svg { display: block; width: 100%; height: auto; }
+.range-text { margin: 0; font-size: 14.5px; color: var(--muted); text-align: center; }
+.range-text b { color: var(--ink); font-weight: 600; }
+.field { display: grid; grid-template-columns: 4.6em 1fr; align-items: center; gap: 10px; }
+.field > span { font-size: 14px; color: var(--muted); }
+.btn.big { height: 52px; font-size: 16.5px; justify-content: center; width: 100%; margin-top: auto; }
+.screen-foot { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); margin-top: auto; }
+
+/* ---- список пьес ---- */
+.pieces { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.piece {
+  background: var(--sheet); border-radius: 14px; box-shadow: var(--shadow); padding: 14px 16px;
+  display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between;
+}
+.piece-t { display: flex; flex-direction: column; min-width: 0; flex: 1 1 12em; }
+.piece-t b { font-family: var(--display); font-weight: 400; font-size: 22px; line-height: 1.15; }
+.piece-t span { color: var(--muted); font-size: 13.5px; }
+.piece-b { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ---- статистика ---- */
 .stats {
@@ -248,21 +286,13 @@ button { cursor: pointer; }
 .group + .group { border-top: 1px solid var(--line); }
 .group h3 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
 .note { margin: 0; font-size: 13.5px; color: var(--muted); max-width: 60ch; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--sheet); font-size: 14px; }
-.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
 .seg { display: flex; background: var(--ground); border-radius: 10px; padding: 3px; gap: 2px; }
 .seg label { flex: 1 1 0; position: relative; min-width: 0; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg span { display: block; text-align: center; padding: 12px 6px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.seg span small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 1px; }
 .seg input:checked + span { background: var(--sheet); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
 .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -2px; }
-.range-row { display: flex; gap: 10px; }
-.range-row label { flex: 1 1 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
-select {
-  height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet);
-  padding: 0 10px; font-size: 15px; color: var(--ink); width: 100%;
-}
 .switch { display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer; padding-block: 8px; }
 .switch input {
   appearance: none; -webkit-appearance: none; flex: none;
@@ -319,6 +349,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 .hard-item span { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .btn.danger { color: var(--bad); }
+.done-actions { padding-top: 16px; }
 
 @media (max-width: 420px) {
   .logo { font-size: 26px; }
@@ -337,52 +368,153 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
 </style>
 
 <div class="app">
-  <header class="top">
-    <span class="logo">С листа</span>
-    <button class="level" id="levelBtn" type="button" aria-label="Уровень и настройки">
-      <span class="level-name" id="levelName">Скрипичный ключ</span>
-      <span class="level-range" id="levelRange"></span>
-    </button>
-    <div class="top-actions">
-      <button class="icon-btn" id="progressBtn" type="button" aria-label="Прогресс">
-        <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
-      </button>
-      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Настройки">
-        <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <button class="stats" id="stats" type="button" aria-label="Статистика занятия, открыть прогресс">
-    <span class="stat"><b id="stAcc">—</b><span>Точность</span></span>
-    <span class="stat"><b id="stStreak">0</b><span>Серия</span></span>
-    <span class="stat"><b id="stTime">—</b><span>Реакция</span></span>
-    <span class="stat"><b id="stCount">0</b><span>Нот</span></span>
-  </button>
-
-  <main class="sheet" id="sheet">
-    <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
-  </main>
-
-  <section class="console">
-    <p class="msg" id="msg" aria-live="polite"></p>
-    <div class="controls">
-      <button class="btn primary" id="micBtn" type="button">
-        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-        <span id="micLabel">Включить микрофон</span>
-      </button>
-      <div class="meter" id="meter" hidden>
-        <div class="meter-bar" aria-hidden="true"><i id="meterFill"></i><b id="meterGate"></b></div>
-        <span class="heard" id="heard">Тишина</span>
+  <!-- Главный экран -->
+  <section class="screen" id="homeScreen">
+    <header class="top">
+      <span class="logo">С листа</span>
+      <div class="top-actions">
+        <button class="icon-btn" type="button" data-panel="progressPanel" aria-label="Прогресс">
+          <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+        </button>
+        <button class="icon-btn" type="button" data-panel="settingsPanel" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+        </button>
       </div>
-      <span class="spacer" id="spacer"></span>
-      <button class="btn" id="hintBtn" type="button">Подсказка</button>
-      <button class="btn" id="skipBtn" type="button">Пропустить</button>
+    </header>
+    <p class="lead">Тренажёр чтения нот. Поставьте телефон на пюпитр и играйте на пианино: приложение слушает и отмечает, та ли нота сыграна.</p>
+    <button class="card continue" type="button" id="continueBtn" hidden>
+      <span class="kicker">Продолжить</span>
+      <b id="continueTitle"></b>
+      <span class="sub" id="continueSub"></span>
+    </button>
+    <div class="modes">
+      <button class="card" type="button" data-go="random">
+        <svg class="staff-ico" viewBox="0 0 64 30" aria-hidden="true"><path d="M2 5h60M2 11h60M2 17h60M2 23h60"/><ellipse class="h" cx="16" cy="20" rx="4" ry="3" transform="rotate(-20 16 20)"/><ellipse class="h" cx="34" cy="11" rx="4" ry="3" transform="rotate(-20 34 11)"/><ellipse class="h" cx="52" cy="17" rx="4" ry="3" transform="rotate(-20 52 17)"/></svg>
+        <b>Случайные ноты</b>
+        <span class="sub">Ноты по одной. Выберите ключ и сколько добавочных линеек.</span>
+      </button>
+      <button class="card" type="button" data-go="pieces">
+        <svg class="staff-ico" viewBox="0 0 64 30" aria-hidden="true"><path d="M2 5h60M2 11h60M2 17h60M2 23h60M31 3v24"/><ellipse class="h" cx="12" cy="23" rx="4" ry="3" transform="rotate(-20 12 23)"/><ellipse class="h" cx="22" cy="17" rx="4" ry="3" transform="rotate(-20 22 17)"/><ellipse class="h" cx="42" cy="14" rx="4" ry="3" transform="rotate(-20 42 14)"/><ellipse class="h" cx="53" cy="11" rx="4" ry="3" transform="rotate(-20 53 11)"/></svg>
+        <b>Пьесы</b>
+        <span class="sub">Мелодии для одной руки — в скрипичном или басовом ключе.</span>
+      </button>
     </div>
   </section>
 
-  <section class="keys-wrap" id="keysWrap" aria-label="Клавиатура">
-    <div class="keys" id="keys"></div>
+  <!-- Настройка случайных нот -->
+  <section class="screen" id="randomScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 class="title">Случайные ноты</h1>
+    </header>
+    <div class="preview">
+      <div id="rangeSvg" role="img" aria-label="Диапазон нот"></div>
+      <p class="range-text" id="rangeText"></p>
+    </div>
+    <div class="setup">
+      <section class="group">
+        <h3>Ключ</h3>
+        <div class="seg" role="radiogroup" aria-label="Ключ">
+          <label><input type="radio" name="clef" value="treble"><span>Скрипичный<small>правая рука</small></span></label>
+          <label><input type="radio" name="clef" value="bass"><span>Басовый<small>левая рука</small></span></label>
+        </div>
+      </section>
+      <section class="group">
+        <h3>Добавочные линейки</h3>
+        <div class="field">
+          <span>Снизу</span>
+          <div class="seg" role="radiogroup" aria-label="Добавочные линейки снизу">
+            <label><input type="radio" name="below" value="0"><span>0</span></label>
+            <label><input type="radio" name="below" value="1"><span>1</span></label>
+            <label><input type="radio" name="below" value="2"><span>2</span></label>
+            <label><input type="radio" name="below" value="3"><span>3</span></label>
+          </div>
+        </div>
+        <div class="field">
+          <span>Сверху</span>
+          <div class="seg" role="radiogroup" aria-label="Добавочные линейки сверху">
+            <label><input type="radio" name="above" value="0"><span>0</span></label>
+            <label><input type="radio" name="above" value="1"><span>1</span></label>
+            <label><input type="radio" name="above" value="2"><span>2</span></label>
+            <label><input type="radio" name="above" value="3"><span>3</span></label>
+          </div>
+        </div>
+        <p class="note">0 — только ноты на стане. Иначе крайняя нота стоит на последней добавочной линейке.</p>
+      </section>
+      <section class="group">
+        <label class="switch" for="optAdaptive"><span>Чаще давать трудные ноты</span><input type="checkbox" id="optAdaptive"></label>
+      </section>
+    </div>
+    <div class="screen-foot">
+      <button class="btn primary big" type="button" id="startRandom">Начать</button>
+    </div>
+  </section>
+
+  <!-- Список пьес -->
+  <section class="screen" id="piecesScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 class="title">Пьесы</h1>
+    </header>
+    <p class="note" id="piecesMsg" aria-live="polite"></p>
+    <ul class="pieces" id="piecesList"></ul>
+  </section>
+
+  <!-- Тренажёр -->
+  <section class="screen" id="playScreen" hidden>
+    <header class="top">
+      <button class="icon-btn" type="button" data-back aria-label="Назад">
+        <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="level">
+        <span class="level-name" id="levelName"></span>
+        <span class="level-range" id="levelRange"></span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" type="button" data-panel="progressPanel" aria-label="Прогресс">
+          <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+        </button>
+        <button class="icon-btn" type="button" data-panel="settingsPanel" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <button class="stats" id="stats" type="button" data-panel="progressPanel" aria-label="Статистика занятия, открыть прогресс">
+      <span class="stat"><b id="stAcc">—</b><span>Точность</span></span>
+      <span class="stat"><b id="stStreak">0</b><span>Серия</span></span>
+      <span class="stat"><b id="stTime">—</b><span>Реакция</span></span>
+      <span class="stat"><b id="stCount">0</b><span>Нот</span></span>
+    </button>
+
+    <main class="sheet" id="sheet">
+      <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
+    </main>
+
+    <section class="console">
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <div class="controls">
+        <button class="btn primary" id="micBtn" type="button">
+          <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          <span id="micLabel">Включить микрофон</span>
+        </button>
+        <div class="meter" id="meter" hidden>
+          <div class="meter-bar" aria-hidden="true"><i id="meterFill"></i><b id="meterGate"></b></div>
+          <span class="heard" id="heard">Тишина</span>
+        </div>
+        <span class="spacer" id="spacer"></span>
+        <button class="btn" id="hintBtn" type="button">Подсказка</button>
+        <button class="btn" id="skipBtn" type="button">Пропустить</button>
+      </div>
+    </section>
+
+    <section class="keys-wrap" id="keysWrap" aria-label="Клавиатура">
+      <div class="keys" id="keys"></div>
+    </section>
   </section>
 </div>
 
@@ -397,40 +529,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   </div>
 
   <section class="group">
-    <h3>Уровень</h3>
-    <div class="chips" id="presetChips"></div>
-  </section>
-
-  <section class="group">
-    <h3>Ключ</h3>
-    <div class="seg" role="radiogroup" aria-label="Ключ">
-      <label><input type="radio" name="clef" id="clefTreble" value="treble"><span>Скрипичный</span></label>
-      <label><input type="radio" name="clef" id="clefBass" value="bass"><span>Басовый</span></label>
-      <label><input type="radio" name="clef" id="clefGrand" value="grand"><span>Оба</span></label>
-    </div>
-    <div class="range-row">
-      <label for="loSel">Самая низкая нота<select id="loSel"></select></label>
-      <label for="hiSel">Самая высокая нота<select id="hiSel"></select></label>
-    </div>
-  </section>
-
-  <section class="group">
-    <h3>Упражнение</h3>
-    <label class="switch" for="optAcc"><span>Диезы и бемоли</span><input type="checkbox" id="optAcc"></label>
-    <div class="seg" role="radiogroup" aria-label="Ходы между нотами">
-      <label><input type="radio" name="motion" id="motionAny" value="any"><span>Любые скачки</span></label>
-      <label><input type="radio" name="motion" id="motionStep" value="step"><span>Плавно, до квинты</span></label>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Сколько нот на экране">
-      <label><input type="radio" name="perRow" id="perRowRow" value="row"><span>Строкой</span></label>
-      <label><input type="radio" name="perRow" id="perRowOne" value="one"><span>По одной</span></label>
-    </div>
+    <h3>Ноты</h3>
     <div class="seg" role="radiogroup" aria-label="Названия нот">
       <label><input type="radio" name="naming" id="namingSolf" value="solfege"><span>до, ре, ми</span></label>
       <label><input type="radio" name="naming" id="namingLet" value="letters"><span>C, D, E</span></label>
     </div>
     <label class="switch" for="optOctave"><span>Требовать точную октаву</span><input type="checkbox" id="optOctave"></label>
-    <label class="switch" for="optAdaptive"><span>Чаще давать трудные ноты</span><input type="checkbox" id="optAdaptive"></label>
   </section>
 
   <section class="group">
@@ -501,88 +605,198 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   </section>
 </aside>
 
+<aside class="panel" id="donePanel" role="dialog" aria-modal="true" aria-labelledby="doneTitle" hidden>
+  <div class="panel-head">
+    <h2 id="doneTitle">Пьеса сыграна</h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <section class="group">
+    <p class="note" id="donePiece"></p>
+    <dl class="kv" id="doneKv"></dl>
+  </section>
+  <div class="controls done-actions">
+    <button class="btn primary" type="button" id="doneAgain">Ещё раз</button>
+    <button class="btn" type="button" id="doneList">К списку</button>
+  </div>
+</aside>
+
 <script>
 (() => {
 'use strict';
 
 const GLYPH = /*__GLYPHS__*/null;
 
+/*__MUSIC__*/
+
 /*__DETECTOR__*/
-
-/* ---------- Теория ---------- */
-const STEP = [0, 2, 4, 5, 7, 9, 11];
-const SOLF = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
-const LET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const OCT_GEN = ['субконтроктавы', 'контроктавы', 'большой октавы', 'малой октавы', 'первой октавы', 'второй октавы', 'третьей октавы', 'четвёртой октавы', 'пятой октавы'];
-const SUP = ['₂', '₁', '', '', '¹', '²', '³', '⁴', '⁵'];
-const CLEFS = { treble: { bottomD: 30, name: 'Скрипичный' }, bass: { bottomD: 18, name: 'Басовый' } };
-const midiOf = (d, acc = 0) => (Math.floor(d / 7) + 1) * 12 + STEP[d % 7] + acc;
-const accMark = (acc) => (acc > 0 ? '♯' : acc < 0 ? '♭' : '');
-
-function shortName(d, acc = 0, naming = S.naming) {
-  const oct = Math.floor(d / 7), li = d % 7;
-  if (naming === 'letters') return LET[li] + accMark(acc) + oct;
-  let n = SOLF[li];
-  if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
-  return n + accMark(acc) + (SUP[oct] || '');
-}
-function fullName(d, acc = 0) {
-  const oct = Math.floor(d / 7), li = d % 7;
-  if (S.naming === 'letters') return LET[li] + accMark(acc) + oct;
-  return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
-}
-function spellMidi(midi, preferFlat) {
-  const pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
-  const WHITE = { 0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6 };
-  if (pc in WHITE) return { d: oct * 7 + WHITE[pc], acc: 0 };
-  if (preferFlat) return { d: oct * 7 + WHITE[pc + 1], acc: -1 };
-  return { d: oct * 7 + WHITE[pc - 1], acc: 1 };
-}
 
 /* ---------- Настройки и хранение ---------- */
 const store = {
   get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* хранилище недоступно */ } },
 };
-const PRESETS = [
-  { id: 'first', name: 'Первая октава', clef: 'treble', lo: 28, hi: 35 },
-  { id: 'treble', name: 'Скрипичный ключ', clef: 'treble', lo: 28, hi: 39 },
-  { id: 'bass', name: 'Басовый ключ', clef: 'bass', lo: 17, hi: 28 },
-  { id: 'grand', name: 'Оба ключа', clef: 'grand', lo: 17, hi: 39 },
-  { id: 'ledger', name: 'Добавочные линейки', clef: 'grand', lo: 14, hi: 42 },
-];
-const D_MIN = 12, D_MAX = 49; // ля контроктавы (A1) … до четвёртой октавы (C7)
-const DEFAULTS = { clef: 'treble', lo: 28, hi: 39, acc: false, motion: 'any', perRow: 'row', naming: 'solfege', octave: true, adaptive: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true };
-const saved = store.get('slista.settings.v1', {}) || {};
-if (saved.gateDb == null && typeof saved.sens === 'number') saved.gateDb = -30 - saved.sens; // старая шкала ползунка
-delete saved.sens;
-const S = Object.assign({}, DEFAULTS, saved);
+const SETTINGS_KEY = 'slista.settings.v2';
+let saved = store.get(SETTINGS_KEY, null);
+if (!saved || typeof saved !== 'object') {
+  const v1 = store.get('slista.settings.v1', null); // FR-RND-04: перенос настроек версии 1
+  saved = migrateSettings(v1);
+  if (v1) store.set(SETTINGS_KEY, Object.assign({}, SETTINGS_DEFAULTS, saved));
+}
+const S = Object.assign({}, SETTINGS_DEFAULTS, saved);
+const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v)) || 0));
+if (!CLEFS[S.clef]) S.clef = 'treble';
+S.below = clampInt(S.below, 0, 3);
+S.above = clampInt(S.above, 0, 3);
+const save = () => store.set(SETTINGS_KEY, S);
 let STATS = store.get('slista.stats.v1', null);
 if (!STATS || typeof STATS !== 'object' || !STATS.notes) STATS = { notes: {}, n: 0, first: 0 };
 const session = { n: 0, first: 0, streak: 0, best: 0, ms: 0 };
 
-const lowD = () => Math.min(S.lo, S.hi);
-const highD = () => Math.max(S.lo, S.hi);
-const clefFor = (midi) => (S.clef === 'grand' ? (midi < 60 ? 'bass' : 'treble') : S.clef);
-const presetId = () => { const p = PRESETS.find((p) => p.clef === S.clef && p.lo === lowD() && p.hi === highD()); return p ? p.id : null; };
+const nm = (d, acc) => shortName(d, acc, S.naming);
+const fn = (d, acc) => fullName(d, acc, S.naming);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const linesLabel = (below, above) => (below || above ? `линейки: ${below} снизу, ${above} сверху` : 'без добавочных линеек');
+const clefLabel = (clef) => CLEFS[clef].name.toLowerCase() + ' ключ';
 
-/* ---------- Генерация нот ---------- */
-function candidates() {
-  const lo = lowD(), hi = highD(), loM = midiOf(lo), hiM = midiOf(hi), out = [];
-  for (let d = lo; d <= hi; d++) {
-    const li = d % 7;
-    const push = (acc, w) => {
-      const midi = midiOf(d, acc);
-      if (midi < loM || midi > hiM) return;
-      out.push({ d, acc, midi, clef: clefFor(midi), w });
-    };
-    push(0, 1);
-    if (S.acc) {
-      if ([0, 1, 3, 4, 5].includes(li)) push(1, 0.45);
-      if ([1, 2, 4, 5, 6].includes(li)) push(-1, 0.45);
+/* ---------- Экраны и история браузера (FR-NAV) ---------- */
+const $ = (id) => document.getElementById(id);
+const SCREENS = { home: 'homeScreen', random: 'randomScreen', pieces: 'piecesScreen', play: 'playScreen' };
+let screen = 'home', afterPop = null;
+const hashScreen = () => { const h = location.hash.slice(1); return SCREENS[h] ? h : 'home'; };
+
+function show(name) {
+  const was = screen;
+  screen = name;
+  for (const [k, id] of Object.entries(SCREENS)) $(id).hidden = k !== name;
+  if (was === 'play' && name !== 'play') leavePlay();
+  if (name === 'home') renderHome();
+  if (name === 'random') renderSetup();
+  if (name === 'pieces') renderPieces();
+  window.scrollTo(0, 0);
+}
+// Переход вперёд: запись в истории, чтобы системная «Назад» возвращала на прошлый экран, а не уводила с сайта.
+function go(name) {
+  history.pushState({ s: name }, '', '#' + name);
+  show(name);
+}
+window.addEventListener('popstate', (e) => {
+  const st = e.state && SCREENS[e.state.s] ? e.state : { s: hashScreen() };
+  if (openPanelEl && !st.panel) hidePanel();
+  if (st.s !== screen) { show(st.s); if (st.s === 'play' && !ex) continueLast(false); } // «Вперёд» в браузере — снова в тренажёр
+  if (afterPop) { const f = afterPop; afterPop = null; f(); }
+});
+document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => history.back()));
+document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
+
+/* ---------- Главный экран ---------- */
+function renderHome() {
+  const l = S.last;
+  $('continueBtn').hidden = !l;
+  if (!l) return;
+  if (l.mode === 'piece') {
+    $('continueTitle').textContent = l.title || 'Пьеса';
+    $('continueSub').textContent = 'Пьеса · ' + clefLabel(l.clef);
+  } else {
+    $('continueTitle').textContent = 'Случайные ноты';
+    $('continueSub').textContent = CLEFS[S.clef].name + ' ключ · ' + linesLabel(S.below, S.above);
+  }
+}
+// «Продолжить»: в истории сначала экран выбора, потом тренажёр — «Назад» из тренажёра ведёт к выбору.
+function continueLast(push = true) {
+  const l = S.last;
+  if (!l) { history.replaceState({ s: 'home' }, '', location.pathname + location.search); show('home'); return; }
+  if (push) { const parent = l.mode === 'piece' ? 'pieces' : 'random'; history.pushState({ s: parent }, '', '#' + parent); go('play'); }
+  if (l.mode === 'piece') openPiece(l.id, l.clef, false);
+  else startRandom();
+}
+$('continueBtn').addEventListener('click', () => continueLast(true));
+
+/* ---------- Настройка случайных нот (FR-RND) ---------- */
+function renderSetup() {
+  document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
+  document.querySelectorAll('input[name="below"]').forEach((r) => { r.checked = +r.value === S.below; });
+  document.querySelectorAll('input[name="above"]').forEach((r) => { r.checked = +r.value === S.above; });
+  $('optAdaptive').checked = S.adaptive;
+  const r = ledgerRange(S.clef, S.below, S.above);
+  $('rangeSvg').innerHTML = staffSVG(S.clef, [{ d: r.lo, len: 1 }, { d: r.hi, len: 1 }]);
+  $('rangeText').innerHTML = `от <b>${nm(r.lo)}</b> до <b>${nm(r.hi)}</b> · ${r.hi - r.lo + 1} нот`;
+}
+for (const name of ['clef', 'below', 'above']) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach((inp) => inp.addEventListener('change', () => {
+    S[name] = name === 'clef' ? inp.value : +inp.value;
+    save();
+    renderSetup();
+  }));
+}
+$('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; save(); });
+$('startRandom').addEventListener('click', () => {
+  S.last = { mode: 'random' };
+  save();
+  go('play');
+  startRandom();
+});
+
+/* ---------- Список пьес (FR-PC-03, FR-PC-10) ---------- */
+let piecesIndex = null;
+const pieceCache = new Map();
+const fileMsg = 'Пьесы загружаются с сайта. Откройте приложение по адресу seliverstov-maxim.github.io/s-lista — случайные ноты работают и так.';
+async function fetchJSON(url) {
+  const r = await fetch(url, { cache: 'no-cache' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+async function renderPieces() {
+  const list = $('piecesList'), msg = $('piecesMsg');
+  if (!piecesIndex) {
+    msg.textContent = 'Загружаю список…';
+    list.innerHTML = '';
+    try { piecesIndex = (await fetchJSON('pieces/index.json')).pieces || []; } catch (e) {
+      msg.textContent = location.protocol === 'file:' ? fileMsg : 'Не удалось загрузить список пьес. Проверьте интернет и откройте раздел ещё раз.';
+      return;
     }
   }
-  return out;
+  msg.textContent = piecesIndex.length ? 'Выберите пьесу и ключ: скрипичный — для правой руки, басовый — для левой.' : 'Пьес пока нет.';
+  list.innerHTML = piecesIndex.map((p) => `<li class="piece"><div class="piece-t"><b>${esc(p.title)}</b><span>${esc(p.composer || '')}</span></div>` +
+    `<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) =>
+      `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}">${CLEFS[c].name}</button>`).join('')}</div></li>`).join('');
+}
+$('piecesList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-piece]');
+  if (b) openPiece(b.dataset.piece, b.dataset.clef, true);
+});
+async function openPiece(id, clef, navigate) {
+  let piece = pieceCache.get(id);
+  if (!piece) {
+    if (navigate) $('piecesMsg').textContent = 'Загружаю пьесу…';
+    try { piece = await fetchJSON(`pieces/${encodeURIComponent(id)}.json`); pieceCache.set(id, piece); } catch (e) {
+      const text = location.protocol === 'file:' ? fileMsg : 'Не удалось загрузить пьесу. Проверьте интернет и попробуйте ещё раз.';
+      if (navigate) { $('piecesMsg').textContent = text; return; }
+      history.replaceState({ s: 'pieces' }, '', '#pieces'); show('pieces'); $('piecesMsg').textContent = text;
+      return;
+    }
+  }
+  if (!piece.shift || piece.shift[clef] == null) clef = piece.shift && piece.shift.treble != null ? 'treble' : 'bass';
+  S.last = { mode: 'piece', id, clef, title: piece.title };
+  save();
+  if (navigate) go('play');
+  startPiece(piece, clef);
+}
+
+/* ---------- Упражнение ---------- */
+// ex — текущее упражнение: партитура, строки, текущая нота. Для случайных нот партитура — одна строка,
+// когда она сыграна, генерируется новая. Для пьесы — вся пьеса, разложенная по строкам ширины листа.
+let ex = null, lastNote = null, ghost = null, ghostTimer = 0, anim = null, fresh = false, busy = false, paused = false;
+let micState = 'off';
+let midiNames = [], midiSeen = false;
+
+// Ширина листа в единицах рисунка (межстрочный интервал — 10 единиц). Пьесам нужно место под такты:
+// интервал не меньше 11 px (FR-EX-01); случайные ноты — крупнее, 12,5 px, как в версии 1. На широком экране — до 17 px.
+const minScale = () => (ex && ex.mode === 'piece' ? 1.1 : 1.25);
+function sheetUnits() {
+  const w = Math.max(200, $('sheet').clientWidth - 16);
+  return w / Math.max(minScale(), Math.min(1.7, w / 500));
 }
 const keyOf = (n) => `${n.clef}:${n.d}:${n.acc}`;
 function difficulty(n) {
@@ -591,183 +805,82 @@ function difficulty(n) {
   const err = (st.e + 0.3) / (st.n + 1), avg = st.ms / st.n;
   return 0.6 + 3 * err + Math.min(1.5, Math.max(0, (avg - 1200) / 1500));
 }
-function pickNote(prev, cands) {
-  let list = cands.filter((c) => !prev || c.midi !== prev.midi);
-  if (!list.length) list = cands;
-  if (S.motion === 'step' && prev) {
-    const near = list.filter((c) => Math.abs(c.d - prev.d) <= 4);
-    if (near.length) list = near;
+// сколько случайных нот помещается в строку без сжатия (от 3 до 8)
+function randomCount(W) {
+  const r = ledgerRange(S.clef, S.below, S.above), mid = Math.round((r.lo + r.hi) / 2);
+  for (let k = 8; k > 3; k--) {
+    const rows = layoutRows(randomScore(Array.from({ length: k }, () => ({ d: mid })), S.clef), W);
+    if (rows.length === 1 && rowFactor(rows[0], W) >= 1) return k;
   }
-  const ws = list.map((c) => c.w * (S.adaptive ? difficulty(c) : 1));
-  let r = Math.random() * ws.reduce((a, b) => a + b, 0);
-  for (let i = 0; i < list.length; i++) { r -= ws[i]; if (r <= 0) return list[i]; }
-  return list[list.length - 1];
+  return 3;
 }
-
-/* ---------- Геометрия нотного стана ---------- */
-const SP = 10; // межстрочный интервал в единицах SVG
-function geometry(n, clefMode, lo, hi) {
-  const need = (clef, loD, hiD) => {
-    const b = CLEFS[clef].bottomD;
-    return { above: Math.max(3.4, (hiD - (b + 8)) / 2 + 2.9), below: Math.max(2.4, (b - loD) / 2 + 1.6) };
-  };
-  let staves, height;
-  if (clefMode === 'grand') {
-    const t = need('treble', 30, Math.max(hi, 38));
-    const b = need('bass', Math.min(lo, 18), 26);
-    const trebleBottom = (t.above + 4) * SP;
-    const bassBottom = trebleBottom + (6.5 + 4) * SP;
-    staves = [{ clef: 'treble', bottomY: trebleBottom }, { clef: 'bass', bottomY: bassBottom }];
-    height = bassBottom + b.below * SP;
-  } else {
-    const r = need(clefMode, lo, hi);
-    staves = [{ clef: clefMode, bottomY: (r.above + 4) * SP }];
-    height = (r.above + 4 + r.below) * SP;
-  }
-  const grand = clefMode === 'grand';
-  const left = grand ? 2.2 * SP : 0.8 * SP;
-  const clefX = left + 0.7 * SP;
-  const firstX = clefX + 2.7 * SP + 2.9 * SP;
-  const slot = 4.4 * SP, barGap = 1.2 * SP;
-  const xs = [], bars = [];
-  for (let i = 0; i < n; i++) xs.push(firstX + i * slot + Math.floor(i / 4) * barGap);
-  for (let g = 4; g < n; g += 4) bars.push((xs[g - 1] + xs[g]) / 2);
-  const endX = xs[n - 1] + slot * 0.62;
-  return { staves, height, width: endX + 0.8 * SP, xs, bars, left, clefX, endX, slot, grand };
-}
-const staffOf = (G, clef) => G.staves.find((s) => s.clef === clef) || G.staves[0];
-const yOf = (d, st) => st.bottomY - (d - CLEFS[st.clef].bottomD) * (SP / 2);
-const f1 = (v) => Math.round(v * 10) / 10;
-
-function glyph(name, x, y, cls, scale = SP) {
-  return `<path class="${cls}" transform="translate(${f1(x)},${f1(y)}) scale(${scale})" d="${GLYPH[name].d}"/>`;
-}
-function noteSVG(n, x, st, cls, showAcc) {
-  const b = CLEFS[st.clef].bottomD, y = yOf(n.d, st), hw = 0.59 * SP, lw = 2.1 * SP;
-  let s = '';
-  for (let p = b - 2; p >= n.d; p -= 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
-  for (let p = b + 10; p <= n.d; p += 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
-  if (showAcc != null) {
-    const g = showAcc > 0 ? 'accidentalSharp' : showAcc < 0 ? 'accidentalFlat' : 'accidentalNatural';
-    s += glyph(g, x - hw - 0.32 * SP - GLYPH[g].adv * SP, y, cls);
-  }
-  s += glyph('noteheadBlack', x - hw, y, cls);
-  const mid = b + 4, yMid = yOf(mid, st), len = 3.5 * SP;
-  if (n.d < mid) {
-    const top = Math.min(y - len, yMid);
-    s += `<rect class="${cls}" x="${f1(x + hw - 1.2)}" y="${f1(top)}" width="1.2" height="${f1(y - 0.17 * SP - top)}"/>`;
-  } else {
-    const bot = Math.max(y + len, yMid);
-    s += `<rect class="${cls}" x="${f1(x - hw)}" y="${f1(y + 0.17 * SP)}" width="1.2" height="${f1(bot - y - 0.17 * SP)}"/>`;
-  }
-  return s;
-}
-function staffFrame(G) {
-  let s = '';
-  const top = G.staves[0].bottomY - 4 * SP, bottom = G.staves[G.staves.length - 1].bottomY;
-  for (const st of G.staves) {
-    for (let i = 0; i < 5; i++) s += `<rect class="st" x="${f1(G.left)}" y="${f1(st.bottomY - i * SP - 0.6)}" width="${f1(G.endX - G.left)}" height="1.2"/>`;
-    if (st.clef === 'treble') s += glyph('gClef', G.clefX, st.bottomY - SP, 'g-ink');
-    else s += glyph('fClef', G.clefX, st.bottomY - 3 * SP, 'g-ink');
-  }
-  if (G.grand) {
-    const k = (bottom - top) / 3.988;
-    s += glyph('brace', G.left - 0.35 * SP - 0.33 * k, bottom, 'g-ink', f1(k));
-    s += `<rect class="st" x="${f1(G.left)}" y="${f1(top - 0.6)}" width="1.4" height="${f1(bottom - top + 1.2)}"/>`;
-  }
-  const bar = (x, w) => {
-    if (G.grand) return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(bottom - top + 1.2)}"/>`;
-    return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(4 * SP + 1.2)}"/>`;
-  };
-  for (const x of G.bars) s += bar(x - 0.6, 1.2);
-  s += bar(G.endX - 1.4, 1.4);
-  return s;
-}
-
-/* ---------- Состояние упражнения ---------- */
-let row = null, lastNote = null, ghost = null, ghostTimer = 0, anim = null, rowFresh = false, busy = false, paused = false;
-let micState = 'off';
-let midiNames = [], midiSeen = false;
-
-function autoCount() {
-  if (S.perRow === 'one') return 1;
-  const w = $('sheet').clientWidth - 16;
-  const lead = S.clef === 'grand' ? 111 : 97;
-  const n = Math.floor((w / 1.1 - lead) / 44);
-  return Math.max(3, Math.min(8, n));
+function startRandom() {
+  const r = ledgerRange(S.clef, S.below, S.above);
+  ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: null };
+  ex.W = sheetUnits();
+  ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
+  startExercise();
+  newRandomRow(false);
+  renderAll();
 }
 // regen — перестроить ещё не начатую строку (например, при повороте экрана):
 // тогда первая нота сравнивается с нотой, сыгранной перед этой строкой, а не с концом выброшенной строки
-function newRow(regen = false) {
-  const cands = candidates();
-  const n = autoCount();
-  const notes = [];
-  const before = regen && row ? row.prev : lastNote;
+function newRandomRow(regen) {
+  const cands = candidates(S.clef, S.below, S.above);
+  const before = regen ? ex.prev : lastNote;
   let prev = before;
-  for (let i = 0; i < n; i++) {
-    const c = pickNote(prev, cands);
-    notes.push({ d: c.d, acc: c.acc, midi: c.midi, clef: c.clef, status: 'todo', errors: 0, hinted: false, startAt: 0 });
-    prev = c;
-  }
+  const list = [];
+  for (let i = randomCount(ex.W); i > 0; i--) { prev = pickNote(prev, cands, S.adaptive ? difficulty : null); list.push(prev); }
   lastNote = prev;
-  row = { notes, idx: 0, prev: before };
-  notes[0].startAt = performance.now();
-  rowFresh = true;
-  ghost = null;
-  setHintKey(null);
+  ex.prev = before;
+  ex.score = randomScore(list, S.clef);
+  ex.rows = layoutRows(ex.score, ex.W);
+  ex.row = 0;
+  ex.cur = 0;
+  ex.score.notes[0].startAt = performance.now();
+  fresh = true;
 }
+function startPiece(piece, clef) {
+  const score = buildScore(piece, clef);
+  const midis = score.notes.map((n) => n.midi);
+  ex = { mode: 'piece', clef, piece, score, lo: Math.min(...midis), hi: Math.max(...midis), elapsed: 0 };
+  ex.W = sheetUnits();
+  ex.vb = scoreVBox(score);
+  ex.rows = layoutRows(score, ex.W);
+  ex.cur = 0;
+  ex.row = 0;
+  startExercise();
+  score.notes[0].startAt = performance.now();
+  fresh = true;
+  renderAll();
+  if (ex.rows[0].noteFrom < 0) { busy = true; const e = ex; setTimeout(() => { if (ex === e) nextRow(); }, 1400); }
+}
+function startExercise() {
+  busy = false; ghost = null; anim = null; lastDone = null;
+  clearTimeout(ghostTimer);
+  buildKeys(ex.lo, ex.hi);
+  applyListener();
+  setHintKey(null);
+  lastW = $('sheet').clientWidth;
+}
+function leavePlay() {
+  ex = null;
+  busy = false;
+  clearTimeout(ghostTimer);
+  setHeard(null);
+}
+const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 
 /* ---------- Отрисовка ---------- */
-const $ = (id) => document.getElementById(id);
-
 function renderScore() {
-  if (!row) return;
-  const n = row.notes.length;
-  const G = geometry(n, S.clef, lowD(), highD());
-  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
-  // подсветка текущей ноты (под линиями стана)
-  if (row.idx < n) {
-    const x = G.xs[row.idx];
-    const top = G.staves[0].bottomY - 4 * SP - 1.6 * SP, bot = G.staves[G.staves.length - 1].bottomY + 1.6 * SP;
-    s += `<rect class="band" x="${f1(x - G.slot / 2 + 0.35 * SP)}" y="${f1(top)}" width="${f1(G.slot - 0.7 * SP)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
-  }
-  s += staffFrame(G);
-  s += `<g class="${rowFresh ? 'row-in fx' : ''}">`;
-  let state = {};
-  row.notes.forEach((note, i) => {
-    if (i % 4 === 0) state = {};
-    const st = staffOf(G, note.clef);
-    const k = note.clef + note.d;
-    const cur = state[k] || 0;
-    const showAcc = note.acc !== cur ? note.acc : null;
-    state[k] = note.acc;
-    const cls = note.status === 'ok' ? 'g-ok' : note.status === 'miss' ? 'g-miss' : 'g-ink';
-    const a = anim && anim.idx === i ? ` fx ${anim.type}` : '';
-    s += `<g class="${a}">${noteSVG(note, G.xs[i], st, cls, showAcc)}</g>`;
-  });
-  s += '</g>';
-  // подсказка
-  if (row.idx < n && row.notes[row.idx].hinted) {
-    const note = row.notes[row.idx], st = staffOf(G, note.clef);
-    const y = Math.min(st.bottomY - 4 * SP, yOf(note.d, st) - 1.4 * SP) - 0.9 * SP;
-    s += `<text class="hint-t" x="${f1(G.xs[row.idx])}" y="${f1(y)}" text-anchor="middle">${shortName(note.d, note.acc)}</text>`;
-  }
-  // сыгранная неверная нота — «призрак» рядом с текущей
-  if (ghost && row.idx < n) {
-    const st = staffOf(G, ghost.clef);
-    const y = yOf(ghost.d, st);
-    if (y > 4 && y < G.height - 4) {
-      const x = G.xs[row.idx] + (ghost.acc ? 2.7 : 1.9) * SP;
-      s += `<g class="ghost">${noteSVG(ghost, x, st, 'g-bad', ghost.acc || null)}</g>`;
-    }
-  }
-  s += '</svg>';
-  $('score').innerHTML = s;
+  if (!ex || !ex.score) return;
+  const row = ex.rows[ex.row], cur = busy ? null : curNote();
+  $('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
   anim = null;
-  rowFresh = false;
+  fresh = false;
 }
-
 const fmtSec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' с';
+const fmtDur = (ms) => { const s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
 
 function renderStats() {
@@ -776,12 +889,20 @@ function renderStats() {
   $('stTime').textContent = session.n ? fmtSec(session.ms / session.n) : '—';
   $('stCount').textContent = session.n;
 }
-function renderLevel() {
-  const p = PRESETS.find((p) => p.id === presetId());
-  $('levelName').textContent = p ? p.name : 'Свой уровень';
-  const clefName = S.clef === 'grand' ? 'Оба ключа' : CLEFS[S.clef].name + ' ключ';
-  $('levelRange').textContent = (p ? '' : clefName + ' · ') + shortName(lowD()) + ' — ' + shortName(highD()) + (S.acc ? ' · ♯ ♭' : '');
+// FR-NAV-05: в шапке — что сейчас играется
+function renderTitle() {
+  if (!ex) return;
+  if (ex.mode === 'random') {
+    const r = ledgerRange(ex.clef, S.below, S.above);
+    $('levelName').textContent = 'Случайные ноты';
+    $('levelRange').textContent = `${clefLabel(ex.clef)} · ${nm(r.lo)}–${nm(r.hi)}`;
+  } else {
+    const total = ex.score.notes.length;
+    $('levelName').textContent = ex.piece.title;
+    $('levelRange').textContent = `${clefLabel(ex.clef)} · нота ${Math.min(ex.cur + 1, total)} из ${total}`;
+  }
 }
+function renderAll() { renderScore(); renderStats(); renderTitle(); idleMessage(); }
 function say(text, kind = '') {
   const m = $('msg');
   m.textContent = text;
@@ -796,10 +917,9 @@ function idleMessage() {
 /* ---------- Клавиатура на экране ---------- */
 const keyEls = new Map();
 let heardMidi = null, hintMidi = null;
-function buildKeys() {
-  const lo = midiOf(lowD()), hi = midiOf(highD());
-  const start = Math.floor(lo / 12) * 12;
-  let end = Math.floor(hi / 12) * 12 + 11;
+function buildKeys(loMidi, hiMidi) {
+  const start = Math.floor(loMidi / 12) * 12;
+  let end = Math.floor(hiMidi / 12) * 12 + 11;
   if (end - start + 1 < 24) end = start + 23;
   const isWhite = (m) => [0, 2, 4, 5, 7, 9, 11].includes(m % 12);
   const whites = [];
@@ -808,15 +928,15 @@ function buildKeys() {
   let html = '';
   whites.forEach((m) => {
     const sp = spellMidi(m, false);
-    const lbl = m % 12 === 0 ? `<span class="lbl">${shortName(sp.d)}</span>` : '';
-    html += `<button type="button" class="wk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d)}">${lbl}</button>`;
+    const lbl = m % 12 === 0 ? `<span class="lbl">${nm(sp.d)}</span>` : '';
+    html += `<button type="button" class="wk" tabindex="-1" data-midi="${m}" aria-label="${nm(sp.d)}">${lbl}</button>`;
   });
   let wi = 0;
   for (let m = start; m <= end; m++) {
     if (isWhite(m)) { wi++; continue; }
     const sp = spellMidi(m, false);
     const left = (wi / nw) * 100 - bw / 2;
-    html += `<button type="button" class="bk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d, sp.acc)}" style="left:${left.toFixed(3)}%;width:${bw.toFixed(3)}%"></button>`;
+    html += `<button type="button" class="bk" tabindex="-1" data-midi="${m}" aria-label="${nm(sp.d, sp.acc)}" style="left:${left.toFixed(3)}%;width:${bw.toFixed(3)}%"></button>`;
   }
   const k = $('keys');
   k.style.setProperty('--nw', nw);
@@ -824,9 +944,11 @@ function buildKeys() {
   keyEls.clear();
   k.querySelectorAll('[data-midi]').forEach((el) => keyEls.set(+el.dataset.midi, el));
   heardMidi = null;
+  hintMidi = null;
   requestAnimationFrame(() => {
     const w = $('keysWrap');
-    w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2;
+    const lo = keyEls.get(loMidi), hi = keyEls.get(hiMidi);
+    w.scrollLeft = lo && hi ? (lo.offsetLeft + hi.offsetLeft + hi.offsetWidth - w.clientWidth) / 2 : (w.scrollWidth - w.clientWidth) / 2;
   });
 }
 const flashTimers = new Map();
@@ -884,51 +1006,84 @@ function record(note, clean, ms) {
   store.set('slista.stats.v1', STATS);
 }
 function advance(status, midi) {
-  const cur = row.notes[row.idx], now = performance.now();
+  const cur = curNote(), now = performance.now();
   const ms = Math.min(10000, now - cur.startAt);
   const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
   cur.status = status;
   record(cur, clean, ms);
+  if (ex.mode === 'piece') ex.elapsed += now - cur.startAt;
   ghost = null;
   clearTimeout(ghostTimer);
   setHintKey(null);
-  if (status === 'ok') { anim = { type: 'pop', idx: row.idx }; flashKey(midi, 'ok'); }
-  row.idx++;
-  if (row.idx >= row.notes.length) {
-    const good = row.notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
-    if (row.notes.length > 1) say(`Строка пройдена: ${good} из ${row.notes.length} с первого раза.`, 'ok');
-    else if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}` : 'Верно.', 'ok');
+  if (status === 'ok') { anim = { type: 'pop', note: cur }; flashKey(midi, 'ok'); }
+  ex.cur++;
+  const row = ex.rows[ex.row];
+  if (ex.cur >= row.noteTo) {
+    const notes = ex.score.notes.slice(row.noteFrom, row.noteTo);
+    const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+    const done = ex.mode === 'piece' && ex.cur >= ex.score.notes.length;
+    if (!done) say(notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '', 'ok');
     busy = true;
-    renderScore(); renderStats();
-    setTimeout(() => { busy = false; newRow(); renderScore(); }, row.notes.length > 1 ? 700 : 380);
+    renderScore(); renderStats(); renderTitle();
+    const e = ex;
+    setTimeout(() => { if (ex === e) nextRow(); }, 700);
     return;
   }
-  row.notes[row.idx].startAt = now;
+  ex.score.notes[ex.cur].startAt = now;
   if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
-  renderScore(); renderStats();
+  renderScore(); renderStats(); renderTitle();
 }
-let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ошибкой
-function handleInput(midi, via, strong = true) {
-  if (!row || busy || paused || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
-  const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
-  if (hit) { lastDone = { midi, t: performance.now() }; advance('ok', midi); return; }
-  if (via === 'legato') return; // плавный переход без удара не штрафуем
-  if (via === 'onset') {
-    if (!strong) return; // распознано неуверенно — не штрафуем
-    if (lastDone && lastDone.midi === midi && performance.now() - lastDone.t < 1500) return; // отголосок прошлой ноты
+// Следующая строка по порядку. Строку, в которой нечего играть (паузы, продолжение лиги), показываем 1,4 с
+// и идём дальше, чтобы лига не вела в никуда. После последней строки пьесы — итог.
+function nextRow() {
+  const e = ex;
+  if (ex.mode === 'random' && ex.cur >= ex.score.notes.length) newRandomRow(false);
+  else if (ex.row + 1 >= ex.rows.length) { busy = false; finishPiece(); return; }
+  else {
+    ex.row++;
+    fresh = true;
+    if (ex.rows[ex.row].noteFrom < 0) {
+      renderScore(); renderTitle();
+      setTimeout(() => { if (ex === e) nextRow(); }, 1400);
+      return;
+    }
   }
+  busy = false;
+  ex.score.notes[ex.cur].startAt = performance.now();
+  renderScore(); renderTitle();
+}
+let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ни ошибкой, ни новым ответом (isEcho)
+function handleInput(midi, via, strong = true) {
+  const cur = curNote();
+  if (!cur || screen !== 'play' || busy || paused) return;
+  const now = performance.now();
+  const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
+  if (isEcho(midi, via, strong, lastDone, now, hit)) return;
+  if (hit) { lastDone = { midi, t: now }; advance('ok', midi); return; }
+  if (via === 'legato') return; // плавный переход без удара не штрафуем
+  if (via === 'onset' && !strong) return; // распознано неуверенно — не штрафуем
   cur.errors++;
   if (cur.errors === 1) { session.streak = 0; renderStats(); }
   const sp = spellMidi(midi, cur.acc < 0);
-  ghost = { d: sp.d, acc: sp.acc, midi, clef: clefFor(midi) };
-  anim = { type: 'shake', idx: row.idx };
+  ghost = { d: sp.d, acc: sp.acc };
+  anim = { type: 'shake', note: cur };
   flashKey(midi, 'bad');
-  say(`Сыграно ${shortName(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
+  say(`Сыграно ${nm(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
   renderScore();
   clearTimeout(ghostTimer);
   ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
 }
+// FR-PC-08: итог пьесы
+function finishPiece() {
+  const notes = ex.score.notes;
+  const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+  $('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)}`;
+  $('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
+  say('Пьеса сыграна.', 'ok');
+  openPanel('donePanel');
+}
+$('doneAgain').addEventListener('click', () => { const p = ex && ex.piece, c = ex && ex.clef; closePanel(() => { if (p) startPiece(p, c); }); });
+$('doneList').addEventListener('click', () => closePanel(() => history.back()));
 
 /* ---------- Микрофон ---------- */
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
@@ -994,13 +1149,15 @@ function stopMic() {
     audio.stream.getTracks().forEach((t) => t.stop());
     try { audio.ctx.close(); } catch (e) { /* уже закрыт */ }
   }
-  audio = null; micState = 'off'; setMicUI(); setHeard(null); idleMessage();
+  audio = null; micState = 'off'; setMicUI(); setHeard(null);
+  if (ex) idleMessage();
   if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
 }
 function applyListener() {
   if (!audio) return;
   audio.listener.gateDb = S.gateDb;
-  audio.listener.setRange(midiOf(lowD()) - 1, midiOf(highD()) + 1);
+  const r = ledgerRange(S.clef, S.below, S.above);
+  audio.listener.setRange((ex ? ex.lo : midiOf(r.lo)) - 1, (ex ? ex.hi : midiOf(r.hi)) + 1);
 }
 async function requestWake() {
   try { if ('wakeLock' in navigator && micState === 'on') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
@@ -1018,7 +1175,7 @@ function onDetector(type, d) {
   if (d.midi != null) {
     const sp = spellMidi(d.midi, false);
     const c = d.cents > 0 ? '+' + d.cents : d.cents < 0 ? '−' + Math.abs(d.cents) : '±0';
-    $('heard').innerHTML = `Слышу <strong>${shortName(sp.d, sp.acc)}</strong> ${c}¢`;
+    $('heard').innerHTML = `Слышу <strong>${nm(sp.d, sp.acc)}</strong> ${c}¢`;
     heardUntil = now + 350;
     setHeard(d.midi);
   } else if (now > heardUntil) {
@@ -1028,7 +1185,7 @@ function onDetector(type, d) {
 }
 
 /* ---------- Калибровка микрофона ---------- */
-const fmtDb = (v) => (v < 0 ? '−' : '') + Math.abs(Math.round(v)) + '\u00a0дБ';
+const fmtDb = (v) => (v < 0 ? '−' : '') + Math.abs(Math.round(v)) + ' дБ';
 const dbPos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
 const cal = { state: 'idle', t0: 0, lastT: 0, noise: [], noiseDb: null, peaks: [], cur: null, env: -120, lastOn: 0, result: null };
 const calActive = () => cal.state === 'silence' || cal.state === 'notes';
@@ -1090,7 +1247,7 @@ function calFinish() {
 function calSave() {
   S.gateDb = cal.result.gate;
   S.calibrated = true;
-  store.set('slista.settings.v1', S);
+  save();
   applyListener();
   closePanel();
   say(`Микрофон настроен: порог ${fmtDb(S.gateDb)}. Играйте отмеченную ноту.`, 'ok');
@@ -1161,7 +1318,7 @@ async function connectMidi() {
       note.textContent = names.length
         ? 'Подключено: ' + names.join(', ') + '. Микрофон не нужен: ноты приходят по кабелю или Bluetooth.'
         : 'MIDI-устройства не найдены. Проверьте кабель или Bluetooth и нажмите кнопку ещё раз.';
-      idleMessage();
+      if (ex) idleMessage();
     };
     hook();
     access.onstatechange = hook;
@@ -1171,9 +1328,9 @@ async function connectMidi() {
 }
 
 /* ---------- Панели ---------- */
+// Открытая панель — отдельная запись в истории: системная «Назад» закрывает панель, а не уходит с экрана.
 let openPanelEl = null, returnFocus = null;
-function openPanel(id) {
-  closePanel();
+function showPanel(id) {
   returnFocus = document.activeElement;
   openPanelEl = $(id);
   if (id === 'progressPanel') renderProgress();
@@ -1185,26 +1342,33 @@ function openPanel(id) {
   const f = openPanelEl.querySelector('[data-close]');
   if (f) f.focus();
 }
-function closePanel() {
+function hidePanel() {
   if (!openPanelEl) return;
   if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
   openPanelEl.hidden = true;
   $('scrim').hidden = true;
   openPanelEl = null;
   paused = false;
-  if (row && row.idx < row.notes.length) row.notes[row.idx].startAt = performance.now();
+  const cur = curNote();
+  if (cur) cur.startAt = performance.now();
   if (returnFocus && returnFocus.focus) returnFocus.focus();
 }
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
-$('scrim').addEventListener('click', closePanel);
-document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePanel));
-
-function miniStaff(n) {
-  const G = geometry(1, n.clef, n.d, n.d);
-  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" aria-hidden="true">` + staffFrame(G);
-  s += noteSVG(n, G.xs[0], G.staves[0], 'g-ink', n.acc || null) + '</svg>';
-  return s;
+function openPanel(id) {
+  if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
+  else history.pushState({ s: screen, panel: id }, '');
+  showPanel(id);
 }
+// then — что сделать после закрытия (когда история уже вернулась на экран)
+function closePanel(then) {
+  if (!openPanelEl) { if (then) then(); return; }
+  if (history.state && history.state.panel) { afterPop = then || null; history.back(); }
+  else { hidePanel(); if (then) then(); }
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+$('scrim').addEventListener('click', () => closePanel());
+document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closePanel()));
+document.querySelectorAll('[data-panel]').forEach((b) => b.addEventListener('click', () => openPanel(b.dataset.panel)));
+
 function renderProgress() {
   $('sessionKv').innerHTML = `
     <dt>Сыграно нот</dt><dd>${session.n}</dd>
@@ -1215,7 +1379,7 @@ function renderProgress() {
     <dt>Всего нот</dt><dd>${STATS.n}</dd>
     <dt>С первого раза</dt><dd>${pct(STATS.first, STATS.n)}</dd>`;
   const items = Object.entries(STATS.notes)
-    .filter(([, st]) => st.n >= 2)
+    .filter(([k, st]) => st.n >= 2 && CLEFS[k.split(':')[0]])
     .map(([k, st]) => {
       const [clef, d, acc] = k.split(':');
       const n = { clef, d: +d, acc: +acc };
@@ -1226,7 +1390,7 @@ function renderProgress() {
     .sort((a, b) => b.score - a.score)
     .slice(0, 6);
   $('hardList').innerHTML = items.length
-    ? items.map((x) => `<div class="hard-item">${miniStaff(x.n)}<div><b>${shortName(x.n.d, x.n.acc)}</b><span>${CLEFS[x.n.clef].name.toLowerCase()} · ошибки ${Math.round(x.err * 100)}% · ${fmtSec(x.avg)}</span></div></div>`).join('')
+    ? items.map((x) => `<div class="hard-item">${staffSVG(x.n.clef, [{ d: x.n.d, acc: x.n.acc }])}<div><b>${nm(x.n.d, x.n.acc)}</b><span>${CLEFS[x.n.clef].name.toLowerCase()} · ошибки ${Math.round(x.err * 100)}% · ${fmtSec(x.avg)}</span></div></div>`).join('')
     : '<p class="note">Пока мало данных. Сыграйте пару строк, и здесь появятся ноты, на которых вы ошибаетесь или думаете дольше всего.</p>';
   renderReset(false);
 }
@@ -1246,95 +1410,51 @@ function renderReset(confirming) {
   } else $('resetBtn').onclick = () => renderReset(true);
 }
 
-/* ---------- Форма настроек ---------- */
-function fillRangeSelects() {
-  const other = S.naming === 'letters' ? 'solfege' : 'letters';
-  let opts = '';
-  for (let d = D_MIN; d <= D_MAX; d++) opts += `<option value="${d}">${shortName(d)} · ${shortName(d, 0, other)}</option>`;
-  $('loSel').innerHTML = opts;
-  $('hiSel').innerHTML = opts;
-}
+/* ---------- Общие настройки (FR-NAV-03) ---------- */
 function syncForm() {
-  const pid = presetId();
-  $('presetChips').innerHTML = PRESETS.map((p) => `<button type="button" class="chip" data-preset="${p.id}" aria-pressed="${p.id === pid}">${p.name}</button>`).join('');
-  document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
-  document.querySelectorAll('input[name="motion"]').forEach((r) => { r.checked = r.value === S.motion; });
-  document.querySelectorAll('input[name="perRow"]').forEach((r) => { r.checked = r.value === S.perRow; });
   document.querySelectorAll('input[name="naming"]').forEach((r) => { r.checked = r.value === S.naming; });
-  $('loSel').value = String(lowD());
-  $('hiSel').value = String(highD());
-  $('optAcc').checked = S.acc;
   $('optOctave').checked = S.octave;
-  $('optAdaptive').checked = S.adaptive;
   $('optKeys').checked = S.showKeys;
   $('optSound').checked = S.keySound;
   $('sens').value = String(-S.gateDb);
   $('sensVal').textContent = fmtDb(S.gateDb);
   $('frameNote').hidden = !inFrame;
 }
-function apply(kind) {
-  store.set('slista.settings.v1', S);
-  if (kind === 'exercise') { lastNote = row && row.idx > 0 ? row.notes[row.idx - 1] : row ? row.prev : null; buildKeys(); newRow(); applyListener(); }
-  if (kind === 'names') { fillRangeSelects(); buildKeys(); }
-  $('keysWrap').hidden = !S.showKeys;
-  renderLevel(); renderScore(); syncForm();
-  if (kind === 'exercise') idleMessage();
-}
-$('presetChips').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-preset]');
-  if (!b) return;
-  const p = PRESETS.find((x) => x.id === b.dataset.preset);
-  Object.assign(S, { clef: p.clef, lo: p.lo, hi: p.hi });
-  apply('exercise');
-});
-document.querySelectorAll('input[name="clef"]').forEach((r) => r.addEventListener('change', () => { S.clef = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="motion"]').forEach((r) => r.addEventListener('change', () => { S.motion = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="perRow"]').forEach((r) => r.addEventListener('change', () => { S.perRow = r.value; apply('exercise'); }));
-document.querySelectorAll('input[name="naming"]').forEach((r) => r.addEventListener('change', () => { S.naming = r.value; apply('names'); }));
-const onRange = () => {
-  let lo = +$('loSel').value, hi = +$('hiSel').value;
-  if (hi - lo < 2) { if (document.activeElement === $('loSel')) hi = Math.min(D_MAX, lo + 2); else lo = Math.max(D_MIN, hi - 2); }
-  S.lo = lo; S.hi = hi;
-  apply('exercise');
-};
-$('loSel').addEventListener('change', onRange);
-$('hiSel').addEventListener('change', onRange);
-$('optAcc').addEventListener('change', (e) => { S.acc = e.target.checked; apply('exercise'); });
-$('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; apply(); });
-$('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; apply(); });
-$('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; apply(); });
-$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; apply(); });
+document.querySelectorAll('input[name="naming"]').forEach((r) => r.addEventListener('change', () => {
+  S.naming = r.value;
+  save();
+  if (ex) { buildKeys(ex.lo, ex.hi); renderScore(); }
+  if (screen === 'random') renderSetup();
+}));
+$('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; save(); });
+$('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; save(); $('keysWrap').hidden = !S.showKeys; });
+$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; save(); });
 $('sens').addEventListener('input', (e) => {
   S.gateDb = -(+e.target.value);
   $('sensVal').textContent = fmtDb(S.gateDb);
-  store.set('slista.settings.v1', S);
+  save();
   applyListener();
 });
 $('calibBtn').addEventListener('click', () => openPanel('calibPanel'));
 $('midiBtn').addEventListener('click', connectMidi);
 
-/* ---------- Кнопки ---------- */
+/* ---------- Кнопки тренажёра ---------- */
 $('micBtn').addEventListener('click', () => (micState === 'on' ? stopMic() : startMic()));
 $('hintBtn').addEventListener('click', () => {
-  if (!row || busy || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
+  const cur = curNote();
+  if (!cur || busy) return;
   cur.hinted = true;
   session.streak = 0;
   setHintKey(cur.midi);
-  say(`Это ${fullName(cur.d, cur.acc)}.`, 'hint');
+  say(`Это ${fn(cur.d, cur.acc)}.`, 'hint');
   renderScore(); renderStats();
 });
 $('skipBtn').addEventListener('click', () => {
-  if (!row || busy || row.idx >= row.notes.length) return;
-  const cur = row.notes[row.idx];
-  say(`Пропущено. Это была нота ${fullName(cur.d, cur.acc)}.`, 'bad');
+  const cur = curNote();
+  if (!cur || busy) return;
+  say(`Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`, 'bad');
   advance('miss');
 });
-$('settingsBtn').addEventListener('click', () => openPanel('settingsPanel'));
-$('levelBtn').addEventListener('click', () => openPanel('settingsPanel'));
-$('progressBtn').addEventListener('click', () => openPanel('progressPanel'));
-$('stats').addEventListener('click', () => openPanel('progressPanel'));
-
 $('keys').addEventListener('click', (e) => {
   const k = e.target.closest('[data-midi]');
   if (!k) return;
@@ -1344,25 +1464,29 @@ $('keys').addEventListener('click', (e) => {
 });
 
 /* ---------- Запуск ---------- */
+// Поворот экрана или смена ширины: пьесу раскладываем заново, ещё не начатую строку случайных нот — перестраиваем.
 let lastW = 0;
 const ro = new ResizeObserver(() => {
   const w = $('sheet').clientWidth;
-  if (Math.abs(w - lastW) < 2) return;
+  if (!ex || screen !== 'play' || !w || Math.abs(w - lastW) < 2) return;
   lastW = w;
-  if (row && row.idx === 0 && !row.notes[0].errors && !row.notes[0].hinted && autoCount() !== row.notes.length) { newRow(true); renderScore(); }
+  ex.W = sheetUnits();
+  const first = ex.score.notes[0];
+  if (ex.mode === 'random' && ex.cur === 0 && !first.errors && !first.hinted && !busy && randomCount(ex.W) !== ex.score.notes.length) newRandomRow(true);
+  else {
+    ex.rows = layoutRows(ex.score, ex.W);
+    ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+  }
+  renderScore();
 });
-
-fillRangeSelects();
-syncForm();
-buildKeys();
-$('keysWrap').hidden = !S.showKeys;
-renderLevel();
-newRow();
-renderScore();
-renderStats();
-setMicUI();
-idleMessage();
-lastW = $('sheet').clientWidth;
 ro.observe($('sheet'));
+
+$('keysWrap').hidden = !S.showKeys;
+setMicUI();
+const initial = hashScreen();
+history.replaceState({ s: 'home' }, '', location.pathname + location.search);
+if (initial === 'random' || initial === 'pieces') go(initial);
+else if (initial === 'play' && S.last) continueLast(true);
+else show('home');
 })();
 </script>
