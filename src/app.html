@@ -174,6 +174,7 @@ button { cursor: pointer; }
 
 /* ---- лист ---- */
 .sheet {
+  position: relative;
   background: var(--sheet);
   border-radius: 14px;
   box-shadow: var(--shadow);
@@ -183,6 +184,14 @@ button { cursor: pointer; }
   min-height: 180px;
   flex: 1 1 auto;
 }
+.play-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 1;
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.play-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.play-btn.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.keys.muted { opacity: 0.55; }
 #score { width: 100%; }
 #score svg { display: block; width: 100%; height: auto; max-height: min(48vh, 460px); margin-inline: auto; }
 .st { fill: var(--staff); }
@@ -191,6 +200,7 @@ button { cursor: pointer; }
 .g-miss { fill: var(--bad); opacity: 0.55; }
 .g-bad { fill: var(--bad); }
 .band { fill: var(--accent-soft); }
+.band.play { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
 .hint-t { fill: var(--accent); font-family: var(--ui); font-weight: 600; font-size: 15px; }
 .ghost { opacity: 0.85; }
 .fx { transform-box: fill-box; transform-origin: center; }
@@ -492,6 +502,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
     </button>
 
     <main class="sheet" id="sheet">
+      <button class="play-btn" id="playBtn" type="button" aria-label="Прослушать с этой строки" hidden></button>
       <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
     </main>
 
@@ -829,6 +840,7 @@ function startRandom() {
   ex.W = sheetUnits();
   ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
   startExercise();
+  $('playBtn').hidden = true;
   newRandomRow(false);
   renderAll();
 }
@@ -859,12 +871,14 @@ function startPiece(piece, clef) {
   ex.cur = 0;
   ex.row = 0;
   startExercise();
+  $('playBtn').hidden = false;
   score.notes[0].startAt = performance.now();
   fresh = true;
   renderAll();
   if (ex.rows[0].noteFrom < 0) { busy = true; const e = ex; setTimeout(() => { if (ex === e) nextRow(); }, 1400); }
 }
 function startExercise() {
+  stopPlayback();
   busy = false; ghost = null; anim = null; lastDone = null;
   clearTimeout(ghostTimer);
   buildKeys(ex.lo, ex.hi);
@@ -873,6 +887,8 @@ function startExercise() {
   lastW = $('sheet').clientWidth;
 }
 function leavePlay() {
+  stopPlayback();
+  $('playBtn').hidden = true;
   ex = null;
   busy = false;
   clearTimeout(ghostTimer);
@@ -886,8 +902,8 @@ const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 /* ---------- Отрисовка ---------- */
 function renderScore() {
   if (!ex || !ex.score) return;
-  const row = ex.rows[ex.row], cur = busy ? null : curNote();
-  $('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
+  const row = ex.rows[ex.row], cur = busy || pb ? null : curNote();
+  $('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
   anim = null;
   fresh = false;
 }
@@ -986,11 +1002,16 @@ function setHintKey(midi) {
 }
 
 let outCtx = null;
+// AudioContext для звука — создаётся по нажатию пользователя (требование iOS)
+function audioOut() {
+  outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (outCtx.state === 'suspended') outCtx.resume();
+  return outCtx;
+}
 function playTone(midi) {
   if (!S.keySound || micState === 'on') return;
   try {
-    outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (outCtx.state === 'suspended') outCtx.resume();
+    audioOut();
     const t = outCtx.currentTime, f = midiToFreq(midi);
     const g = outCtx.createGain();
     g.gain.setValueAtTime(0.0001, t);
@@ -1069,8 +1090,9 @@ function nextRow() {
 let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ни ошибкой, ни новым ответом (isEcho)
 function handleInput(midi, via, strong = true) {
   const cur = curNote();
-  if (!cur || screen !== 'play' || busy || paused) return;
+  if (!cur || screen !== 'play' || busy || paused || pb) return;
   const now = performance.now();
+  if ((via === 'onset' || via === 'legato') && now < micMuteUntil) return; // микрофон ещё слышит затихающий проигрыш
   const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
   if (isEcho(midi, via, strong, lastDone, now, hit)) return;
   if (hit) { lastDone = { midi, t: now }; advance('ok', midi); return; }
@@ -1082,10 +1104,21 @@ function handleInput(midi, via, strong = true) {
   ghost = { d: sp.d, acc: sp.acc };
   anim = { type: 'shake', note: cur };
   flashKey(midi, 'bad');
-  say(`Сыграно ${nm(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
+  say(`Сыграно ${nm(sp.d, sp.acc)}, ${wrongWhy(cur, sp)}`, 'bad');
   renderScore();
   clearTimeout(ghostTimer);
   ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
+}
+// Сыграна та же нота без знака (или не с тем знаком) — объясняем, откуда знак у нужной ноты
+function wrongWhy(cur, sp) {
+  if (sp.d !== cur.d || sp.acc === cur.acc) return 'а нужна другая нота.';
+  const need = `а нужно сыграть ${nm(cur.d, cur.acc)}`;
+  const src = accidentalSource(ex.score, cur);
+  const sign = cur.acc > 0 ? 'диез' : cur.acc < 0 ? 'бемоль' : 'бекар';
+  if (src === 'key') return `${need}: знаки в ключе (${keySigNames(keyAt(ex.score, cur), S.naming)}) действуют на все такие ноты до конца пьесы.`;
+  if (src === 'mark') return `${need}: перед нотой стоит ${sign}.`;
+  if (src === 'measure') return `${need}: знак раньше в такте действует до конца такта.`;
+  return `${need}.`;
 }
 // FR-PC-08: итог пьесы
 function finishPiece() {
@@ -1099,6 +1132,97 @@ function finishPiece() {
 $('doneAgain').addEventListener('click', () => { const p = ex && ex.piece, c = ex && ex.clef; closePanel(() => { if (p) startPiece(p, c); }); });
 $('doneList').addEventListener('click', () => closePanel(() => history.back()));
 
+/* ---------- Проигрыш пьесы (FR-PC-11) ---------- */
+// «▶» играет пьесу по её темпу с начала текущей строки до конца, «■» останавливает. Звучащий знак подсвечен,
+// строки листаются. Пока звучит, любой ввод игнорируется; микрофон молчит ещё 1,2 с после — затихает динамик.
+let pb = null, micMuteUntil = 0;
+const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
+const STOP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/></svg>';
+$('playBtn').innerHTML = PLAY_ICON;
+// Звук ноты: тот же синтез, что у экранной клавиатуры; затухает как струна и обрывается к концу ноты
+function voice(ctx, midi, t, end, nodes) {
+  const f = midiToFreq(midi), g = ctx.createGain(), stop = Math.min(Math.max(end, t + 0.12), t + 1.6);
+  const level = 0.22 * Math.pow(0.0008 / 0.22, (stop - t) / 1.6);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0001, level), stop);
+  g.gain.linearRampToValueAtTime(0, stop + 0.06);
+  g.connect(ctx.destination);
+  const oscs = [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].map(([k, a]) => {
+    const o = ctx.createOscillator(), og = ctx.createGain();
+    o.frequency.value = f * k; og.gain.value = a;
+    o.connect(og); og.connect(g);
+    o.start(t); o.stop(stop + 0.08);
+    return o;
+  });
+  nodes.push({ g, oscs });
+}
+function setPlayUI(on) {
+  const b = $('playBtn');
+  b.classList.toggle('on', on);
+  b.innerHTML = on ? STOP_ICON : PLAY_ICON;
+  b.setAttribute('aria-label', on ? 'Остановить' : 'Прослушать с этой строки');
+  $('hintBtn').disabled = $('skipBtn').disabled = on;
+  $('keys').classList.toggle('muted', on);
+  setMicUI();
+}
+function startPlayback() {
+  if (!ex || ex.mode !== 'piece' || pb || busy || paused) return;
+  let ctx;
+  try { ctx = audioOut(); } catch (e) { say('Этот браузер не умеет воспроизводить звук.', 'bad'); return; }
+  const first = ex.rows[ex.row].parts[0];
+  const plan = playbackPlan(ex.score, ex.score.measures[first.mi].items[first.from]);
+  pb = { e: ex, ctx, t0: ctx.currentTime + 0.12, plan, next: 0, vis: -1, shown: null, nodes: [], rowOf: itemRowMap(ex.score, ex.rows), timer: 0 };
+  ghost = null;
+  clearTimeout(ghostTimer);
+  setHintKey(null);
+  setPlayUI(true);
+  say('Слушаем с этой строки. «Стоп» — остановить.');
+  pb.timer = setInterval(playTick, 40);
+  playTick();
+}
+function playTick() {
+  const p = pb;
+  if (!p) return;
+  if (ex !== p.e) { stopPlayback(); return; }
+  const now = p.ctx.currentTime - p.t0, ev = p.plan.events;
+  // звук — на полсекунды вперёд по часам AudioContext
+  while (p.next < ev.length && ev[p.next].t < now + 0.5) {
+    const e = ev[p.next++];
+    if (e.midi != null) voice(p.ctx, e.midi, p.t0 + e.t, p.t0 + e.soundEnd, p.nodes);
+  }
+  // подсветка — знак, который звучит сейчас; строка листается вместе с ним
+  let v = p.vis;
+  while (v + 1 < ev.length && ev[v + 1].t <= now) v++;
+  if (v !== p.vis && v >= 0) {
+    p.vis = v;
+    p.shown = ev[v].item;
+    const r = p.rowOf.get(p.shown);
+    if (r !== ex.row) { ex.row = r; fresh = true; }
+    renderScore();
+  }
+  if (now > p.plan.total + 0.3) stopPlayback();
+}
+function stopPlayback() {
+  const p = pb;
+  if (!p) return;
+  pb = null;
+  clearInterval(p.timer);
+  const t = p.ctx.currentTime;
+  for (const n of p.nodes) {
+    try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.02); n.oscs.forEach((o) => o.stop(t + 0.1)); } catch (e) { /* уже отзвучала */ }
+  }
+  micMuteUntil = performance.now() + 1200;
+  setPlayUI(false);
+  if (ex === p.e) {
+    ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+    const cur = curNote();
+    if (cur) cur.startAt = performance.now(); // время на ноту считаем заново — прослушивание не в счёт
+    fresh = true;
+    renderScore(); renderTitle(); idleMessage();
+  }
+}
+
 /* ---------- Микрофон ---------- */
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 let audio = null, wakeLock = null;
@@ -1108,7 +1232,7 @@ function setMicUI() {
   const btn = $('micBtn');
   btn.classList.toggle('primary', !on);
   btn.classList.toggle('on', on);
-  btn.disabled = micState === 'starting';
+  btn.disabled = micState === 'starting' || !!pb;
   $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
   $('meter').hidden = !on;
   $('spacer').hidden = on;
@@ -1368,6 +1492,7 @@ function hidePanel() {
   if (returnFocus && returnFocus.focus) returnFocus.focus();
 }
 function openPanel(id) {
+  stopPlayback();
   if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
   else history.pushState({ s: screen, panel: id }, '');
   showPanel(id);
@@ -1454,10 +1579,11 @@ $('calibBtn').addEventListener('click', () => openPanel('calibPanel'));
 $('midiBtn').addEventListener('click', connectMidi);
 
 /* ---------- Кнопки тренажёра ---------- */
-$('micBtn').addEventListener('click', () => (micState === 'on' ? stopMic() : startMic()));
+$('micBtn').addEventListener('click', () => { if (!pb) (micState === 'on' ? stopMic() : startMic()); });
+$('playBtn').addEventListener('click', () => (pb ? stopPlayback() : startPlayback()));
 $('hintBtn').addEventListener('click', () => {
   const cur = curNote();
-  if (!cur || busy) return;
+  if (!cur || busy || pb) return;
   cur.hinted = true;
   session.streak = 0;
   setHintKey(cur.midi);
@@ -1466,14 +1592,14 @@ $('hintBtn').addEventListener('click', () => {
 });
 $('skipBtn').addEventListener('click', () => {
   const cur = curNote();
-  if (!cur || busy) return;
+  if (!cur || busy || pb) return;
   const text = `Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`;
   say(text, 'bad');
   advance('miss', undefined, text);
 });
 $('keys').addEventListener('click', (e) => {
   const k = e.target.closest('[data-midi]');
-  if (!k) return;
+  if (!k || pb) return;
   const m = +k.dataset.midi;
   playTone(m);
   handleInput(m, 'screen');
@@ -1492,6 +1618,7 @@ const ro = new ResizeObserver(() => {
   else {
     ex.rows = layoutRows(ex.score, ex.W);
     ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+    if (pb) { pb.rowOf = itemRowMap(ex.score, ex.rows); if (pb.shown) ex.row = pb.rowOf.get(pb.shown); }
   }
   renderScore();
 });

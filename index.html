@@ -177,6 +177,7 @@ background: none; border: 0; padding: 0; text-align: left; width: 100%;
 .stat b { font-size: 21px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stat span { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
 .sheet {
+position: relative;
 background: var(--sheet);
 border-radius: 14px;
 box-shadow: var(--shadow);
@@ -186,6 +187,14 @@ place-items: center;
 min-height: 180px;
 flex: 1 1 auto;
 }
+.play-btn {
+position: absolute; top: 8px; right: 8px; z-index: 1;
+width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.play-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.play-btn.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.keys.muted { opacity: 0.55; }
 #score { width: 100%; }
 #score svg { display: block; width: 100%; height: auto; max-height: min(48vh, 460px); margin-inline: auto; }
 .st { fill: var(--staff); }
@@ -194,6 +203,7 @@ flex: 1 1 auto;
 .g-miss { fill: var(--bad); opacity: 0.55; }
 .g-bad { fill: var(--bad); }
 .band { fill: var(--accent-soft); }
+.band.play { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
 .hint-t { fill: var(--accent); font-family: var(--ui); font-weight: 600; font-size: 15px; }
 .ghost { opacity: 0.85; }
 .fx { transform-box: fill-box; transform-origin: center; }
@@ -489,6 +499,7 @@ border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 
     </button>
 
     <main class="sheet" id="sheet">
+      <button class="play-btn" id="playBtn" type="button" aria-label="Прослушать с этой строки" hidden></button>
       <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
     </main>
 
@@ -719,7 +730,7 @@ head: null, tieTo: null, beam: null, stem: null, group: null, status: 'todo', er
 }
 function buildScore(piece, clef) {
 const shift = 7 * ((piece.shift && piece.shift[clef]) || 0);
-let time = null, key = 0, open = null;
+let time = null, key = 0, tempo = 100, open = null;
 const measures = [], notes = [];
 piece.measures.forEach((m, mi) => {
 const prevKey = key;
@@ -727,6 +738,7 @@ const showTime = !!m.time && (mi === 0 || !sameTime(m.time, time));
 const showKey = m.key != null && mi > 0 && m.key !== key;
 if (m.time) time = m.time;
 if (m.key != null) key = m.key;
+if (m.tempo) tempo = m.tempo;
 const full = time ? time[0] * durOf(time[1]) : 4 * TPQ;
 let t = 0;
 const items = m.items.map((it) => {
@@ -746,7 +758,7 @@ if (!n.tieFrom) { n.idx = notes.length; notes.push(n); }
 t += n.dur;
 return n;
 });
-measures.push({ time, key, prevKey, showTime, showKey, full, pickup: !!m.pickup, items });
+measures.push({ time, key, tempo, prevKey, showTime, showKey, full, pickup: !!m.pickup, items });
 });
 const score = { clef, measures, notes, title: piece.title };
 prepareScore(score);
@@ -765,6 +777,35 @@ prepareScore(score);
 return score;
 }
 const allNotes = (score) => score.measures.flatMap((m) => m.items.filter((it) => it.type === 'note'));
+function playbackPlan(score, from) {
+const events = [], at = new Map();
+let t = 0, started = !from;
+for (const m of score.measures) {
+const spt = 60 / ((m.tempo || 100) * TPQ); // секунд на тик
+for (const it of m.items) {
+if (!started && it !== from) continue;
+started = true;
+const e = { item: it, t, end: t + it.dur * spt, midi: null, soundEnd: 0 };
+events.push(e);
+at.set(it, e);
+t = e.end;
+}
+}
+for (const e of events) {
+const it = e.item;
+if (it.type !== 'note' || (it.tieFrom && at.has(it.head))) continue; // продолжение лиги, начало которой тоже звучит
+let last = it;
+while (last.tieTo && at.has(last.tieTo)) last = last.tieTo;
+e.midi = it.midi;
+e.soundEnd = at.get(last).end;
+}
+return { events, total: t };
+}
+function itemRowMap(score, rows) {
+const map = new Map();
+rows.forEach((r, ri) => r.parts.forEach((p) => score.measures[p.mi].items.slice(p.from, p.to).forEach((it) => map.set(it, ri))));
+return map;
+}
 const SP = 10;          // межстрочный интервал в единицах SVG
 const STEM = 3.5 * SP;  // длина штиля
 const BEAM_T = 0.5 * SP, BEAM_GAP = 0.75 * SP;
@@ -1095,11 +1136,12 @@ const width = Math.max(o.W, endX + RIGHT);
 const staffTop = baseY - 4 * SP;
 let s = `<svg viewBox="0 0 ${f1(width)} ${f1(H)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
 const cur = o.cur && pos.x.has(o.cur) ? o.cur : null;
-if (cur) {
-const x = pos.x.get(cur), yN = Y(cur.d);
-const bw = Math.max(2.6 * SP, Math.min(4.2 * SP, spaceFor(cur.dur) * f * 0.8)) + leadOf(cur);
+const hl = o.play && pos.x.has(o.play) ? o.play : cur;
+if (hl) {
+const x = pos.x.get(hl), yN = hl.type === 'note' ? Y(hl.d) : baseY - 2 * SP, lead = leadOf(hl);
+const bw = Math.max(2.6 * SP, Math.min(4.2 * SP, spaceFor(hl.dur) * f * 0.8)) + lead;
 const top = Math.min(staffTop - 1.6 * SP, yN - 1.3 * SP), bot = Math.max(baseY + 1.6 * SP, yN + 1.3 * SP);
-s += `<rect class="band" x="${f1(x - bw / 2 - leadOf(cur) / 2)}" y="${f1(top)}" width="${f1(bw)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
+s += `<rect class="band${hl === cur ? '' : ' play'}" x="${f1(x - bw / 2 - lead / 2)}" y="${f1(top)}" width="${f1(bw)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
 }
 for (let i = 0; i < 5; i++) s += rect(left, baseY - i * SP - 0.6, endX - left, 1.2, 'st');
 const clefX = 1.5 * SP;
@@ -1177,6 +1219,18 @@ const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6], FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3]; /
 const keyAlter = (d, key) => (key > 0 ? (SHARP_ORDER.slice(0, key).includes(d % 7) ? 1 : 0) : key < 0 ? (FLAT_ORDER.slice(0, -key).includes(d % 7) ? -1 : 0) : 0);
 const measureOf = (score, note) => score.measures.find((m) => m.items.includes(note)) || null;
 const keyAt = (score, note) => { const m = measureOf(score, note); return m ? m.key : 0; };
+function accidentalSource(score, note) {
+if (note.mark != null) return 'mark';
+const k = keyAlter(note.d, keyAt(score, note));
+if (note.acc === k) return k ? 'key' : null;
+return 'measure';
+}
+function keySigNames(key, naming = 'solfege') {
+if (!key) return '';
+const order = key > 0 ? SHARP_ORDER : FLAT_ORDER;
+const names = order.slice(0, Math.abs(key)).map((li) => (naming === 'letters' ? LET[li] + accMark(Math.sign(key)) : SOLF[li] + (key > 0 ? '-диез' : '-бемоль')));
+return names.length > 1 ? names.slice(0, -1).join(', ') + ' и ' + names[names.length - 1] : names[0];
+}
 function shownAcc(score, cur, d, acc) {
 const m = measureOf(score, cur);
 let state = keyAlter(d, m ? m.key : 0);
@@ -1615,6 +1669,7 @@ ex = { mode: 'random', clef: S.clef, lo: midiOf(r.lo), hi: midiOf(r.hi), prev: n
 ex.W = sheetUnits();
 ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
 startExercise();
+$('playBtn').hidden = true;
 newRandomRow(false);
 renderAll();
 }
@@ -1643,12 +1698,14 @@ ex.rows = layoutRows(score, ex.W);
 ex.cur = 0;
 ex.row = 0;
 startExercise();
+$('playBtn').hidden = false;
 score.notes[0].startAt = performance.now();
 fresh = true;
 renderAll();
 if (ex.rows[0].noteFrom < 0) { busy = true; const e = ex; setTimeout(() => { if (ex === e) nextRow(); }, 1400); }
 }
 function startExercise() {
+stopPlayback();
 busy = false; ghost = null; anim = null; lastDone = null;
 clearTimeout(ghostTimer);
 buildKeys(ex.lo, ex.hi);
@@ -1657,6 +1714,8 @@ setHintKey(null);
 lastW = $('sheet').clientWidth;
 }
 function leavePlay() {
+stopPlayback();
+$('playBtn').hidden = true;
 ex = null;
 busy = false;
 clearTimeout(ghostTimer);
@@ -1667,8 +1726,8 @@ $('levelName').textContent = $('levelRange').textContent = '';
 const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 function renderScore() {
 if (!ex || !ex.score) return;
-const row = ex.rows[ex.row], cur = busy ? null : curNote();
-$('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
+const row = ex.rows[ex.row], cur = busy || pb ? null : curNote();
+$('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
 anim = null;
 fresh = false;
 }
@@ -1762,11 +1821,15 @@ hintMidi = midi;
 if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('hint');
 }
 let outCtx = null;
+function audioOut() {
+outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
+if (outCtx.state === 'suspended') outCtx.resume();
+return outCtx;
+}
 function playTone(midi) {
 if (!S.keySound || micState === 'on') return;
 try {
-outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
-if (outCtx.state === 'suspended') outCtx.resume();
+audioOut();
 const t = outCtx.currentTime, f = midiToFreq(midi);
 const g = outCtx.createGain();
 g.gain.setValueAtTime(0.0001, t);
@@ -1840,8 +1903,9 @@ renderScore(); renderTitle();
 let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ни ошибкой, ни новым ответом (isEcho)
 function handleInput(midi, via, strong = true) {
 const cur = curNote();
-if (!cur || screen !== 'play' || busy || paused) return;
+if (!cur || screen !== 'play' || busy || paused || pb) return;
 const now = performance.now();
+if ((via === 'onset' || via === 'legato') && now < micMuteUntil) return; // микрофон ещё слышит затихающий проигрыш
 const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
 if (isEcho(midi, via, strong, lastDone, now, hit)) return;
 if (hit) { lastDone = { midi, t: now }; advance('ok', midi); return; }
@@ -1853,10 +1917,20 @@ const sp = spellMidi(midi, cur.acc < 0 || keyAt(ex.score, cur) < 0); // в бе�
 ghost = { d: sp.d, acc: sp.acc };
 anim = { type: 'shake', note: cur };
 flashKey(midi, 'bad');
-say(`Сыграно ${nm(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
+say(`Сыграно ${nm(sp.d, sp.acc)}, ${wrongWhy(cur, sp)}`, 'bad');
 renderScore();
 clearTimeout(ghostTimer);
 ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
+}
+function wrongWhy(cur, sp) {
+if (sp.d !== cur.d || sp.acc === cur.acc) return 'а нужна другая нота.';
+const need = `а нужно сыграть ${nm(cur.d, cur.acc)}`;
+const src = accidentalSource(ex.score, cur);
+const sign = cur.acc > 0 ? 'диез' : cur.acc < 0 ? 'бемоль' : 'бекар';
+if (src === 'key') return `${need}: знаки в ключе (${keySigNames(keyAt(ex.score, cur), S.naming)}) действуют на все такие ноты до конца пьесы.`;
+if (src === 'mark') return `${need}: перед нотой стоит ${sign}.`;
+if (src === 'measure') return `${need}: знак раньше в такте действует до конца такта.`;
+return `${need}.`;
 }
 function finishPiece() {
 const notes = ex.score.notes;
@@ -1868,6 +1942,90 @@ openPanel('donePanel');
 }
 $('doneAgain').addEventListener('click', () => { const p = ex && ex.piece, c = ex && ex.clef; closePanel(() => { if (p) startPiece(p, c); }); });
 $('doneList').addEventListener('click', () => closePanel(() => history.back()));
+let pb = null, micMuteUntil = 0;
+const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
+const STOP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/></svg>';
+$('playBtn').innerHTML = PLAY_ICON;
+function voice(ctx, midi, t, end, nodes) {
+const f = midiToFreq(midi), g = ctx.createGain(), stop = Math.min(Math.max(end, t + 0.12), t + 1.6);
+const level = 0.22 * Math.pow(0.0008 / 0.22, (stop - t) / 1.6);
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
+g.gain.exponentialRampToValueAtTime(Math.max(0.0001, level), stop);
+g.gain.linearRampToValueAtTime(0, stop + 0.06);
+g.connect(ctx.destination);
+const oscs = [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].map(([k, a]) => {
+const o = ctx.createOscillator(), og = ctx.createGain();
+o.frequency.value = f * k; og.gain.value = a;
+o.connect(og); og.connect(g);
+o.start(t); o.stop(stop + 0.08);
+return o;
+});
+nodes.push({ g, oscs });
+}
+function setPlayUI(on) {
+const b = $('playBtn');
+b.classList.toggle('on', on);
+b.innerHTML = on ? STOP_ICON : PLAY_ICON;
+b.setAttribute('aria-label', on ? 'Остановить' : 'Прослушать с этой строки');
+$('hintBtn').disabled = $('skipBtn').disabled = on;
+$('keys').classList.toggle('muted', on);
+setMicUI();
+}
+function startPlayback() {
+if (!ex || ex.mode !== 'piece' || pb || busy || paused) return;
+let ctx;
+try { ctx = audioOut(); } catch (e) { say('Этот браузер не умеет воспроизводить звук.', 'bad'); return; }
+const first = ex.rows[ex.row].parts[0];
+const plan = playbackPlan(ex.score, ex.score.measures[first.mi].items[first.from]);
+pb = { e: ex, ctx, t0: ctx.currentTime + 0.12, plan, next: 0, vis: -1, shown: null, nodes: [], rowOf: itemRowMap(ex.score, ex.rows), timer: 0 };
+ghost = null;
+clearTimeout(ghostTimer);
+setHintKey(null);
+setPlayUI(true);
+say('Слушаем с этой строки. «Стоп» — остановить.');
+pb.timer = setInterval(playTick, 40);
+playTick();
+}
+function playTick() {
+const p = pb;
+if (!p) return;
+if (ex !== p.e) { stopPlayback(); return; }
+const now = p.ctx.currentTime - p.t0, ev = p.plan.events;
+while (p.next < ev.length && ev[p.next].t < now + 0.5) {
+const e = ev[p.next++];
+if (e.midi != null) voice(p.ctx, e.midi, p.t0 + e.t, p.t0 + e.soundEnd, p.nodes);
+}
+let v = p.vis;
+while (v + 1 < ev.length && ev[v + 1].t <= now) v++;
+if (v !== p.vis && v >= 0) {
+p.vis = v;
+p.shown = ev[v].item;
+const r = p.rowOf.get(p.shown);
+if (r !== ex.row) { ex.row = r; fresh = true; }
+renderScore();
+}
+if (now > p.plan.total + 0.3) stopPlayback();
+}
+function stopPlayback() {
+const p = pb;
+if (!p) return;
+pb = null;
+clearInterval(p.timer);
+const t = p.ctx.currentTime;
+for (const n of p.nodes) {
+try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.02); n.oscs.forEach((o) => o.stop(t + 0.1)); } catch (e) { /* уже отзвучала */ }
+}
+micMuteUntil = performance.now() + 1200;
+setPlayUI(false);
+if (ex === p.e) {
+ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+const cur = curNote();
+if (cur) cur.startAt = performance.now(); // время на ноту считаем заново — прослушивание не в счёт
+fresh = true;
+renderScore(); renderTitle(); idleMessage();
+}
+}
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 let audio = null, wakeLock = null;
 function setMicUI() {
@@ -1875,7 +2033,7 @@ const on = micState === 'on';
 const btn = $('micBtn');
 btn.classList.toggle('primary', !on);
 btn.classList.toggle('on', on);
-btn.disabled = micState === 'starting';
+btn.disabled = micState === 'starting' || !!pb;
 $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
 $('meter').hidden = !on;
 $('spacer').hidden = on;
@@ -2125,6 +2283,7 @@ if (cur) cur.startAt = performance.now();
 if (returnFocus && returnFocus.focus) returnFocus.focus();
 }
 function openPanel(id) {
+stopPlayback();
 if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
 else history.pushState({ s: screen, panel: id }, '');
 showPanel(id);
@@ -2205,10 +2364,11 @@ applyListener();
 });
 $('calibBtn').addEventListener('click', () => openPanel('calibPanel'));
 $('midiBtn').addEventListener('click', connectMidi);
-$('micBtn').addEventListener('click', () => (micState === 'on' ? stopMic() : startMic()));
+$('micBtn').addEventListener('click', () => { if (!pb) (micState === 'on' ? stopMic() : startMic()); });
+$('playBtn').addEventListener('click', () => (pb ? stopPlayback() : startPlayback()));
 $('hintBtn').addEventListener('click', () => {
 const cur = curNote();
-if (!cur || busy) return;
+if (!cur || busy || pb) return;
 cur.hinted = true;
 session.streak = 0;
 setHintKey(cur.midi);
@@ -2217,14 +2377,14 @@ renderScore(); renderStats();
 });
 $('skipBtn').addEventListener('click', () => {
 const cur = curNote();
-if (!cur || busy) return;
+if (!cur || busy || pb) return;
 const text = `Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`;
 say(text, 'bad');
 advance('miss', undefined, text);
 });
 $('keys').addEventListener('click', (e) => {
 const k = e.target.closest('[data-midi]');
-if (!k) return;
+if (!k || pb) return;
 const m = +k.dataset.midi;
 playTone(m);
 handleInput(m, 'screen');
@@ -2240,6 +2400,7 @@ if (ex.mode === 'random' && ex.cur === 0 && !first.errors && !first.hinted && !b
 else {
 ex.rows = layoutRows(ex.score, ex.W);
 ex.row = rowOfNote(ex.rows, Math.min(ex.cur, ex.score.notes.length - 1));
+if (pb) { pb.rowOf = itemRowMap(ex.score, ex.rows); if (pb.shown) ex.row = pb.rowOf.get(pb.shown); }
 }
 renderScore();
 });

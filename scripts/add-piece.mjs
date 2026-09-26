@@ -112,7 +112,7 @@ function summary(piece, info) {
   const first = piece.measures[0];
   const k = Math.abs(first.key);
   const keyText = k === 0 ? 'без знаков' : `${k} ${first.key > 0 ? plural(k, 'диез', 'диеза', 'диезов') : plural(k, 'бемоль', 'бемоля', 'бемолей')}`;
-  const lines = [`  Тактов: ${info.measures}, нот: ${info.notes}, размер ${first.time.join('/')}, ключевые знаки: ${keyText}${first.pickup ? ', затакт' : ''}`];
+  const lines = [`  Тактов: ${info.measures}, нот: ${info.notes}, размер ${first.time.join('/')}, ключевые знаки: ${keyText}, темп ♩ = ${String(first.tempo).replace('.', ',')}${first.pickup ? ', затакт' : ''}`];
   for (const clef of CLEFS) {
     if (!(clef in piece.shift)) { lines.push(`  ${CLEF_NAME[clef]}: не помещается в три добавочные линейки — версии не будет`); continue; }
     const k = piece.shift[clef];

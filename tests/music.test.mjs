@@ -249,3 +249,36 @@ test('FR-RND-04: перенос настроек — линейки только
   assert.equal(pick({ clef: 'grand', lo: 14, hi: 26 }), 'treble 3 0');
   assert.equal(pick({ clef: 'bass', lo: 12, hi: 16 }), 'bass 3 0');
 });
+
+test('FR-PC-11: план проигрыша — время по темпу такта, лига тянет звук, паузы молчат', () => {
+  const piece = { shift: { treble: 0 }, measures: [
+    { time: [4, 4], key: 0, tempo: 120, items: [n(28), n(29, 8), n(30, 8), { rest: true, len: 4 }, n(31, 4, { tie: true })] },
+    { tempo: 60, items: [n(31, 2), n(32, 2)] },
+  ] };
+  const score = M.buildScore(piece, 'treble');
+  const plan = M.playbackPlan(score, score.notes[0]);
+  const ev = plan.events.map((e) => [+(e.t.toFixed(3)), +(e.end.toFixed(3)), e.midi]);
+  // 120 в минуту: четверть 0,5 с, восьмая 0,25 с; 60 в минуту: половинная 2 с
+  assert.deepEqual(ev, [[0, 0.5, 60], [0.5, 0.75, 62], [0.75, 1, 64], [1, 1.5, null], [1.5, 2, 65], [2, 4, null], [4, 6, 67]]);
+  assert.equal(+plan.events[4].soundEnd.toFixed(3), 4, 'фа под лигой звучит до конца продолжения');
+  assert.equal(+plan.total.toFixed(3), 6);
+  // проигрыш с середины: с продолжения лиги — оно звучит само
+  const tail = M.playbackPlan(score, score.measures[1].items[0]);
+  assert.deepEqual(tail.events.map((e) => e.midi), [65, 67]);
+  // строка каждого знака
+  const rows = M.layoutRows(score, 200), map = M.itemRowMap(score, rows);
+  assert.equal(map.size, 7);
+});
+
+test('Откуда знак у нужной ноты: ключевые знаки, знак перед нотой, знак раньше в такте', () => {
+  const piece = { shift: { treble: 0 }, measures: [
+    { time: [4, 4], key: 2, items: [n(31, 4, { acc: 1 }), n(31, 4, { mark: 0 }), n(31), n(35, 4, { acc: 1 })] },
+    { items: [n(32, 4, { acc: 1, mark: 1 }), n(32, 4, { acc: 1 }), n(33), n(34)] },
+  ] };
+  const score = M.buildScore(piece, 'treble');
+  assert.deepEqual(score.notes.slice(0, 6).map((x) => M.accidentalSource(score, x)), ['key', 'mark', 'measure', 'key', 'mark', 'measure']);
+  assert.equal(M.accidentalSource(score, score.notes[6]), null);
+  assert.equal(M.keySigNames(2), 'фа-диез и до-диез');
+  assert.equal(M.keySigNames(-3), 'си-бемоль, ми-бемоль и ля-бемоль');
+  assert.equal(M.keySigNames(1, 'letters'), 'F♯');
+});

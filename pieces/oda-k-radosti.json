@@ -5,7 +5,7 @@
  "license": "CC0 1.0",
  "shift": {"treble":0,"bass":-1},
  "measures": [
-  {"time":[4,4],"key":2,"items":[{"d":31,"acc":1,"len":4},{"d":31,"acc":1,"len":4},{"d":32,"acc":0,"len":4},{"d":33,"acc":0,"len":4}]},
+  {"time":[4,4],"key":2,"tempo":100,"items":[{"d":31,"acc":1,"len":4},{"d":31,"acc":1,"len":4},{"d":32,"acc":0,"len":4},{"d":33,"acc":0,"len":4}]},
   {"items":[{"d":33,"acc":0,"len":4},{"d":32,"acc":0,"len":4},{"d":31,"acc":1,"len":4},{"d":30,"acc":0,"len":4}]},
   {"items":[{"d":29,"acc":0,"len":4},{"d":29,"acc":0,"len":4},{"d":30,"acc":0,"len":4},{"d":31,"acc":1,"len":4}]},
   {"items":[{"d":31,"acc":1,"len":4,"dots":1},{"d":30,"acc":0,"len":8},{"d":30,"acc":0,"len":2}]},

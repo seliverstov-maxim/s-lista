@@ -124,7 +124,7 @@ function makeNote(f) {
 // Ноты-продолжения лиги (tieFrom) не играются отдельно: их цвет берётся у первой ноты лиги (head).
 function buildScore(piece, clef) {
   const shift = 7 * ((piece.shift && piece.shift[clef]) || 0);
-  let time = null, key = 0, open = null;
+  let time = null, key = 0, tempo = 100, open = null;
   const measures = [], notes = [];
   piece.measures.forEach((m, mi) => {
     const prevKey = key;
@@ -132,6 +132,7 @@ function buildScore(piece, clef) {
     const showKey = m.key != null && mi > 0 && m.key !== key;
     if (m.time) time = m.time;
     if (m.key != null) key = m.key;
+    if (m.tempo) tempo = m.tempo;
     const full = time ? time[0] * durOf(time[1]) : 4 * TPQ;
     let t = 0;
     const items = m.items.map((it) => {
@@ -151,7 +152,7 @@ function buildScore(piece, clef) {
       t += n.dur;
       return n;
     });
-    measures.push({ time, key, prevKey, showTime, showKey, full, pickup: !!m.pickup, items });
+    measures.push({ time, key, tempo, prevKey, showTime, showKey, full, pickup: !!m.pickup, items });
   });
   const score = { clef, measures, notes, title: piece.title };
   prepareScore(score);
@@ -172,6 +173,40 @@ function randomScore(list, clef) {
   return score;
 }
 const allNotes = (score) => score.measures.flatMap((m) => m.items.filter((it) => it.type === 'note'));
+
+/* ---- Проигрыш (FR-PC-11) ---- */
+// События от знака from до конца пьесы: начало и конец в секундах по темпу такта (четвертей в минуту).
+// Звучат ноты; продолжение лиги не звучит заново — звук первой ноты лиги тянется до конца лиги (soundEnd).
+function playbackPlan(score, from) {
+  const events = [], at = new Map();
+  let t = 0, started = !from;
+  for (const m of score.measures) {
+    const spt = 60 / ((m.tempo || 100) * TPQ); // секунд на тик
+    for (const it of m.items) {
+      if (!started && it !== from) continue;
+      started = true;
+      const e = { item: it, t, end: t + it.dur * spt, midi: null, soundEnd: 0 };
+      events.push(e);
+      at.set(it, e);
+      t = e.end;
+    }
+  }
+  for (const e of events) {
+    const it = e.item;
+    if (it.type !== 'note' || (it.tieFrom && at.has(it.head))) continue; // продолжение лиги, начало которой тоже звучит
+    let last = it;
+    while (last.tieTo && at.has(last.tieTo)) last = last.tieTo;
+    e.midi = it.midi;
+    e.soundEnd = at.get(last).end;
+  }
+  return { events, total: t };
+}
+// Строка каждого знака: по ней проигрыш листает строки
+function itemRowMap(score, rows) {
+  const map = new Map();
+  rows.forEach((r, ri) => r.parts.forEach((p) => score.measures[p.mi].items.slice(p.from, p.to).forEach((it) => map.set(it, ri))));
+  return map;
+}
 
 /* ---- Штили и рёбра ---- */
 const SP = 10;          // межстрочный интервал в единицах SVG
@@ -550,12 +585,13 @@ function renderRow(score, row, o) {
   const staffTop = baseY - 4 * SP;
   let s = `<svg viewBox="0 0 ${f1(width)} ${f1(H)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
   const cur = o.cur && pos.x.has(o.cur) ? o.cur : null;
-  // подсветка текущей ноты — под линиями стана
-  if (cur) {
-    const x = pos.x.get(cur), yN = Y(cur.d);
-    const bw = Math.max(2.6 * SP, Math.min(4.2 * SP, spaceFor(cur.dur) * f * 0.8)) + leadOf(cur);
+  // подсветка под линиями стана: звучащий знак при проигрыше (o.play), иначе текущая нота
+  const hl = o.play && pos.x.has(o.play) ? o.play : cur;
+  if (hl) {
+    const x = pos.x.get(hl), yN = hl.type === 'note' ? Y(hl.d) : baseY - 2 * SP, lead = leadOf(hl);
+    const bw = Math.max(2.6 * SP, Math.min(4.2 * SP, spaceFor(hl.dur) * f * 0.8)) + lead;
     const top = Math.min(staffTop - 1.6 * SP, yN - 1.3 * SP), bot = Math.max(baseY + 1.6 * SP, yN + 1.3 * SP);
-    s += `<rect class="band" x="${f1(x - bw / 2 - leadOf(cur) / 2)}" y="${f1(top)}" width="${f1(bw)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
+    s += `<rect class="band${hl === cur ? '' : ' play'}" x="${f1(x - bw / 2 - lead / 2)}" y="${f1(top)}" width="${f1(bw)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
   }
   // стан: линии, ключ, ключевые знаки, размер, тактовые черты
   for (let i = 0; i < 5; i++) s += rect(left, baseY - i * SP - 0.6, endX - left, 1.2, 'st');
@@ -642,6 +678,20 @@ const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6], FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3]; /
 const keyAlter = (d, key) => (key > 0 ? (SHARP_ORDER.slice(0, key).includes(d % 7) ? 1 : 0) : key < 0 ? (FLAT_ORDER.slice(0, -key).includes(d % 7) ? -1 : 0) : 0);
 const measureOf = (score, note) => score.measures.find((m) => m.items.includes(note)) || null;
 const keyAt = (score, note) => { const m = measureOf(score, note); return m ? m.key : 0; };
+// Откуда у ноты её знак: 'key' — из ключевых знаков, 'mark' — знак перед нотой, 'measure' — знак раньше в такте, null — без знака
+function accidentalSource(score, note) {
+  if (note.mark != null) return 'mark';
+  const k = keyAlter(note.d, keyAt(score, note));
+  if (note.acc === k) return k ? 'key' : null;
+  return 'measure';
+}
+// Ключевые знаки словами: «фа-диез и до-диез» или «F♯ и C♯»
+function keySigNames(key, naming = 'solfege') {
+  if (!key) return '';
+  const order = key > 0 ? SHARP_ORDER : FLAT_ORDER;
+  const names = order.slice(0, Math.abs(key)).map((li) => (naming === 'letters' ? LET[li] + accMark(Math.sign(key)) : SOLF[li] + (key > 0 ? '-диез' : '-бемоль')));
+  return names.length > 1 ? names.slice(0, -1).join(', ') + ' и ' + names[names.length - 1] : names[0];
+}
 function shownAcc(score, cur, d, acc) {
   const m = measureOf(score, cur);
   let state = keyAlter(d, m ? m.key : 0);

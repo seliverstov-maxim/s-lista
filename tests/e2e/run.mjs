@@ -168,6 +168,9 @@ try {
     const m = await curMidi(page);
     await press(page, m + 2);
     check('пьеса: неверная нота — «Сыграно …»', (await text(page, '#msg')).startsWith('Сыграно'));
+    await press(page, m - 1); // фа вместо фа-диеза из ключевых знаков
+    const why = await text(page, '#msg');
+    check('пьеса: фа вместо фа-диеза — объяснение про ключевые знаки', why.includes('нужно сыграть фа♯') && why.includes('знаки в ключе (фа-диез и до-диез)'), why);
     let rows = 0;
     const played = await playAll(page, 400, async () => { rows++; if (rows <= 3) await page.screenshot({ path: outDir + `piece-row${rows}.png` }); });
     check('пьеса: сыграны все 62 ноты', played === 62, `${played}`);
@@ -338,6 +341,44 @@ try {
     check('раскладка: продолжение лиги не играется отдельно', played === 31, `${played} нот`); // 8 + 16 + 3 + 3 + 1: продолжение лиги и паузы не играются
     check('раскладка: масштаб одинаковый во всех строках', widths.size === 1, [...widths].join(', '));
     check('страница без ошибок JS (раскладка)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
+  // 10г. Проигрыш пьесы (FR-PC-11): «▶» → «■», звучащий знак подсвечен, ввод не засчитывается, после — та же нота
+  {
+    const q = (d) => ({ d, acc: 0, len: 4 });
+    const fast = { id: 'e2e-play', title: 'Проигрыш', composer: 'тест', license: 'CC0', shift: { treble: 0 },
+      measures: [{ time: [4, 4], key: 0, tempo: 240, items: [q(28), q(30), q(32), q(35)] }, { items: [q(33), q(31), q(29), q(28)] }] };
+    const route = async (page) => {
+      await page.route('**/pieces/index.json', (r) => r.fulfill({ json: { pieces: [{ id: 'e2e-play', title: 'Проигрыш', composer: 'тест', clefs: ['treble'] }] } }));
+      await page.route('**/pieces/e2e-play.json', (r) => r.fulfill({ json: fast }));
+    };
+    const { ctx, page, errors } = await open(base + '#pieces', { route });
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="e2e-play"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
+    check('кнопка «▶» есть в пьесе', await visible(page, '#playBtn'));
+    await press(page, await curMidi(page)); // одна нота сыграна — проигрыш не должен сдвинуть текущую
+    await page.click('#playBtn');
+    check('«▶» → «■»', (await page.getAttribute('#playBtn', 'aria-label')) === 'Остановить' && (await page.getAttribute('#playBtn', 'class')).includes('on'));
+    const xs = new Set();
+    for (let i = 0; i < 6; i++) { await page.waitForTimeout(150); const x = await page.getAttribute('#score rect.band.play', 'x').catch(() => null); if (x) xs.add(x); }
+    check('при проигрыше подсветка идёт по нотам', xs.size >= 3, `${xs.size} разных положений`);
+    await page.click('#keys [data-midi="60"]', { force: true });
+    check('при проигрыше клавиатура не засчитывается', (await text(page, '#stCount')) === '1');
+    check('при проигрыше подсказка недоступна', await page.isDisabled('#hintBtn'));
+    await page.waitForTimeout(2500);
+    check('после конца проигрыша — снова «▶»', (await page.getAttribute('#playBtn', 'aria-label')) === 'Прослушать с этой строки');
+    check('после проигрыша текущая нота та же', (await page.getAttribute('#score .n.cur', 'data-i')) === '1');
+    await press(page, await curMidi(page));
+    check('после проигрыша ввод снова засчитывается', (await text(page, '#stCount')) === '2' && (await text(page, '#msg')).startsWith('Верно'));
+    // «■» посреди пьесы в обычном темпе
+    await page.click('#playBtn');
+    await page.waitForTimeout(300);
+    await page.click('#playBtn');
+    check('«■» останавливает, текущая нота та же', (await page.getAttribute('#playBtn', 'aria-label')) === 'Прослушать с этой строки' && (await page.getAttribute('#score .n.cur', 'data-i')) === '2');
+    check('в случайных нотах кнопки «▶» нет', await (async () => { await page.goto(base + '#random'); await page.click('#startRandom'); return !(await visible(page, '#playBtn')); })());
+    check('страница без ошибок JS (проигрыш)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
 

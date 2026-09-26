@@ -32,6 +32,15 @@
           <line>2</line>
         </clef>
       </attributes>
+      <direction placement="above">
+        <direction-type>
+          <metronome parentheses="no">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>100</per-minute>
+          </metronome>
+        </direction-type>
+        <sound tempo="100"/>
+      </direction>
       <note>
         <pitch>
           <step>F</step>

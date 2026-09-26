@@ -69,6 +69,22 @@ export function chooseShift(ds, clef, keep = false) {
   return best ? best.k : null;
 }
 
+// Темп в четвертях в минуту: из <sound tempo> (так его пишет MuseScore), иначе из метронома <beat-unit> = <per-minute>.
+// null — темпа в элементе нет, NaN — есть, но не читается (например, «♩ = ♪» или «около 90»).
+function tempoOf(el) {
+  const snd = el.name === 'sound' ? el : kid(el, 'sound');
+  if (snd && snd.attrs.tempo != null) return Number(snd.attrs.tempo);
+  for (const dt of kids(el, 'direction-type')) {
+    const mt = kid(dt, 'metronome');
+    if (!mt) continue;
+    const units = kids(mt, 'beat-unit'), len = units.length === 1 ? TYPE_LEN[units[0].text.trim()] : null;
+    const per = Number(String(textOf(mt, 'per-minute') || '').replace(',', '.'));
+    return len && per > 0 ? per * durQ(len, kids(mt, 'beat-unit-dot').length) : NaN;
+  }
+  return null;
+}
+const TEMPO_MIN = 20, TEMPO_MAX = 300;
+
 // Ключ исходника: скрипичный или басовый без октавного сдвига; остальные (альтовый, скрипичный с восьмёркой) — null
 function clefOf(cl) {
   const sign = textOf(cl, 'sign'), line = textOf(cl, 'line'), oct = Number(textOf(cl, 'clef-octave-change') || 0);
@@ -188,6 +204,7 @@ export function convert(xmlText, meta = {}) {
   const stream = []; // все ноты и паузы по порядку: { it, mi }
   let divisions = null, time = null, key = 0;
   let voice = null, fileHasAccidentals = false, fileHasBeams = false, srcClef; // srcClef — первый ключ партии
+  let tempo = null; // темп в четвертях в минуту
   const once = new Set();
   const errOnce = (k, m) => { if (!once.has(k)) { once.add(k); err(m); } };
   const lens = []; // длительность каждого такта в четвертях
@@ -199,7 +216,16 @@ export function convert(xmlText, meta = {}) {
     const at = (text) => `Такт ${num}: ${text}`;
     const items = [];
     let q = 0, started = false, broken = false;
-    let timeOut = mi === 0, keyOut = mi === 0;
+    let timeOut = mi === 0, keyOut = mi === 0, tempoOut = false;
+    // темп — только в начале такта: по нему приложение проигрывает пьесу (FR-PC-11)
+    const readTempo = (el) => {
+      const q = tempoOf(el);
+      if (q == null) return;
+      if (!Number.isFinite(q) || q < TEMPO_MIN || q > TEMPO_MAX) { err(at(`темп не читается или вне ${TEMPO_MIN}…${TEMPO_MAX} четвертей в минуту. Задайте обычный метроном, например ♩ = 90.`)); return; }
+      if (started) { err(at('смена темпа посреди такта. Перенесите обозначение темпа в начало такта.')); return; }
+      const v = Math.round(q * 100) / 100;
+      if (v !== tempo) { tempo = v; tempoOut = true; }
+    };
     // нота отклонена: такт дальше не проверяем на полноту — хватит основной ошибки
     const reject = (text) => { err(at(text)); broken = true; };
     const checkSound = (s) => {
@@ -330,16 +356,20 @@ export function convert(xmlText, meta = {}) {
       } else if (c.name === 'direction') {
         for (const dt of kids(c, 'direction-type')) if (kid(dt, 'segno') || kid(dt, 'coda')) err(at(JUMP));
         checkSound(kid(c, 'sound'));
+        readTempo(c);
       } else if (c.name === 'sound') {
         checkSound(c);
+        readTempo(c);
       }
       // print, harmony, figured-bass, bookmark и прочее оформление пропускаем
     }
 
     if (mi === 0 && !time) errOnce('notime', 'В начале пьесы нет размера. Задайте размер в MuseScore и экспортируйте снова.');
+    if (mi === 0 && tempo == null) errOnce('notempo', 'В начале пьесы нет темпа: по нему приложение проигрывает пьесу. Поставьте в первом такте обозначение темпа с метрономом (например, ♩ = 90) и экспортируйте снова.');
     const m = {};
     if (timeOut && time) m.time = [...time];
     if (keyOut) m.key = key;
+    if (tempoOut) m.tempo = tempo;
     if (!items.length && !broken) err(at('пустой такт.'));
     else if (time && !broken) {
       const need = (time[0] * 4) / time[1];
@@ -423,7 +453,7 @@ export function convert(xmlText, meta = {}) {
   const piece = {
     title, composer, license,
     shift,
-    measures: measures.map((m) => clean({ time: m.time, key: m.key, pickup: m.pickup, items: m.items.map(canon) })),
+    measures: measures.map((m) => clean({ time: m.time, key: m.key, tempo: m.tempo, pickup: m.pickup, items: m.items.map(canon) })),
   };
   const lo = Math.min(...ds), hi = Math.max(...ds);
   return { piece, errors, warnings, info: { measures: measures.length, notes: notes.length, lo, hi } };

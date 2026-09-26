@@ -43,7 +43,7 @@ function noteXml(tok, bar) {
   return s + '</note>';
 }
 
-function score({ title = 'Тестовая пьеса', composer = 'Автор', rights = 'CC0 1.0', time = '4/4', key = 0, parts = 1, firstAttrs = '', clef = '<clef><sign>G</sign><line>2</line></clef>', measures } = {}) {
+function score({ title = 'Тестовая пьеса', composer = 'Автор', rights = 'CC0 1.0', time = '4/4', key = 0, parts = 1, firstAttrs = '', clef = '<clef><sign>G</sign><line>2</line></clef>', tempo = 100, measures } = {}) {
   const part = (id) => {
     let [b, bt] = time.split('/').map(Number);
     const body = measures.map((mm, i) => {
@@ -54,7 +54,9 @@ function score({ title = 'Тестовая пьеса', composer = 'Автор',
       if (i > 0 && o.time) { [b, bt] = o.time.split('/').map(Number); attrs += `<time><beats>${b}</beats><beat-type>${bt}</beat-type></time>`; }
       const bar = (DIV * 4 * b) / bt;
       const toks = (o.notes || '').trim().split(/\s+/).filter(Boolean);
-      return `<measure number="${o.number ?? i + 1}">${attrs ? `<attributes>${attrs}</attributes>` : ''}${o.before || ''}${toks.map((t) => noteXml(t, bar)).join('')}${o.after || ''}</measure>`;
+      // темп — как пишет MuseScore: метроном и <sound tempo> в начале первого такта
+      const tempoXml = i === 0 && tempo != null ? `<direction placement="above"><direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>${tempo}</per-minute></metronome></direction-type><sound tempo="${tempo}"/></direction>` : '';
+      return `<measure number="${o.number ?? i + 1}">${attrs ? `<attributes>${attrs}</attributes>` : ''}${tempoXml}${o.before || ''}${toks.map((t) => noteXml(t, bar)).join('')}${o.after || ''}</measure>`;
     }).join('\n');
     return `<part id="${id}">\n${body}\n</part>`;
   };
@@ -211,7 +213,7 @@ test('«Данные пьесы»: затакт, лиги, паузы, точк�
   assert.equal(r.piece.composer, 'Композитор');
   assert.equal(r.piece.license, 'CC BY 4.0');
   assert.deepEqual(r.piece.measures, [
-    { time: [4, 4], key: 1, pickup: true, items: [n(29, 4)] },
+    { time: [4, 4], key: 1, tempo: 100, pickup: true, items: [n(29, 4)] },
     { items: [n(32, 4, { dots: 1 }), n(33, 8), n(34, 8, { beam: ['begin'] }), n(35, 8, { beam: ['end'] }), n(36, 4, { tie: true })] },
     { items: [n(36, 2), { rest: true, len: 4 }, n(31, 8, { mark: 0, beam: ['begin'] }), { d: 31, acc: 1, len: 8, mark: 1, beam: ['end'] }] },
     { time: [3, 4], items: [n(30, 16, { beam: ['begin', 'begin'] }), { d: 31, acc: 1, len: 16, beam: ['continue', 'end'] }, n(32, 8, { beam: ['end'] }), n(33, 2)] },
@@ -221,9 +223,28 @@ test('«Данные пьесы»: затакт, лиги, паузы, точк�
   assert.deepEqual(r.warnings, []);
 });
 
+test('FR-PC-11: темп — из <sound tempo> или метронома, в четвертях в минуту; смена — только в начале такта', () => {
+  assert.equal(ok(score({ tempo: 92, measures: ['C4:1'] })).piece.measures[0].tempo, 92);
+  // только метроном: пунктирная четверть = 60 → 90 четвертей в минуту
+  const dotted = '<direction><direction-type><metronome><beat-unit>quarter</beat-unit><beat-unit-dot/><per-minute>60</per-minute></metronome></direction-type></direction>';
+  assert.equal(ok(score({ tempo: null, time: '6/8', measures: [{ before: dotted, notes: 'C4:2.' }] })).piece.measures[0].tempo, 90);
+  // смена темпа в начале второго такта записывается там
+  const slower = '<direction><direction-type><words>Медленнее</words></direction-type><sound tempo="72"/></direction>';
+  const r = ok(score({ measures: ['C4:1', { before: slower, notes: 'D4:1' }] }));
+  assert.deepEqual(r.piece.measures.map((m) => m.tempo), [100, 72]);
+});
+
+test('FR-TOOL-02: пьеса без темпа, со сменой темпа посреди такта или с нечитаемым темпом отклоняется', () => {
+  rejects(score({ tempo: null, measures: ['C4:1'] }), /нет темпа/);
+  rejects(score({ measures: [{ notes: 'C4:2 D4:2', after: '<direction><direction-type><words>rit.</words></direction-type><sound tempo="60"/></direction>' }] }), /Такт 1: смена темпа посреди такта/);
+  const fuzzy = '<direction><direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>около 90</per-minute></metronome></direction-type></direction>';
+  rejects(score({ tempo: null, measures: [{ before: fuzzy, notes: 'C4:1' }] }), /темп не читается/);
+  rejects(score({ tempo: 500, measures: ['C4:1'] }), /темп не читается или вне/);
+});
+
 test('Ключ, смена тональности и размера пишутся только там, где меняются', () => {
   const r = ok(score({ key: -2, measures: ['Bb4:2 Eb5:2', { key: -2, notes: 'D5:1' }, { key: 0, notes: 'C5:1' }, { time: '4/4', notes: 'C5:1' }] }));
-  assert.deepEqual(r.piece.measures.map(({ items, ...m }) => m), [{ time: [4, 4], key: -2 }, {}, { key: 0 }, {}]);
+  assert.deepEqual(r.piece.measures.map(({ items, ...m }) => m), [{ time: [4, 4], key: -2, tempo: 100 }, {}, { key: 0 }, {}]);
 });
 
 test('Знаки альтерации вычисляются по тональности, если в файле их нет: действуют до конца такта, лига через черту — без знака', () => {
