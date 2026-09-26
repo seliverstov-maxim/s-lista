@@ -88,12 +88,13 @@ try {
     await page.click('input[name="below"][value="2"] + span');
     await page.click('input[name="above"][value="1"] + span');
     const range = await text(page, '#rangeText');
-    check('образец диапазона: басовый, 2 снизу, 1 сверху — от До до до¹', range.includes('от До до до¹'), range);
+    check('образец диапазона: басовый, 2 снизу, 1 сверху — от C₂ до C₄', range.includes('от C₂ до C₄'), range);
     check('образец диапазона нарисован', (await page.locator('#rangeSvg svg path').count()) >= 3);
     await page.screenshot({ path: outDir + 'random-setup.png' });
     await page.click('#startRandom');
     check('тренажёр открыт', await visible(page, '#playScreen'));
-    check('шапка тренажёра — ключ и диапазон', (await text(page, '#levelRange')).startsWith('басовый ключ · До–до¹'), await text(page, '#levelRange'));
+    check('шапка тренажёра — ключ и диапазон', (await text(page, '#levelRange')).startsWith('басовый ключ · C₂–C₄'), await text(page, '#levelRange'));
+    check('клавиши «до» подписаны буквой с маленьким номером октавы', (await page.$$eval('#keys .lbl', (els) => els.map((e) => e.textContent))).includes('C₃'));
     const paths = await page.locator('#score svg path').count(), rects = await page.locator('#score svg rect').count();
     check('нотный стан нарисован', paths >= 4 && rects >= 5, `${paths} знаков, ${rects} линий`);
     const m = await curMidi(page);
@@ -149,7 +150,7 @@ try {
     await page.click('[data-go="random"]');
     const state = await page.evaluate(() => ['clef', 'below', 'above'].map((n) => document.querySelector(`input[name="${n}"]:checked`).value).join(' '));
     check('версия 1: большой стан → скрипичный, 3 снизу, 2 сверху', state === 'treble 3 2', state);
-    check('версия 1: названия нот сохранились (буквенные)', (await text(page, '#rangeText')).includes('от F3 до C6'), await text(page, '#rangeText'));
+    check('версия 1: названия нот — буквы с маленьким номером октавы', (await text(page, '#rangeText')).includes('от F₃ до C₆'), await text(page, '#rangeText'));
     check('страница без ошибок JS (перенос)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
@@ -170,7 +171,8 @@ try {
     check('пьеса: неверная нота — «Сыграно …»', (await text(page, '#msg')).startsWith('Сыграно'));
     await press(page, m - 1); // фа вместо фа-диеза из ключевых знаков
     const why = await text(page, '#msg');
-    check('пьеса: фа вместо фа-диеза — объяснение про ключевые знаки', why.includes('нужно сыграть фа♯') && why.includes('знаки в ключе (фа-диез и до-диез)'), why);
+    check('пьеса: фа вместо фа-диеза — объяснение про ключевые знаки', why.includes('нужно сыграть F♯₃') && why.includes('знаки в ключе (F♯ и C♯)'), why);
+    check('пьеса: фа вместо фа-диеза — диез фа в ключе вспыхивает', (await page.locator('#score .key-flash').count()) === 1);
     let rows = 0;
     const played = await playAll(page, 400, async () => { rows++; if (rows <= 3) await page.screenshot({ path: outDir + `piece-row${rows}.png` }); });
     check('пьеса: сыграны все 62 ноты', played === 62, `${played}`);

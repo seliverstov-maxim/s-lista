@@ -202,6 +202,8 @@ button { cursor: pointer; }
 .band { fill: var(--accent-soft); }
 .band.play { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
 .hint-t { fill: var(--accent); font-family: var(--ui); font-weight: 600; font-size: 15px; }
+.key-flash { animation: keyFlash 0.5s ease-in-out 3; }
+@keyframes keyFlash { 50% { opacity: 0.25; } }
 .ghost { opacity: 0.85; }
 .fx { transform-box: fill-box; transform-origin: center; }
 .pop { animation: pop 0.34s ease-out; }
@@ -263,7 +265,7 @@ button { cursor: pointer; }
   background: linear-gradient(180deg, var(--key-b-top), var(--key-b) 70%);
   border: 1px solid var(--key-b); border-top: 0; border-radius: 0 0 4px 4px;
 }
-.wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 10.5px; color: var(--key-label); pointer-events: none; }
+.wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 12px; color: var(--key-label); pointer-events: none; }
 .wk.heard { background: color-mix(in srgb, var(--accent) 26%, var(--key-w)); }
 .bk.heard { background: color-mix(in srgb, var(--accent) 60%, var(--key-b)); }
 .wk.ok { background: color-mix(in srgb, var(--ok) 45%, var(--key-w)); }
@@ -372,7 +374,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   #score svg { max-height: 56vh; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pop, .shake, .row-in { animation: none; }
+  .pop, .shake, .row-in, .key-flash { animation: none; }
   .switch input, .switch input::before { transition: none; }
 }
 </style>
@@ -657,6 +659,9 @@ if (!saved || typeof saved !== 'object') {
 }
 const S = Object.assign({}, SETTINGS_DEFAULTS, saved);
 const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v)) || 0));
+// Названия нот по умолчанию — буквы с маленьким номером октавы (C₄). Кто сохранил «до, ре, ми» раньше,
+// переключаем один раз; вернуть слоги можно в настройках.
+if (S.namingV !== 2) { S.naming = 'letters'; S.namingV = 2; store.set(SETTINGS_KEY, S); }
 if (!CLEFS[S.clef]) S.clef = 'treble';
 S.below = clampInt(S.below, 0, 3);
 S.above = clampInt(S.above, 0, 3);
@@ -903,7 +908,7 @@ const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 function renderScore() {
   if (!ex || !ex.score) return;
   const row = ex.rows[ex.row], cur = busy || pb ? null : curNote();
-  $('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
+  $('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, keyFlash: cur && ghost ? ghost.keyFlash : null, naming: S.naming });
   anim = null;
   fresh = false;
 }
@@ -1101,7 +1106,8 @@ function handleInput(midi, via, strong = true) {
   cur.errors++;
   if (cur.errors === 1) { session.streak = 0; renderStats(); }
   const sp = spellMidi(midi, cur.acc < 0 || keyAt(ex.score, cur) < 0); // в бемольной тональности — бемолем
-  ghost = { d: sp.d, acc: sp.acc };
+  const byKey = sp.d === cur.d && sp.acc !== cur.acc && accidentalSource(ex.score, cur) === 'key';
+  ghost = { d: sp.d, acc: sp.acc, keyFlash: byKey ? cur.d % 7 : null };
   anim = { type: 'shake', note: cur };
   flashKey(midi, 'bad');
   say(`Сыграно ${nm(sp.d, sp.acc)}, ${wrongWhy(cur, sp)}`, 'bad');

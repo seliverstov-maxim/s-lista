@@ -11,7 +11,7 @@ const seeded = (seed = 7) => () => ((seed = (seed * 1103515245 + 12345) % 214748
 const n = (d, len = 4, extra = {}) => ({ d, acc: 0, len, ...extra });
 
 test('FR-RND-02: диапазон по добавочным линейкам — как в таблице спецификации', () => {
-  const name = (d) => M.shortName(d);
+  const name = (d) => M.shortName(d, 0, 'solfege');
   const table = {
     treble: [['ми¹', 'фа²'], ['до¹', 'ля²'], ['ля', 'до³'], ['фа', 'ми³']],
     bass: [['Соль', 'ля'], ['Ми', 'до¹'], ['До', 'ми¹'], ['Ля₁', 'соль¹']],
@@ -281,4 +281,21 @@ test('Откуда знак у нужной ноты: ключевые знак�
   assert.equal(M.keySigNames(2), 'фа-диез и до-диез');
   assert.equal(M.keySigNames(-3), 'си-бемоль, ми-бемоль и ля-бемоль');
   assert.equal(M.keySigNames(1, 'letters'), 'F♯');
+});
+
+test('Названия буквами: номер октавы маленькой цифрой (C₄), слоги — по-прежнему с русскими октавами', () => {
+  assert.equal(M.shortName(28), 'C₄');
+  assert.equal(M.shortName(31, 1, 'letters'), 'F♯₄');
+  assert.equal(M.fullName(12, 0, 'letters'), 'A₁');
+  assert.equal(M.shortName(28, 0, 'solfege'), 'до¹');
+  assert.equal(M.fullName(31, 1, 'solfege'), 'фа-диез первой октавы');
+});
+
+test('Ошибка из-за ключевых знаков: вспыхивает знак своей буквы', () => {
+  const piece = { shift: { treble: 0 }, measures: [{ time: [4, 4], key: 2, items: [n(31, 4, { acc: 1 }), n(32), n(33), n(34)] }] };
+  const score = M.buildScore(piece, 'treble');
+  const rows = M.layoutRows(score, 400), vb = M.scoreVBox(score);
+  const svg = M.renderRow(score, rows[0], { W: 400, vb, cur: score.notes[0], ghost: { d: 31, acc: 0 }, keyFlash: 3 });
+  assert.equal((svg.match(/key-flash/g) || []).length, 1, 'подсвечен один знак — фа-диез');
+  assert.ok(!M.renderRow(score, rows[0], { W: 400, vb, cur: score.notes[0] }).includes('key-flash'));
 });

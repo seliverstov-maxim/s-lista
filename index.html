@@ -205,6 +205,8 @@ border: 1px solid var(--line); background: var(--panel); color: var(--ink);
 .band { fill: var(--accent-soft); }
 .band.play { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
 .hint-t { fill: var(--accent); font-family: var(--ui); font-weight: 600; font-size: 15px; }
+.key-flash { animation: keyFlash 0.5s ease-in-out 3; }
+@keyframes keyFlash { 50% { opacity: 0.25; } }
 .ghost { opacity: 0.85; }
 .fx { transform-box: fill-box; transform-origin: center; }
 .pop { animation: pop 0.34s ease-out; }
@@ -262,7 +264,7 @@ position: absolute; top: 0; height: 60%; z-index: 2; padding: 0;
 background: linear-gradient(180deg, var(--key-b-top), var(--key-b) 70%);
 border: 1px solid var(--key-b); border-top: 0; border-radius: 0 0 4px 4px;
 }
-.wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 10.5px; color: var(--key-label); pointer-events: none; }
+.wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 12px; color: var(--key-label); pointer-events: none; }
 .wk.heard { background: color-mix(in srgb, var(--accent) 26%, var(--key-w)); }
 .bk.heard { background: color-mix(in srgb, var(--accent) 60%, var(--key-b)); }
 .wk.ok { background: color-mix(in srgb, var(--ok) 45%, var(--key-w)); }
@@ -368,7 +370,7 @@ border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 
 #score svg { max-height: 56vh; }
 }
 @media (prefers-reduced-motion: reduce) {
-.pop, .shake, .row-in { animation: none; }
+.pop, .shake, .row-in, .key-flash { animation: none; }
 .switch input, .switch input::before { transition: none; }
 }
 </style>
@@ -639,22 +641,23 @@ const SOLF = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
 const LET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const OCT_GEN = ['субконтроктавы', 'контроктавы', 'большой октавы', 'малой октавы', 'первой октавы', 'второй октавы', 'третьей октавы', 'четвёртой октавы', 'пятой октавы'];
 const SUP = ['₂', '₁', '', '', '¹', '²', '³', '⁴', '⁵'];
+const SUB_DIGIT = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']; // номер октавы у букв — маленькой цифрой: C₄
 const CLEFS = {
 treble: { bottomD: 30, name: 'Скрипичный', hand: 'правая рука' },
 bass: { bottomD: 18, name: 'Басовый', hand: 'левая рука' },
 };
 const midiOf = (d, acc = 0) => (Math.floor(d / 7) + 1) * 12 + STEP[d % 7] + acc;
 const accMark = (acc) => (acc > 0 ? '♯' : acc < 0 ? '♭' : '');
-function shortName(d, acc = 0, naming = 'solfege') {
+function shortName(d, acc = 0, naming = 'letters') {
 const oct = Math.floor(d / 7), li = d % 7;
-if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+if (naming === 'letters') return LET[li] + accMark(acc) + SUB_DIGIT[oct];
 let n = SOLF[li];
 if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
 return n + accMark(acc) + (SUP[oct] || '');
 }
-function fullName(d, acc = 0, naming = 'solfege') {
+function fullName(d, acc = 0, naming = 'letters') {
 const oct = Math.floor(d / 7), li = d % 7;
-if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+if (naming === 'letters') return LET[li] + accMark(acc) + SUB_DIGIT[oct];
 return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
 }
 function spellMidi(midi, preferFlat) {
@@ -695,7 +698,7 @@ return now - lastDone.t < ECHO_MS;
 }
 const SETTINGS_DEFAULTS = {
 clef: 'treble', below: 1, above: 1, adaptive: true,
-naming: 'solfege', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
+naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
 };
 function migrateSettings(old) {
 if (!old || typeof old !== 'object') return {};
@@ -1110,9 +1113,9 @@ const dx = (x2 - x1) * 0.28;
 return `<path class="${cls}" d="M${f1(x1)} ${f1(y0)}C${f1(x1 + dx)} ${f1(y0 + s * h)} ${f1(x2 - dx)} ${f1(y0 + s * h)} ${f1(x2)} ${f1(y0)}` +
 `C${f1(x2 - dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1 + dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1)} ${f1(y0)}Z"/>`;
 }
-function keySigSVG(clef, fifths, x, Y, cls = 'g-ink') {
+function keySigSVG(clef, fifths, x, Y, cls = 'g-ink', flash = -1) {
 let s = '';
-keyPositions(clef, fifths).forEach((d, i) => { s += glyph(fifths > 0 ? 'accidentalSharp' : 'accidentalFlat', x + i * keyStep(fifths), Y(d), cls); });
+keyPositions(clef, fifths).forEach((d, i) => { s += glyph(fifths > 0 ? 'accidentalSharp' : 'accidentalFlat', x + i * keyStep(fifths), Y(d), d % 7 === flash ? 'g-bad key-flash' : cls); });
 return s;
 }
 function timeSigSVG(time, x, baseY) {
@@ -1147,7 +1150,7 @@ for (let i = 0; i < 5; i++) s += rect(left, baseY - i * SP - 0.6, endX - left, 1
 const clefX = 1.5 * SP;
 s += score.clef === 'bass' ? glyph('fClef', clefX, baseY - 3 * SP, 'g-ink') : glyph('gClef', clefX, baseY - SP, 'g-ink');
 let hx = clefX + clefW(score.clef);
-if (row.key) { hx += 1.0 * SP; s += keySigSVG(score.clef, row.key, hx, Y); hx += keyWidth(row.key); }
+if (row.key) { hx += 1.0 * SP; s += keySigSVG(score.clef, row.key, hx, Y, 'g-ink', o.keyFlash != null ? o.keyFlash : -1); hx += keyWidth(row.key); }
 if (row.time) { hx += 1.0 * SP; s += timeSigSVG(row.time, hx, baseY); }
 for (const c of pos.changes) {
 let cx = c.x;
@@ -1507,6 +1510,7 @@ if (v1) store.set(SETTINGS_KEY, Object.assign({}, SETTINGS_DEFAULTS, saved));
 }
 const S = Object.assign({}, SETTINGS_DEFAULTS, saved);
 const clampInt = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number(v)) || 0));
+if (S.namingV !== 2) { S.naming = 'letters'; S.namingV = 2; store.set(SETTINGS_KEY, S); }
 if (!CLEFS[S.clef]) S.clef = 'treble';
 S.below = clampInt(S.below, 0, 3);
 S.above = clampInt(S.above, 0, 3);
@@ -1727,7 +1731,7 @@ const curNote = () => (ex && ex.score ? ex.score.notes[ex.cur] || null : null);
 function renderScore() {
 if (!ex || !ex.score) return;
 const row = ex.rows[ex.row], cur = busy || pb ? null : curNote();
-$('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, naming: S.naming });
+$('score').innerHTML = renderRow(ex.score, row, { W: ex.W, vb: ex.vb, cur, play: pb ? pb.shown : null, anim, fresh, hint: !!(cur && cur.hinted), ghost: cur ? ghost : null, keyFlash: cur && ghost ? ghost.keyFlash : null, naming: S.naming });
 anim = null;
 fresh = false;
 }
@@ -1914,7 +1918,8 @@ if (via === 'onset' && !strong) return; // распознано неуверен
 cur.errors++;
 if (cur.errors === 1) { session.streak = 0; renderStats(); }
 const sp = spellMidi(midi, cur.acc < 0 || keyAt(ex.score, cur) < 0); // в бемольной тональности — бемолем
-ghost = { d: sp.d, acc: sp.acc };
+const byKey = sp.d === cur.d && sp.acc !== cur.acc && accidentalSource(ex.score, cur) === 'key';
+ghost = { d: sp.d, acc: sp.acc, keyFlash: byKey ? cur.d % 7 : null };
 anim = { type: 'shake', note: cur };
 flashKey(midi, 'bad');
 say(`Сыграно ${nm(sp.d, sp.acc)}, ${wrongWhy(cur, sp)}`, 'bad');

@@ -9,6 +9,7 @@ const SOLF = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
 const LET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const OCT_GEN = ['субконтроктавы', 'контроктавы', 'большой октавы', 'малой октавы', 'первой октавы', 'второй октавы', 'третьей октавы', 'четвёртой октавы', 'пятой октавы'];
 const SUP = ['₂', '₁', '', '', '¹', '²', '³', '⁴', '⁵'];
+const SUB_DIGIT = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']; // номер октавы у букв — маленькой цифрой: C₄
 const CLEFS = {
   treble: { bottomD: 30, name: 'Скрипичный', hand: 'правая рука' },
   bass: { bottomD: 18, name: 'Басовый', hand: 'левая рука' },
@@ -16,16 +17,16 @@ const CLEFS = {
 const midiOf = (d, acc = 0) => (Math.floor(d / 7) + 1) * 12 + STEP[d % 7] + acc;
 const accMark = (acc) => (acc > 0 ? '♯' : acc < 0 ? '♭' : '');
 
-function shortName(d, acc = 0, naming = 'solfege') {
+function shortName(d, acc = 0, naming = 'letters') {
   const oct = Math.floor(d / 7), li = d % 7;
-  if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+  if (naming === 'letters') return LET[li] + accMark(acc) + SUB_DIGIT[oct];
   let n = SOLF[li];
   if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
   return n + accMark(acc) + (SUP[oct] || '');
 }
-function fullName(d, acc = 0, naming = 'solfege') {
+function fullName(d, acc = 0, naming = 'letters') {
   const oct = Math.floor(d / 7), li = d % 7;
-  if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+  if (naming === 'letters') return LET[li] + accMark(acc) + SUB_DIGIT[oct];
   return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
 }
 function spellMidi(midi, preferFlat) {
@@ -80,7 +81,7 @@ function isEcho(midi, via, strong, lastDone, now, hit) {
 /* ---- Настройки (FR-RND-04) ---- */
 const SETTINGS_DEFAULTS = {
   clef: 'treble', below: 1, above: 1, adaptive: true,
-  naming: 'solfege', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
+  naming: 'letters', octave: true, gateDb: -50, calibrated: false, showKeys: true, keySound: true, last: null,
 };
 // Настройки версии 1 → поля версии 2. Большой стан становится скрипичным ключом,
 // диапазон — наименьшим числом линеек, при котором старая граница попадает в диапазон (не больше 3).
@@ -555,9 +556,10 @@ function tieSVG(x1, x2, y, below, cls) {
   return `<path class="${cls}" d="M${f1(x1)} ${f1(y0)}C${f1(x1 + dx)} ${f1(y0 + s * h)} ${f1(x2 - dx)} ${f1(y0 + s * h)} ${f1(x2)} ${f1(y0)}` +
     `C${f1(x2 - dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1 + dx)} ${f1(y0 + s * (h - 2.2))} ${f1(x1)} ${f1(y0)}Z"/>`;
 }
-function keySigSVG(clef, fifths, x, Y, cls = 'g-ink') {
+// flash — буква (0 до … 6 си), чей знак подсветить красным: ошибка из-за ключевых знаков
+function keySigSVG(clef, fifths, x, Y, cls = 'g-ink', flash = -1) {
   let s = '';
-  keyPositions(clef, fifths).forEach((d, i) => { s += glyph(fifths > 0 ? 'accidentalSharp' : 'accidentalFlat', x + i * keyStep(fifths), Y(d), cls); });
+  keyPositions(clef, fifths).forEach((d, i) => { s += glyph(fifths > 0 ? 'accidentalSharp' : 'accidentalFlat', x + i * keyStep(fifths), Y(d), d % 7 === flash ? 'g-bad key-flash' : cls); });
   return s;
 }
 function timeSigSVG(time, x, baseY) {
@@ -598,7 +600,7 @@ function renderRow(score, row, o) {
   const clefX = 1.5 * SP;
   s += score.clef === 'bass' ? glyph('fClef', clefX, baseY - 3 * SP, 'g-ink') : glyph('gClef', clefX, baseY - SP, 'g-ink');
   let hx = clefX + clefW(score.clef);
-  if (row.key) { hx += 1.0 * SP; s += keySigSVG(score.clef, row.key, hx, Y); hx += keyWidth(row.key); }
+  if (row.key) { hx += 1.0 * SP; s += keySigSVG(score.clef, row.key, hx, Y, 'g-ink', o.keyFlash != null ? o.keyFlash : -1); hx += keyWidth(row.key); }
   if (row.time) { hx += 1.0 * SP; s += timeSigSVG(row.time, hx, baseY); }
   for (const c of pos.changes) {
     let cx = c.x;
