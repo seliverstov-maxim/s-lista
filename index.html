@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Тренажёр чтения нот с листа: показывает ноту и слушает пианино через микрофон.">
+<meta name="theme-color" content="#E7E5E0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F0F11" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="С листа">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+</style>
+<title>С листа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Oranienbaum&display=swap">
+<style>
+:root {
+  --ground: #E7E5E0;
+  --sheet: #FFFEFB;
+  --panel: #F4F3EF;
+  --ink: #17161B;
+  --staff: #4B4851;
+  --muted: #6A665F;
+  --line: #D2CEC6;
+  --accent: #936316;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(147, 99, 22, 0.15);
+  --ok: #1C7A4A;
+  --bad: #C2372A;
+  --felt: #6F1F24;
+  --key-w: #FFFFFF;
+  --key-w-edge: #BCB7AE;
+  --key-b: #19181C;
+  --key-b-top: #3B3941;
+  --scrim: rgba(18, 16, 14, 0.42);
+  --shadow: 0 1px 2px rgba(40, 30, 10, 0.08), 0 10px 28px rgba(40, 30, 10, 0.09);
+  --display: "Oranienbaum", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --ui: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0F0F11;
+    --sheet: #1A1A1E;
+    --panel: #18181B;
+    --ink: #ECE8E0;
+    --staff: #A29E96;
+    --muted: #9A958C;
+    --line: #2E2D33;
+    --accent: #D9A94F;
+    --accent-ink: #1A1408;
+    --accent-soft: rgba(217, 169, 79, 0.17);
+    --ok: #4FCB8C;
+    --bad: #FF6F5F;
+    --felt: #5C1A1E;
+    --key-w: #D9D5CC;
+    --key-w-edge: #7F7A72;
+    --key-b: #09090A;
+    --key-b-top: #2B2B30;
+    --scrim: rgba(0, 0, 0, 0.55);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0F0F11;
+  --sheet: #1A1A1E;
+  --panel: #18181B;
+  --ink: #ECE8E0;
+  --staff: #A29E96;
+  --muted: #9A958C;
+  --line: #2E2D33;
+  --accent: #D9A94F;
+  --accent-ink: #1A1408;
+  --accent-soft: rgba(217, 169, 79, 0.17);
+  --ok: #4FCB8C;
+  --bad: #FF6F5F;
+  --felt: #5C1A1E;
+  --key-w: #D9D5CC;
+  --key-w-edge: #7F7A72;
+  --key-b: #09090A;
+  --key-b-top: #2B2B30;
+  --scrim: rgba(0, 0, 0, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+html, body { min-height: 100%; }
+[hidden] { display: none !important; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  min-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+
+/* ---- шапка ---- */
+.top { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.logo {
+  font-family: var(--display);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.level {
+  display: flex; flex-direction: column; align-items: flex-start;
+  min-width: 0; flex: 1 1 auto;
+  background: none; border: 0; padding: 4px 8px; border-radius: 8px;
+  text-align: left;
+}
+.level:hover { background: var(--accent-soft); }
+.level-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.level-range { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.top-actions { display: flex; gap: 6px; }
+.icon-btn {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--panel);
+}
+.icon-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- статистика ---- */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  background: none; border: 0; padding: 0; text-align: left; width: 100%;
+}
+.stat { display: flex; flex-direction: column; gap: 1px; padding: 2px 4px; min-width: 0; }
+.stat b { font-size: 21px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat span { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+/* ---- лист ---- */
+.sheet {
+  background: var(--sheet);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 10px 8px;
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  flex: 1 1 auto;
+}
+#score { width: 100%; }
+#score svg { display: block; width: 100%; height: auto; max-height: min(48vh, 460px); margin-inline: auto; }
+.st { fill: var(--staff); }
+.g-ink { fill: var(--ink); }
+.g-ok { fill: var(--ok); }
+.g-miss { fill: var(--bad); opacity: 0.55; }
+.g-bad { fill: var(--bad); }
+.band { fill: var(--accent-soft); }
+.hint-t { fill: var(--accent); font-family: var(--ui); font-weight: 600; font-size: 15px; }
+.ghost { opacity: 0.85; }
+.fx { transform-box: fill-box; transform-origin: center; }
+.pop { animation: pop 0.34s ease-out; }
+.shake { animation: shake 0.36s ease-in-out; }
+.row-in { animation: rowIn 0.32s ease-out; }
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.22); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
+@keyframes rowIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+/* ---- пульт ---- */
+.console { display: flex; flex-direction: column; gap: 10px; }
+.msg { margin: 0; min-height: 1.45em; font-size: 15.5px; text-wrap: balance; }
+.msg.ok { color: var(--ok); }
+.msg.bad { color: var(--bad); }
+.msg.hint { color: var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn {
+  height: 44px; padding: 0 16px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--panel);
+  font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+.btn.on { background: var(--sheet); }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.spacer { flex: 1 1 auto; }
+.meter { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 180px; }
+.meter-bar { position: relative; height: 8px; flex: 1 1 auto; min-width: 60px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.meter-bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); border-radius: 4px; }
+.meter-bar b { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: 0.5; }
+.heard { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); white-space: nowrap; min-width: 7.5em; }
+.heard strong { color: var(--ink); font-weight: 600; }
+
+/* ---- клавиатура ---- */
+.keys-wrap {
+  margin-inline: -16px;
+  padding-inline: 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.keys {
+  position: relative; display: flex; height: clamp(110px, 17vh, 160px);
+  min-width: calc(var(--nw) * 28px);
+  border-top: 5px solid var(--felt);
+  border-radius: 3px 3px 0 0;
+  touch-action: manipulation;
+  user-select: none; -webkit-user-select: none;
+}
+.wk {
+  flex: 1 1 0; position: relative;
+  background: var(--key-w);
+  border: 1px solid var(--key-w-edge); border-top: 0;
+  margin-right: -1px; border-radius: 0 0 6px 6px;
+  padding: 0;
+}
+.bk {
+  position: absolute; top: 0; height: 60%; z-index: 2; padding: 0;
+  background: linear-gradient(180deg, var(--key-b-top), var(--key-b) 70%);
+  border: 1px solid var(--key-b); border-top: 0; border-radius: 0 0 4px 4px;
+}
+.wk .lbl { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 10.5px; color: #6A665F; pointer-events: none; }
+.wk.heard { background: color-mix(in srgb, var(--accent) 26%, var(--key-w)); }
+.bk.heard { background: color-mix(in srgb, var(--accent) 60%, var(--key-b)); }
+.wk.ok { background: color-mix(in srgb, var(--ok) 45%, var(--key-w)); }
+.bk.ok { background: var(--ok); }
+.wk.bad { background: color-mix(in srgb, var(--bad) 40%, var(--key-w)); }
+.bk.bad { background: var(--bad); }
+.wk.hint, .bk.hint { box-shadow: inset 0 0 0 3px var(--accent); }
+.wk:active { background: color-mix(in srgb, var(--ink) 8%, var(--key-w)); }
+
+/* ---- панели ---- */
+.scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 20; }
+.panel {
+  position: fixed; z-index: 21; left: 0; right: 0; bottom: 0;
+  max-height: 88vh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--panel); color: var(--ink);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
+  padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 760px) {
+  .panel { left: auto; top: 0; width: 420px; max-height: none; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); }
+}
+.panel-head {
+  position: sticky; top: 0; z-index: 1; background: var(--panel);
+  display: flex; align-items: center; justify-content: space-between;
+  padding-block: 14px 10px; border-bottom: 1px solid var(--line);
+}
+.panel-head h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1.1; }
+.group { padding-block: 16px 4px; display: flex; flex-direction: column; gap: 10px; }
+.group + .group { border-top: 1px solid var(--line); }
+.group h3 { margin: 0; font-size: 11.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.note { margin: 0; font-size: 13.5px; color: var(--muted); max-width: 60ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 8px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--sheet); font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.seg { display: flex; background: var(--ground); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg label { flex: 1 1 0; position: relative; min-width: 0; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: block; text-align: center; padding: 8px 6px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.seg input:checked + span { background: var(--sheet); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: -2px; }
+.range-row { display: flex; gap: 10px; }
+.range-row label { flex: 1 1 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); min-width: 0; }
+select {
+  height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--sheet);
+  padding: 0 10px; font-size: 15px; color: var(--ink); width: 100%;
+}
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer; padding-block: 4px; }
+.switch input {
+  appearance: none; -webkit-appearance: none; flex: none;
+  width: 46px; height: 28px; border-radius: 14px; background: var(--line); position: relative; cursor: pointer;
+  transition: background 0.15s;
+}
+.switch input::before {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
+  background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.15s;
+}
+.switch input:checked { background: var(--accent); }
+.switch input:checked::before { transform: translateX(18px); }
+input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
+.sens-scale { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: -6px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.hard { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.hard .note { grid-column: 1 / -1; }
+.hard-item { display: grid; grid-template-columns: 58px 1fr; gap: 10px; align-items: center; background: var(--sheet); border-radius: 10px; padding: 6px 10px 6px 6px; }
+.hard-item svg { width: 58px; height: auto; display: block; }
+.hard-item b { display: block; font-weight: 600; }
+.hard-item span { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.btn.danger { color: var(--bad); }
+
+@media (max-width: 420px) {
+  .logo { font-size: 26px; }
+  .stat b { font-size: 19px; }
+  .btn { padding: 0 13px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .stats { display: none; }
+  .keys { height: 84px; }
+  #score svg { max-height: 56vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pop, .shake, .row-in { animation: none; }
+  .switch input, .switch input::before { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <span class="logo">С листа</span>
+    <button class="level" id="levelBtn" type="button" aria-label="Уровень и настройки">
+      <span class="level-name" id="levelName">Скрипичный ключ</span>
+      <span class="level-range" id="levelRange"></span>
+    </button>
+    <div class="top-actions">
+      <button class="icon-btn" id="progressBtn" type="button" aria-label="Прогресс">
+        <svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+      </button>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Настройки">
+        <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <button class="stats" id="stats" type="button" aria-label="Статистика занятия, открыть прогресс">
+    <span class="stat"><b id="stAcc">—</b><span>Точность</span></span>
+    <span class="stat"><b id="stStreak">0</b><span>Серия</span></span>
+    <span class="stat"><b id="stTime">—</b><span>Реакция</span></span>
+    <span class="stat"><b id="stCount">0</b><span>Нот</span></span>
+  </button>
+
+  <main class="sheet" id="sheet">
+    <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
+  </main>
+
+  <section class="console">
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <div class="controls">
+      <button class="btn primary" id="micBtn" type="button">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        <span id="micLabel">Включить микрофон</span>
+      </button>
+      <div class="meter" id="meter" hidden>
+        <div class="meter-bar" aria-hidden="true"><i id="meterFill"></i><b id="meterGate"></b></div>
+        <span class="heard" id="heard">Тишина</span>
+      </div>
+      <span class="spacer" id="spacer"></span>
+      <button class="btn" id="hintBtn" type="button">Подсказка</button>
+      <button class="btn" id="skipBtn" type="button">Пропустить</button>
+    </div>
+  </section>
+
+  <section class="keys-wrap" id="keysWrap" aria-label="Клавиатура">
+    <div class="keys" id="keys"></div>
+  </section>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<aside class="panel" id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <div class="panel-head">
+    <h2 id="settingsTitle">Настройки</h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <section class="group">
+    <h3>Уровень</h3>
+    <div class="chips" id="presetChips"></div>
+  </section>
+
+  <section class="group">
+    <h3>Ключ</h3>
+    <div class="seg" role="radiogroup" aria-label="Ключ">
+      <label><input type="radio" name="clef" id="clefTreble" value="treble"><span>Скрипичный</span></label>
+      <label><input type="radio" name="clef" id="clefBass" value="bass"><span>Басовый</span></label>
+      <label><input type="radio" name="clef" id="clefGrand" value="grand"><span>Оба</span></label>
+    </div>
+    <div class="range-row">
+      <label for="loSel">Самая низкая нота<select id="loSel"></select></label>
+      <label for="hiSel">Самая высокая нота<select id="hiSel"></select></label>
+    </div>
+  </section>
+
+  <section class="group">
+    <h3>Упражнение</h3>
+    <label class="switch" for="optAcc"><span>Диезы и бемоли</span><input type="checkbox" id="optAcc"></label>
+    <div class="seg" role="radiogroup" aria-label="Ходы между нотами">
+      <label><input type="radio" name="motion" id="motionAny" value="any"><span>Любые скачки</span></label>
+      <label><input type="radio" name="motion" id="motionStep" value="step"><span>Плавно, до квинты</span></label>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Сколько нот на экране">
+      <label><input type="radio" name="perRow" id="perRowRow" value="row"><span>Строкой</span></label>
+      <label><input type="radio" name="perRow" id="perRowOne" value="one"><span>По одной</span></label>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Названия нот">
+      <label><input type="radio" name="naming" id="namingSolf" value="solfege"><span>до, ре, ми</span></label>
+      <label><input type="radio" name="naming" id="namingLet" value="letters"><span>C, D, E</span></label>
+    </div>
+    <label class="switch" for="optOctave"><span>Требовать точную октаву</span><input type="checkbox" id="optOctave"></label>
+    <label class="switch" for="optAdaptive"><span>Чаще давать трудные ноты</span><input type="checkbox" id="optAdaptive"></label>
+  </section>
+
+  <section class="group">
+    <h3>Микрофон</h3>
+    <label for="sens">Чувствительность</label>
+    <input type="range" id="sens" min="0" max="40" step="1">
+    <div class="sens-scale"><span>шумная комната</span><span>тихое пианино</span></div>
+    <p class="note">Положите телефон на пюпитр. Играйте по одной ноте и без педали: так распознавание надёжнее. Если ноты не ловятся, сдвиньте ползунок вправо. Если приложение срабатывает от шума, сдвиньте влево.</p>
+    <p class="note" id="frameNote" hidden>В окне предпросмотра браузер не даёт доступ к микрофону. Чтобы играть на настоящем пианино, откройте приложение как отдельный сайт. Здесь можно нажимать клавиши на экране.</p>
+  </section>
+
+  <section class="group">
+    <h3>Клавиатура</h3>
+    <label class="switch" for="optKeys"><span>Показывать клавиатуру</span><input type="checkbox" id="optKeys"></label>
+    <label class="switch" for="optSound"><span>Звук при нажатии на экране</span><input type="checkbox" id="optSound"></label>
+    <button class="btn" type="button" id="midiBtn">Подключить MIDI-клавиатуру</button>
+    <p class="note" id="midiNote">Цифровое пианино можно подключить кабелем USB: ноты будут приходить без микрофона.</p>
+  </section>
+</aside>
+
+<aside class="panel" id="progressPanel" role="dialog" aria-modal="true" aria-labelledby="progressTitle" hidden>
+  <div class="panel-head">
+    <h2 id="progressTitle">Прогресс</h2>
+    <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <section class="group">
+    <h3>Это занятие</h3>
+    <dl class="kv" id="sessionKv"></dl>
+  </section>
+  <section class="group">
+    <h3>Трудные ноты</h3>
+    <div class="hard" id="hardList"></div>
+  </section>
+  <section class="group">
+    <h3>За всё время</h3>
+    <dl class="kv" id="allKv"></dl>
+    <div class="confirm" id="resetArea"></div>
+  </section>
+</aside>
+
+<script>
+(() => {
+'use strict';
+
+const GLYPH = {"gClef":{"d":"M1.504 -1.66C1.496 -1.708 1.504 -1.712 1.528 -1.736C1.96 -2.14 2.288 -2.648 2.288 -3.26C2.288 -3.608 2.192 -3.952 2.028 -4.192C1.968 -4.28 1.864 -4.392 1.82 -4.392C1.764 -4.392 1.64 -4.288 1.56 -4.2C1.264 -3.872 1.168 -3.372 1.168 -2.956C1.168 -2.724 1.196 -2.464 1.224 -2.3C1.232 -2.252 1.236 -2.244 1.188 -2.204C0.612 -1.728 0 -1.156 0 -0.348C0 0.348 0.476 1.008 1.456 1.008C1.548 1.008 1.652 1 1.732 0.984C1.776 0.976 1.784 0.972 1.792 1.02C1.84 1.288 1.9 1.636 1.9 1.824C1.9 2.416 1.5 2.488 1.264 2.488C1.048 2.488 0.944 2.424 0.944 2.372C0.944 2.344 0.98 2.332 1.072 2.304C1.196 2.268 1.34 2.16 1.34 1.928C1.34 1.708 1.2 1.52 0.956 1.52C0.688 1.52 0.528 1.732 0.528 1.98C0.528 2.24 0.684 2.632 1.288 2.632C1.556 2.632 2.076 2.512 2.076 1.832C2.076 1.604 2.004 1.224 1.96 0.976C1.952 0.928 1.956 0.932 2.012 0.908C2.416 0.748 2.684 0.408 2.684 -0.044C2.684 -0.556 2.308 -1.008 1.72 -1.008C1.616 -1.008 1.616 -1.008 1.604 -1.08ZM1.88 -3.772C2.012 -3.772 2.12 -3.664 2.12 -3.444C2.12 -3 1.74 -2.64 1.424 -2.364C1.396 -2.34 1.38 -2.344 1.372 -2.396C1.356 -2.5 1.348 -2.636 1.348 -2.764C1.348 -3.388 1.636 -3.772 1.88 -3.772ZM1.444 -1.048C1.456 -0.972 1.456 -0.976 1.384 -0.952C1.032 -0.832 0.804 -0.516 0.804 -0.176C0.804 0.184 0.992 0.44 1.264 0.532C1.296 0.544 1.344 0.556 1.372 0.556C1.404 0.556 1.42 0.536 1.42 0.512C1.42 0.484 1.388 0.472 1.36 0.46C1.192 0.388 1.072 0.216 1.072 0.032C1.072 -0.196 1.228 -0.368 1.472 -0.436C1.536 -0.452 1.544 -0.448 1.552 -0.404L1.752 0.788C1.76 0.832 1.756 0.832 1.696 0.844C1.632 0.856 1.552 0.864 1.472 0.864C0.772 0.864 0.32 0.476 0.32 -0.08C0.32 -0.316 0.36 -0.632 0.692 -1.008C0.932 -1.276 1.116 -1.424 1.304 -1.576C1.344 -1.608 1.352 -1.604 1.36 -1.56ZM1.72 -0.412C1.712 -0.46 1.716 -0.472 1.764 -0.468C2.088 -0.44 2.356 -0.168 2.356 0.184C2.356 0.436 2.204 0.64 1.98 0.752C1.932 0.776 1.924 0.776 1.916 0.728Z","adv":2.684},"fClef":{"d":"M1.008 -1.048C0.312 -1.048 0 -0.54 0 -0.156C0 0.164 0.168 0.44 0.492 0.44C0.744 0.44 0.916 0.264 0.916 0.016C0.916 -0.24 0.728 -0.4 0.532 -0.4C0.424 -0.4 0.384 -0.372 0.332 -0.372C0.28 -0.372 0.268 -0.404 0.268 -0.444C0.268 -0.604 0.508 -0.896 0.916 -0.896C1.34 -0.896 1.524 -0.48 1.524 0.148C1.524 1.264 0.972 1.888 0.04 2.42C0.004 2.44 -0.02 2.46 -0.02 2.492C-0.02 2.516 -0.004 2.54 0.032 2.54C0.052 2.54 0.076 2.532 0.1 2.52C1.084 2.04 2.124 1.328 2.124 0.112C2.124 -0.584 1.7 -1.048 1.008 -1.048ZM2.516 -0.72C2.392 -0.72 2.296 -0.624 2.296 -0.5C2.296 -0.376 2.392 -0.28 2.516 -0.28C2.64 -0.28 2.736 -0.376 2.736 -0.5C2.736 -0.624 2.64 -0.72 2.516 -0.72ZM2.52 0.284C2.396 0.284 2.304 0.376 2.304 0.5C2.304 0.624 2.396 0.716 2.52 0.716C2.644 0.716 2.736 0.624 2.736 0.5C2.736 0.376 2.644 0.284 2.52 0.284Z","adv":2.736},"brace":{"d":"M0.08 -1.992C0.196 -2.064 0.328 -2.348 0.328 -2.584C0.328 -2.604 0.328 -2.628 0.324 -2.648C0.296 -2.888 0.176 -3.26 0.176 -3.476C0.176 -3.684 0.268 -3.884 0.288 -3.92C0.3 -3.944 0.308 -3.948 0.308 -3.96C0.308 -3.972 0.296 -3.988 0.284 -3.988C0.276 -3.988 0.268 -3.98 0.252 -3.96C0.164 -3.852 0.056 -3.62 0.056 -3.22C0.056 -2.824 0.196 -2.664 0.196 -2.412C0.196 -2.224 0.12 -2.12 0.008 -1.992C0.08 -1.912 0.196 -1.848 0.196 -1.588C0.196 -1.308 0.056 -1.06 0.056 -0.768C0.056 -0.368 0.164 -0.136 0.252 -0.024C0.268 -0.004 0.276 0 0.284 0C0.296 0 0.308 -0.012 0.308 -0.024C0.308 -0.036 0.304 -0.044 0.288 -0.068C0.268 -0.1 0.176 -0.3 0.176 -0.512C0.176 -0.724 0.296 -1.1 0.324 -1.336C0.328 -1.356 0.328 -1.376 0.328 -1.4C0.328 -1.636 0.196 -1.92 0.08 -1.992Z","adv":0.336},"noteheadBlack":{"d":"M0.388 0.5C0.744 0.5 1.18 0.172 1.18 -0.168C1.18 -0.372 1.02 -0.5 0.792 -0.5C0.352 -0.5 0 -0.176 0 0.168C0 0.376 0.172 0.5 0.388 0.5Z","adv":1.18},"accidentalSharp":{"d":"M0.948 -0.472C0.976 -0.484 0.996 -0.516 0.996 -0.54V-0.824C0.996 -0.844 0.984 -0.856 0.968 -0.856C0.96 -0.856 0.956 -0.856 0.948 -0.852C0.948 -0.852 0.868 -0.82 0.848 -0.816C0.82 -0.816 0.792 -0.836 0.792 -0.868V-1.356C0.792 -1.38 0.768 -1.4 0.736 -1.4C0.696 -1.4 0.672 -1.38 0.672 -1.356V-0.836C0.668 -0.796 0.656 -0.744 0.62 -0.72C0.572 -0.692 0.436 -0.636 0.368 -0.62C0.332 -0.62 0.32 -0.668 0.32 -0.7V-1.18C0.32 -1.204 0.292 -1.224 0.264 -1.224C0.224 -1.224 0.2 -1.204 0.2 -1.18V-0.64C0.2 -0.584 0.176 -0.544 0.152 -0.532C0.128 -0.52 0.048 -0.488 0.048 -0.488C0.02 -0.48 0 -0.448 0 -0.424V-0.14C0 -0.116 0.012 -0.104 0.036 -0.104L0.044 -0.108C0.048 -0.108 0.108 -0.132 0.14 -0.148L0.144 -0.152C0.176 -0.152 0.2 -0.112 0.2 -0.08V0.316C0.2 0.36 0.18 0.396 0.156 0.408C0.132 0.416 0.048 0.452 0.048 0.452C0.02 0.46 0 0.492 0 0.516V0.8C0 0.824 0.012 0.836 0.036 0.836L0.044 0.832C0.048 0.832 0.104 0.808 0.14 0.796C0.144 0.792 0.148 0.792 0.152 0.792C0.18 0.792 0.2 0.836 0.2 0.856V1.348C0.2 1.372 0.224 1.392 0.252 1.392C0.292 1.392 0.32 1.372 0.32 1.348V0.792C0.32 0.74 0.34 0.712 0.36 0.704L0.604 0.604C0.604 0.604 0.608 0.604 0.608 0.604L0.616 0.6C0.652 0.6 0.672 0.648 0.672 0.672V1.172C0.672 1.196 0.696 1.216 0.724 1.216C0.768 1.216 0.792 1.196 0.792 1.172V0.604C0.792 0.572 0.808 0.524 0.836 0.512C0.864 0.5 0.948 0.468 0.948 0.468C0.976 0.456 0.996 0.424 0.996 0.4V0.116C0.996 0.096 0.984 0.084 0.968 0.084C0.96 0.084 0.956 0.084 0.948 0.088L0.844 0.128C0.82 0.128 0.792 0.104 0.792 0.056V-0.316C0.792 -0.344 0.812 -0.42 0.844 -0.432ZM0.672 0.18C0.648 0.26 0.46 0.34 0.368 0.34C0.344 0.34 0.324 0.332 0.32 0.32C0.312 0.304 0.308 0.216 0.308 0.12C0.308 -0.004 0.312 -0.144 0.32 -0.176C0.328 -0.244 0.512 -0.328 0.612 -0.328C0.64 -0.328 0.664 -0.32 0.672 -0.304C0.68 -0.284 0.688 -0.184 0.688 -0.076C0.688 0.032 0.68 0.144 0.672 0.18Z","adv":0.996},"accidentalFlat":{"d":"M0.048 0.68C0.06 0.696 0.072 0.7 0.084 0.7C0.096 0.7 0.108 0.692 0.108 0.692C0.228 0.624 0.324 0.516 0.424 0.448C0.78 0.2 0.904 -0.044 0.904 -0.228C0.904 -0.456 0.728 -0.6 0.544 -0.612C0.476 -0.612 0.38 -0.58 0.324 -0.544C0.3 -0.524 0.256 -0.488 0.236 -0.488C0.228 -0.488 0.224 -0.488 0.216 -0.492C0.188 -0.504 0.172 -0.532 0.172 -0.56C0.176 -0.648 0.2 -1.608 0.2 -1.688C0.2 -1.732 0.164 -1.756 0.124 -1.756C0.068 -1.756 0.004 -1.716 0 -1.644C0 -1.644 0.016 0.64 0.048 0.68ZM0.188 0.324C0.188 0.324 0.176 0.084 0.176 -0.076C0.176 -0.14 0.18 -0.188 0.184 -0.204C0.212 -0.284 0.372 -0.4 0.464 -0.4C0.58 -0.4 0.628 -0.268 0.628 -0.168C0.628 0.048 0.444 0.264 0.272 0.372C0.256 0.38 0.244 0.384 0.232 0.384C0.196 0.384 0.188 0.344 0.188 0.324Z","adv":0.904},"accidentalNatural":{"d":"M0.564 -0.724C0.556 -0.724 0.552 -0.72 0.548 -0.72C0.548 -0.72 0.292 -0.628 0.188 -0.628C0.164 -0.628 0.148 -0.632 0.148 -0.648V-1.316C0.148 -1.344 0.124 -1.364 0.1 -1.364H0.048C0.02 -1.364 0 -1.344 0 -1.316V0.744C0 0.768 0.012 0.78 0.036 0.78L0.044 0.776C0.048 0.776 0.056 0.776 0.06 0.772C0.116 0.748 0.34 0.652 0.456 0.652C0.496 0.652 0.524 0.664 0.524 0.696V1.292C0.524 1.32 0.544 1.34 0.572 1.34H0.624C0.648 1.34 0.672 1.32 0.672 1.292V-0.716C0.672 -0.736 0.656 -0.748 0.64 -0.748C0.636 -0.748 0.628 -0.748 0.624 -0.744ZM0.148 -0.156C0.148 -0.212 0.392 -0.316 0.488 -0.316C0.512 -0.316 0.524 -0.312 0.524 -0.296V0.116C0.524 0.188 0.296 0.28 0.196 0.28C0.168 0.28 0.148 0.272 0.148 0.256Z","adv":0.672}};
+
+/* ---------- Распознавание высоты звука (YIN) и нажатий ---------- */
+const A4 = 440;
+const midiToFreq = (m) => A4 * Math.pow(2, (m - 69) / 12);
+const freqToMidiF = (f) => 69 + 12 * Math.log2(f / A4);
+
+/* YIN: x — буфер, off — начало окна, W — длина окна.
+   Возвращает период (в отсчётах, с дробной частью) и апериодичность (0 — чистый тон). */
+function yinDetect(x, off, W, tauMin, tauMax, d, cmnd, thr) {
+  for (let tau = 1; tau <= tauMax; tau++) {
+    let s = 0;
+    const o2 = off + tau;
+    for (let j = 0; j < W; j++) {
+      const v = x[off + j] - x[o2 + j];
+      s += v * v;
+    }
+    d[tau] = s;
+  }
+  cmnd[0] = 1;
+  let run = 0;
+  for (let tau = 1; tau <= tauMax; tau++) {
+    run += d[tau];
+    cmnd[tau] = run > 0 ? (d[tau] * tau) / run : 1;
+  }
+  const localMin = (t) => { while (t + 1 <= tauMax && cmnd[t + 1] < cmnd[t]) t++; return t; };
+  let tau = -1;
+  for (let t = tauMin; t <= tauMax; t++) {
+    if (cmnd[t] < thr) { tau = localMin(t); break; }
+  }
+  if (tau < 0) {
+    // порог не пройден (например, звучат две ноты): берём глобальный минимум,
+    // но предпочитаем более короткий период, если он почти так же хорош (защита от ошибки на октаву вниз)
+    let m = Infinity;
+    for (let t = tauMin; t <= tauMax; t++) if (cmnd[t] < m) { m = cmnd[t]; tau = t; }
+    for (let k = 4; k >= 2; k--) {
+      const c = tau / k;
+      if (c < tauMin) continue;
+      const r = Math.max(2, Math.round(c * 0.04));
+      let bt = -1, bv = Infinity;
+      for (let t = Math.max(tauMin, Math.floor(c - r)); t <= Math.min(tauMax, Math.ceil(c + r)); t++) {
+        if (cmnd[t] < bv) { bv = cmnd[t]; bt = t; }
+      }
+      if (bt > 0 && bv < m + 0.12 && bv < 0.5) { tau = bt; break; }
+    }
+  }
+  let better = tau;
+  if (tau > 1 && tau < tauMax) {
+    const a = cmnd[tau - 1], b = cmnd[tau], c = cmnd[tau + 1];
+    const den = a - 2 * b + c;
+    if (den !== 0) better = tau + (a - c) / (2 * den);
+  }
+  return { tau: better, ap: cmnd[tau] };
+}
+
+/* Быстрое преобразование Фурье (радикс-2) с окном Ханна; возвращает амплитудный спектр */
+function makeSpectrum(N) {
+  const bits = Math.log2(N) | 0;
+  const rev = new Uint32Array(N);
+  for (let i = 0; i < N; i++) { let r = 0; for (let b = 0; b < bits; b++) r |= ((i >> b) & 1) << (bits - 1 - b); rev[i] = r; }
+  const win = new Float32Array(N);
+  for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (N - 1));
+  const cos = new Float32Array(N / 2), sin = new Float32Array(N / 2);
+  for (let i = 0; i < N / 2; i++) { cos[i] = Math.cos((2 * Math.PI * i) / N); sin[i] = -Math.sin((2 * Math.PI * i) / N); }
+  const re = new Float32Array(N), im = new Float32Array(N);
+  return (x, out) => {
+    for (let i = 0; i < N; i++) { re[rev[i]] = x[i] * win[i]; im[rev[i]] = 0; }
+    for (let size = 2; size <= N; size <<= 1) {
+      const half = size >> 1, step = N / size;
+      for (let i = 0; i < N; i += size) {
+        for (let j = 0, k = 0; j < half; j++, k += step) {
+          const a = i + j, b = a + half;
+          const tr = re[b] * cos[k] - im[b] * sin[k];
+          const ti = re[b] * sin[k] + im[b] * cos[k];
+          re[b] = re[a] - tr; im[b] = im[a] - ti;
+          re[a] += tr; im[a] += ti;
+        }
+      }
+    }
+    for (let i = 0; i < N / 2; i++) out[i] = Math.hypot(re[i], im[i]);
+    return out;
+  };
+}
+
+/* Гармоническая сумма по спектру "новой" энергии: какая нота только что прозвучала */
+function harmonicPick(Y, binHz, lo, hi) {
+  const nb = Y.length;
+  const peak = (f, tol) => {
+    const b0 = Math.max(1, Math.floor((f * (1 - tol)) / binHz)), b1 = Math.min(nb - 1, Math.max(b0 + 1, Math.ceil((f * (1 + tol)) / binHz)));
+    let m = 0; for (let b = b0; b <= b1; b++) if (Y[b] > m) m = Y[b];
+    return m;
+  };
+  let best = null, bestS = 0, second = 0;
+  for (let m = lo; m <= hi; m++) {
+    const f0 = midiToFreq(m);
+    let s = 0, half = 0, third = 0;
+    for (let k = 1; k <= 12; k++) {
+      const f = k * f0;
+      if (f > 5000) break;
+      const tol = 0.015 + 0.002 * k, w = 1 / Math.pow(k, 0.6);
+      s += w * peak(f, tol);
+      half += w * peak((k - 0.5) * f0, tol);
+      third += w * 0.5 * (peak((k - 1 / 3) * f0, tol) + peak((k - 2 / 3) * f0, tol));
+    }
+    const score = s - 0.7 * Math.max(half, third);
+    if (score > bestS) { second = Math.max(second, bestS); bestS = score; best = m; }
+    else if (score > second) second = score;
+  }
+  return { midi: best, score: bestS };
+}
+
+/* Слушатель: получает последние отсчёты с микрофона на каждом кадре,
+   находит начало нового звука (удар по клавише) и определяет ноту. */
+class PitchListener {
+  constructor(sampleRate, bufferLength, onEvent) {
+    this.sr = sampleRate;
+    this.dec = sampleRate >= 32000 ? 2 : 1;
+    this.dsr = sampleRate / this.dec;
+    this.maxDec = Math.floor(bufferLength / this.dec);
+    this.dbuf = new Float32Array(this.maxDec);
+    this.d = new Float32Array(this.maxDec);
+    this.cmnd = new Float32Array(this.maxDec);
+    this.onEvent = onEvent;
+    this.N = bufferLength;
+    this.spectrum = makeSpectrum(bufferLength);
+    this.prevBuf = new Float32Array(bufferLength);
+    this.specPre = new Float32Array(bufferLength / 2);
+    this.specCur = new Float32Array(bufferLength / 2);
+    this.specNew = new Float32Array(bufferLength / 2);
+    this.gateDb = -50;
+    this.env = 0;
+    this.lastT = null;
+    this.lastOnset = -1e9;
+    this.collect = null;
+    this.stableMidi = null;
+    this.stableSince = 0;
+    this.lastEmitted = null;
+    this.silentSince = 0;
+    this.setRange(36, 96);
+  }
+
+  setRange(lowMidi, highMidi) {
+    const fmin = Math.max(45, midiToFreq(lowMidi - 5) * 0.97);
+    const fmax = Math.min(this.dsr / 4, midiToFreq(highMidi + 12) * 1.06);
+    this.tauMax = Math.min(Math.ceil(this.dsr / fmin), Math.floor(this.maxDec / 3));
+    this.tauMin = Math.max(2, Math.floor(this.dsr / fmax));
+    this.W = Math.max(256, Math.min(3 * this.tauMax, this.maxDec - this.tauMax - 1));
+    this.windowMs = ((this.W + this.tauMax) / this.dsr) * 1000;
+    this.settleMs = Math.max(30, this.windowMs * 0.85);
+    this.candLo = Math.max(21, lowMidi - 5);
+    this.candHi = Math.min(108, highMidi + 12);
+  }
+
+  process(buf, t) {
+    const n = buf.length;
+    const dt = this.lastT == null ? 16.7 : Math.max(1, t - this.lastT);
+    this.lastT = t;
+
+    // быстрая громкость по последним ~11 мс
+    const fastN = Math.min(512, n);
+    let s = 0;
+    for (let i = n - fastN; i < n; i++) s += buf[i] * buf[i];
+    const rms = Math.sqrt(s / fastN);
+    const gate = Math.pow(10, this.gateDb / 20);
+
+    const onset = rms > gate && rms > this.env * 1.4 + gate * 0.25 && t - this.lastOnset > 90;
+    this.env = Math.max(rms, this.env * Math.pow(0.93, dt / 16.7));
+    if (onset) {
+      this.lastOnset = t;
+      this.collect = { t0: t, votes: new Map() };
+      this.spectrum(this.prevBuf, this.specPre);
+    }
+
+    // высота тона
+    let midi = null, cents = 0, valid = false, ap = 1;
+    if (rms > gate * 0.6) {
+      const need = this.W + this.tauMax + 1;
+      const start = n - need * this.dec;
+      const dbuf = this.dbuf;
+      if (this.dec === 2) {
+        for (let i = 0; i < need; i++) dbuf[i] = 0.5 * (buf[start + 2 * i] + buf[start + 2 * i + 1]);
+      } else {
+        for (let i = 0; i < need; i++) dbuf[i] = buf[start + i];
+      }
+      const r = yinDetect(dbuf, 0, this.W, this.tauMin, this.tauMax, this.d, this.cmnd, 0.15);
+      if (r.tau > 0) {
+        const f = this.dsr / r.tau;
+        const mf = freqToMidiF(f);
+        midi = Math.round(mf);
+        cents = Math.round((mf - midi) * 100);
+        ap = r.ap;
+        valid = r.ap < 0.25 && rms > gate;
+      }
+    }
+    this.onEvent('level', { rms, db: 20 * Math.log10(rms + 1e-9), gateDb: this.gateDb, midi: valid ? midi : null, cents });
+
+    // решение после удара
+    if (this.collect) {
+      const c = this.collect;
+      const age = t - c.t0;
+      if (age >= this.settleMs && rms > gate) {
+        let vm = this.newNote(buf);
+        // спектр грубоват на низких нотах: если YIN уверен и близок — берём его точное значение
+        if (vm != null && midi != null && ap < 0.2 && Math.abs(midi - vm) <= 2) vm = midi;
+        if (vm != null) {
+          const v = (c.votes.get(vm) || 0) + 1;
+          c.votes.set(vm, v);
+          if (v >= 3) this.emit(vm, 'onset');
+        }
+      }
+      if (this.collect && age > 420) {
+        let best = null, bv = 0;
+        c.votes.forEach((v, m) => { if (v > bv) { bv = v; best = m; } });
+        if (bv >= 2) this.emit(best, 'onset');
+        this.collect = null;
+      }
+    }
+
+    // плавный переход без явного удара (легато)
+    if (valid) {
+      if (midi !== this.stableMidi) { this.stableMidi = midi; this.stableSince = t; }
+      else if (!this.collect && t - this.stableSince >= 130 && midi !== this.lastEmitted &&
+               (this.lastEmitted == null || Math.abs(midi - this.lastEmitted) % 12 !== 0)) {
+        this.emit(midi, 'legato');
+      }
+    } else {
+      this.stableMidi = null;
+    }
+
+    this.prevBuf.set(buf);
+
+    if (rms < gate) {
+      if (!this.silentSince) this.silentSince = t;
+      if (t - this.silentSince > 200) this.lastEmitted = null;
+    } else this.silentSince = 0;
+  }
+
+  // нота, которая появилась после удара: спектр сейчас минус спектр до удара
+  newNote(buf) {
+    const cur = this.spectrum(buf, this.specCur), pre = this.specPre, Y = this.specNew;
+    let eNew = 0, eCur = 0;
+    for (let i = 0; i < Y.length; i++) {
+      const v = cur[i] - pre[i];
+      Y[i] = v > 0 ? Math.sqrt(v) : 0;
+      eNew += v > 0 ? v : 0; eCur += cur[i];
+    }
+    if (eNew < eCur * 0.12) return null;
+    const r = harmonicPick(Y, this.sr / this.N, this.candLo, this.candHi);
+    return r.midi;
+  }
+
+  emit(midi, via) {
+    this.collect = null;
+    this.lastEmitted = midi;
+    this.stableMidi = midi;
+    this.onEvent('note', { midi, via });
+  }
+}
+
+
+/* ---------- Теория ---------- */
+const STEP = [0, 2, 4, 5, 7, 9, 11];
+const SOLF = ['до', 'ре', 'ми', 'фа', 'соль', 'ля', 'си'];
+const LET = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const OCT_GEN = ['субконтроктавы', 'контроктавы', 'большой октавы', 'малой октавы', 'первой октавы', 'второй октавы', 'третьей октавы', 'четвёртой октавы', 'пятой октавы'];
+const SUP = ['₂', '₁', '', '', '¹', '²', '³', '⁴', '⁵'];
+const CLEFS = { treble: { bottomD: 30, name: 'Скрипичный' }, bass: { bottomD: 18, name: 'Басовый' } };
+const midiOf = (d, acc = 0) => (Math.floor(d / 7) + 1) * 12 + STEP[d % 7] + acc;
+const accMark = (acc) => (acc > 0 ? '♯' : acc < 0 ? '♭' : '');
+
+function shortName(d, acc = 0, naming = S.naming) {
+  const oct = Math.floor(d / 7), li = d % 7;
+  if (naming === 'letters') return LET[li] + accMark(acc) + oct;
+  let n = SOLF[li];
+  if (oct <= 2) n = n[0].toUpperCase() + n.slice(1);
+  return n + accMark(acc) + (SUP[oct] || '');
+}
+function fullName(d, acc = 0) {
+  const oct = Math.floor(d / 7), li = d % 7;
+  if (S.naming === 'letters') return LET[li] + accMark(acc) + oct;
+  return SOLF[li] + (acc > 0 ? '-диез' : acc < 0 ? '-бемоль' : '') + ' ' + OCT_GEN[oct];
+}
+function spellMidi(midi, preferFlat) {
+  const pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
+  const WHITE = { 0: 0, 2: 1, 4: 2, 5: 3, 7: 4, 9: 5, 11: 6 };
+  if (pc in WHITE) return { d: oct * 7 + WHITE[pc], acc: 0 };
+  if (preferFlat) return { d: oct * 7 + WHITE[pc + 1], acc: -1 };
+  return { d: oct * 7 + WHITE[pc - 1], acc: 1 };
+}
+
+/* ---------- Настройки и хранение ---------- */
+const store = {
+  get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* хранилище недоступно */ } },
+};
+const PRESETS = [
+  { id: 'first', name: 'Первая октава', clef: 'treble', lo: 28, hi: 35 },
+  { id: 'treble', name: 'Скрипичный ключ', clef: 'treble', lo: 28, hi: 39 },
+  { id: 'bass', name: 'Басовый ключ', clef: 'bass', lo: 17, hi: 28 },
+  { id: 'grand', name: 'Оба ключа', clef: 'grand', lo: 17, hi: 39 },
+  { id: 'ledger', name: 'Добавочные линейки', clef: 'grand', lo: 14, hi: 42 },
+];
+const D_MIN = 12, D_MAX = 49; // ля контроктавы … до пятой
+const DEFAULTS = { clef: 'treble', lo: 28, hi: 39, acc: false, motion: 'any', perRow: 'row', naming: 'solfege', octave: true, adaptive: true, sens: 20, showKeys: true, keySound: true };
+const S = Object.assign({}, DEFAULTS, store.get('slista.settings.v1', {}));
+let STATS = store.get('slista.stats.v1', null);
+if (!STATS || typeof STATS !== 'object' || !STATS.notes) STATS = { notes: {}, n: 0, first: 0 };
+const session = { n: 0, first: 0, streak: 0, best: 0, ms: 0 };
+
+const lowD = () => Math.min(S.lo, S.hi);
+const highD = () => Math.max(S.lo, S.hi);
+const clefFor = (midi) => (S.clef === 'grand' ? (midi < 60 ? 'bass' : 'treble') : S.clef);
+const presetId = () => { const p = PRESETS.find((p) => p.clef === S.clef && p.lo === lowD() && p.hi === highD()); return p ? p.id : null; };
+
+/* ---------- Генерация нот ---------- */
+function candidates() {
+  const lo = lowD(), hi = highD(), loM = midiOf(lo), hiM = midiOf(hi), out = [];
+  for (let d = lo; d <= hi; d++) {
+    const li = d % 7;
+    const push = (acc, w) => {
+      const midi = midiOf(d, acc);
+      if (midi < loM || midi > hiM) return;
+      out.push({ d, acc, midi, clef: clefFor(midi), w });
+    };
+    push(0, 1);
+    if (S.acc) {
+      if ([0, 1, 3, 4, 5].includes(li)) push(1, 0.45);
+      if ([1, 2, 4, 5, 6].includes(li)) push(-1, 0.45);
+    }
+  }
+  return out;
+}
+const keyOf = (n) => `${n.clef}:${n.d}:${n.acc}`;
+function difficulty(n) {
+  const st = STATS.notes[keyOf(n)];
+  if (!st || !st.n) return 1.4;
+  const err = (st.e + 0.3) / (st.n + 1), avg = st.ms / st.n;
+  return 0.6 + 3 * err + Math.min(1.5, Math.max(0, (avg - 1200) / 1500));
+}
+function pickNote(prev, cands) {
+  let list = cands.filter((c) => !prev || c.midi !== prev.midi);
+  if (!list.length) list = cands;
+  if (S.motion === 'step' && prev) {
+    const near = list.filter((c) => Math.abs(c.d - prev.d) <= 4);
+    if (near.length) list = near;
+  }
+  const ws = list.map((c) => c.w * (S.adaptive ? difficulty(c) : 1));
+  let r = Math.random() * ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < list.length; i++) { r -= ws[i]; if (r <= 0) return list[i]; }
+  return list[list.length - 1];
+}
+
+/* ---------- Геометрия нотного стана ---------- */
+const SP = 10; // межстрочный интервал в единицах SVG
+function geometry(n, clefMode, lo, hi) {
+  const need = (clef, loD, hiD) => {
+    const b = CLEFS[clef].bottomD;
+    return { above: Math.max(3.4, (hiD - (b + 8)) / 2 + 2.9), below: Math.max(2.4, (b - loD) / 2 + 1.6) };
+  };
+  let staves, height;
+  if (clefMode === 'grand') {
+    const t = need('treble', 30, Math.max(hi, 38));
+    const b = need('bass', Math.min(lo, 18), 26);
+    const trebleBottom = (t.above + 4) * SP;
+    const bassBottom = trebleBottom + (6.5 + 4) * SP;
+    staves = [{ clef: 'treble', bottomY: trebleBottom }, { clef: 'bass', bottomY: bassBottom }];
+    height = bassBottom + b.below * SP;
+  } else {
+    const r = need(clefMode, lo, hi);
+    staves = [{ clef: clefMode, bottomY: (r.above + 4) * SP }];
+    height = (r.above + 4 + r.below) * SP;
+  }
+  const grand = clefMode === 'grand';
+  const left = grand ? 2.2 * SP : 0.8 * SP;
+  const clefX = left + 0.7 * SP;
+  const firstX = clefX + 2.7 * SP + 2.9 * SP;
+  const slot = 4.4 * SP, barGap = 1.2 * SP;
+  const xs = [], bars = [];
+  for (let i = 0; i < n; i++) xs.push(firstX + i * slot + Math.floor(i / 4) * barGap);
+  for (let g = 4; g < n; g += 4) bars.push((xs[g - 1] + xs[g]) / 2);
+  const endX = xs[n - 1] + slot * 0.62;
+  return { staves, height, width: endX + 0.8 * SP, xs, bars, left, clefX, endX, slot, grand };
+}
+const staffOf = (G, clef) => G.staves.find((s) => s.clef === clef) || G.staves[0];
+const yOf = (d, st) => st.bottomY - (d - CLEFS[st.clef].bottomD) * (SP / 2);
+const f1 = (v) => Math.round(v * 10) / 10;
+
+function glyph(name, x, y, cls, scale = SP) {
+  return `<path class="${cls}" transform="translate(${f1(x)},${f1(y)}) scale(${scale})" d="${GLYPH[name].d}"/>`;
+}
+function noteSVG(n, x, st, cls, showAcc) {
+  const b = CLEFS[st.clef].bottomD, y = yOf(n.d, st), hw = 0.59 * SP, lw = 2.1 * SP;
+  let s = '';
+  for (let p = b - 2; p >= n.d; p -= 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
+  for (let p = b + 10; p <= n.d; p += 2) s += `<rect class="${cls}" x="${f1(x - lw / 2)}" y="${f1(yOf(p, st) - 0.8)}" width="${lw}" height="1.6"/>`;
+  if (showAcc != null) {
+    const g = showAcc > 0 ? 'accidentalSharp' : showAcc < 0 ? 'accidentalFlat' : 'accidentalNatural';
+    s += glyph(g, x - hw - 0.32 * SP - GLYPH[g].adv * SP, y, cls);
+  }
+  s += glyph('noteheadBlack', x - hw, y, cls);
+  const mid = b + 4, yMid = yOf(mid, st), len = 3.5 * SP;
+  if (n.d < mid) {
+    const top = Math.min(y - len, yMid);
+    s += `<rect class="${cls}" x="${f1(x + hw - 1.2)}" y="${f1(top)}" width="1.2" height="${f1(y - 0.17 * SP - top)}"/>`;
+  } else {
+    const bot = Math.max(y + len, yMid);
+    s += `<rect class="${cls}" x="${f1(x - hw)}" y="${f1(y + 0.17 * SP)}" width="1.2" height="${f1(bot - y - 0.17 * SP)}"/>`;
+  }
+  return s;
+}
+function staffFrame(G) {
+  let s = '';
+  const top = G.staves[0].bottomY - 4 * SP, bottom = G.staves[G.staves.length - 1].bottomY;
+  for (const st of G.staves) {
+    for (let i = 0; i < 5; i++) s += `<rect class="st" x="${f1(G.left)}" y="${f1(st.bottomY - i * SP - 0.6)}" width="${f1(G.endX - G.left)}" height="1.2"/>`;
+    if (st.clef === 'treble') s += glyph('gClef', G.clefX, st.bottomY - SP, 'g-ink');
+    else s += glyph('fClef', G.clefX, st.bottomY - 3 * SP, 'g-ink');
+  }
+  if (G.grand) {
+    const k = (bottom - top) / 3.988;
+    s += glyph('brace', G.left - 0.35 * SP - 0.33 * k, bottom, 'g-ink', f1(k));
+    s += `<rect class="st" x="${f1(G.left)}" y="${f1(top - 0.6)}" width="1.4" height="${f1(bottom - top + 1.2)}"/>`;
+  }
+  const bar = (x, w) => {
+    if (G.grand) return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(bottom - top + 1.2)}"/>`;
+    return `<rect class="st" x="${f1(x)}" y="${f1(top - 0.6)}" width="${w}" height="${f1(4 * SP + 1.2)}"/>`;
+  };
+  for (const x of G.bars) s += bar(x - 0.6, 1.2);
+  s += bar(G.endX - 1.4, 1.4);
+  return s;
+}
+
+/* ---------- Состояние упражнения ---------- */
+let row = null, lastNote = null, ghost = null, ghostTimer = 0, anim = null, rowFresh = false, busy = false, paused = false;
+let micState = 'off';
+let midiNames = [], midiSeen = false;
+
+function autoCount() {
+  if (S.perRow === 'one') return 1;
+  const w = $('sheet').clientWidth - 16;
+  const lead = S.clef === 'grand' ? 111 : 97;
+  const n = Math.floor((w / 1.1 - lead) / 44);
+  return Math.max(3, Math.min(8, n));
+}
+function newRow() {
+  const cands = candidates();
+  const n = autoCount();
+  const notes = [];
+  let prev = lastNote;
+  for (let i = 0; i < n; i++) {
+    const c = pickNote(prev, cands);
+    notes.push({ d: c.d, acc: c.acc, midi: c.midi, clef: c.clef, status: 'todo', errors: 0, hinted: false, startAt: 0 });
+    prev = c;
+  }
+  lastNote = prev;
+  row = { notes, idx: 0 };
+  notes[0].startAt = performance.now();
+  rowFresh = true;
+  ghost = null;
+  setHintKey(null);
+}
+
+/* ---------- Отрисовка ---------- */
+const $ = (id) => document.getElementById(id);
+
+function renderScore() {
+  if (!row) return;
+  const n = row.notes.length;
+  const G = geometry(n, S.clef, lowD(), highD());
+  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`;
+  // подсветка текущей ноты (под линиями стана)
+  if (row.idx < n) {
+    const x = G.xs[row.idx];
+    const top = G.staves[0].bottomY - 4 * SP - 1.6 * SP, bot = G.staves[G.staves.length - 1].bottomY + 1.6 * SP;
+    s += `<rect class="band" x="${f1(x - G.slot / 2 + 0.35 * SP)}" y="${f1(top)}" width="${f1(G.slot - 0.7 * SP)}" height="${f1(bot - top)}" rx="${0.9 * SP}"/>`;
+  }
+  s += staffFrame(G);
+  s += `<g class="${rowFresh ? 'row-in fx' : ''}">`;
+  let state = {};
+  row.notes.forEach((note, i) => {
+    if (i % 4 === 0) state = {};
+    const st = staffOf(G, note.clef);
+    const k = note.clef + note.d;
+    const cur = state[k] || 0;
+    const showAcc = note.acc !== cur ? note.acc : null;
+    state[k] = note.acc;
+    const cls = note.status === 'ok' ? 'g-ok' : note.status === 'miss' ? 'g-miss' : 'g-ink';
+    const a = anim && anim.idx === i ? ` fx ${anim.type}` : '';
+    s += `<g class="${a}">${noteSVG(note, G.xs[i], st, cls, showAcc)}</g>`;
+  });
+  s += '</g>';
+  // подсказка
+  if (row.idx < n && row.notes[row.idx].hinted) {
+    const note = row.notes[row.idx], st = staffOf(G, note.clef);
+    const y = Math.min(st.bottomY - 4 * SP, yOf(note.d, st) - 1.4 * SP) - 0.9 * SP;
+    s += `<text class="hint-t" x="${f1(G.xs[row.idx])}" y="${f1(y)}" text-anchor="middle">${shortName(note.d, note.acc)}</text>`;
+  }
+  // сыгранная неверная нота — «призрак» рядом с текущей
+  if (ghost && row.idx < n) {
+    const st = staffOf(G, ghost.clef);
+    const y = yOf(ghost.d, st);
+    if (y > 4 && y < G.height - 4) {
+      const x = G.xs[row.idx] + (ghost.acc ? 2.7 : 1.9) * SP;
+      s += `<g class="ghost">${noteSVG(ghost, x, st, 'g-bad', ghost.acc || null)}</g>`;
+    }
+  }
+  s += '</svg>';
+  $('score').innerHTML = s;
+  anim = null;
+  rowFresh = false;
+}
+
+const fmtSec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' с';
+const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+
+function renderStats() {
+  $('stAcc').textContent = pct(session.first, session.n);
+  $('stStreak').textContent = session.streak;
+  $('stTime').textContent = session.n ? fmtSec(session.ms / session.n) : '—';
+  $('stCount').textContent = session.n;
+}
+function renderLevel() {
+  const p = PRESETS.find((p) => p.id === presetId());
+  $('levelName').textContent = p ? p.name : 'Свой уровень';
+  const clefName = S.clef === 'grand' ? 'Оба ключа' : CLEFS[S.clef].name + ' ключ';
+  $('levelRange').textContent = (p ? '' : clefName + ' · ') + shortName(lowD()) + ' — ' + shortName(highD()) + (S.acc ? ' · ♯ ♭' : '');
+}
+function say(text, kind = '') {
+  const m = $('msg');
+  m.textContent = text;
+  m.className = 'msg' + (kind ? ' ' + kind : '');
+}
+function idleMessage() {
+  if (midiNames.length) say(`Пианино подключено по MIDI (${midiNames.join(', ')}). Играйте отмеченную ноту.`);
+  else if (micState === 'on') say('Играйте отмеченную ноту.');
+  else say('Включите микрофон и играйте отмеченную ноту на пианино. Без микрофона можно нажимать клавиши внизу.');
+}
+
+/* ---------- Клавиатура на экране ---------- */
+const keyEls = new Map();
+let heardMidi = null, hintMidi = null;
+function buildKeys() {
+  const lo = midiOf(lowD()), hi = midiOf(highD());
+  const start = Math.floor(lo / 12) * 12;
+  let end = Math.floor(hi / 12) * 12 + 11;
+  if (end - start + 1 < 24) end = start + 23;
+  const isWhite = (m) => [0, 2, 4, 5, 7, 9, 11].includes(m % 12);
+  const whites = [];
+  for (let m = start; m <= end; m++) if (isWhite(m)) whites.push(m);
+  const nw = whites.length, bw = (0.6 / nw) * 100;
+  let html = '';
+  whites.forEach((m) => {
+    const sp = spellMidi(m, false);
+    const lbl = m % 12 === 0 ? `<span class="lbl">${shortName(sp.d)}</span>` : '';
+    html += `<button type="button" class="wk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d)}">${lbl}</button>`;
+  });
+  let wi = 0;
+  for (let m = start; m <= end; m++) {
+    if (isWhite(m)) { wi++; continue; }
+    const sp = spellMidi(m, false);
+    const left = (wi / nw) * 100 - bw / 2;
+    html += `<button type="button" class="bk" tabindex="-1" data-midi="${m}" aria-label="${shortName(sp.d, sp.acc)}" style="left:${left.toFixed(3)}%;width:${bw.toFixed(3)}%"></button>`;
+  }
+  const k = $('keys');
+  k.style.setProperty('--nw', nw);
+  k.innerHTML = html;
+  keyEls.clear();
+  k.querySelectorAll('[data-midi]').forEach((el) => keyEls.set(+el.dataset.midi, el));
+  heardMidi = null;
+  requestAnimationFrame(() => {
+    const w = $('keysWrap');
+    w.scrollLeft = (w.scrollWidth - w.clientWidth) / 2;
+  });
+}
+const flashTimers = new Map();
+function flashKey(midi, cls) {
+  const el = keyEls.get(midi);
+  if (!el) return;
+  el.classList.remove('ok', 'bad');
+  void el.offsetWidth;
+  el.classList.add(cls);
+  clearTimeout(flashTimers.get(midi));
+  flashTimers.set(midi, setTimeout(() => el.classList.remove(cls), 650));
+}
+function setHeard(midi) {
+  if (midi === heardMidi) return;
+  if (heardMidi != null && keyEls.get(heardMidi)) keyEls.get(heardMidi).classList.remove('heard');
+  heardMidi = midi;
+  if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('heard');
+}
+function setHintKey(midi) {
+  if (hintMidi != null && keyEls.get(hintMidi)) keyEls.get(hintMidi).classList.remove('hint');
+  hintMidi = midi;
+  if (midi != null && keyEls.get(midi)) keyEls.get(midi).classList.add('hint');
+}
+
+let outCtx = null;
+function playTone(midi) {
+  if (!S.keySound || micState === 'on') return;
+  try {
+    outCtx = outCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (outCtx.state === 'suspended') outCtx.resume();
+    const t = outCtx.currentTime, f = midiToFreq(midi);
+    const g = outCtx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.22, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.6);
+    g.connect(outCtx.destination);
+    [[1, 1], [2, 0.42], [3, 0.16], [4, 0.07]].forEach(([k, a]) => {
+      const o = outCtx.createOscillator(), og = outCtx.createGain();
+      o.frequency.value = f * k; og.gain.value = a;
+      o.connect(og); og.connect(g);
+      o.start(t); o.stop(t + 1.7);
+    });
+  } catch (e) { /* звук недоступен */ }
+}
+
+/* ---------- Проверка ответа ---------- */
+function record(note, clean, ms) {
+  session.n++; session.ms += ms;
+  if (clean) { session.first++; session.streak++; session.best = Math.max(session.best, session.streak); }
+  else session.streak = 0;
+  STATS.n++; if (clean) STATS.first++;
+  const k = keyOf(note);
+  const st = STATS.notes[k] || (STATS.notes[k] = { n: 0, e: 0, ms: 0 });
+  st.n++; if (!clean) st.e++; st.ms += ms;
+  store.set('slista.stats.v1', STATS);
+}
+function advance(status, midi) {
+  const cur = row.notes[row.idx], now = performance.now();
+  const ms = Math.min(10000, now - cur.startAt);
+  const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
+  cur.status = status;
+  record(cur, clean, ms);
+  ghost = null;
+  clearTimeout(ghostTimer);
+  setHintKey(null);
+  if (status === 'ok') { anim = { type: 'pop', idx: row.idx }; flashKey(midi, 'ok'); }
+  row.idx++;
+  if (row.idx >= row.notes.length) {
+    const good = row.notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
+    if (row.notes.length > 1) say(`Строка пройдена: ${good} из ${row.notes.length} с первого раза.`, 'ok');
+    else if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}` : 'Верно.', 'ok');
+    busy = true;
+    renderScore(); renderStats();
+    setTimeout(() => { busy = false; newRow(); renderScore(); }, row.notes.length > 1 ? 700 : 380);
+    return;
+  }
+  row.notes[row.idx].startAt = now;
+  if (status === 'ok') say(clean ? `Верно · ${fmtSec(ms)}${session.streak >= 5 ? ` · серия ${session.streak}` : ''}` : 'Верно.', 'ok');
+  renderScore(); renderStats();
+}
+function handleInput(midi, via) {
+  if (!row || busy || paused || row.idx >= row.notes.length) return;
+  const cur = row.notes[row.idx];
+  const hit = S.octave ? midi === cur.midi : (((midi - cur.midi) % 12) + 12) % 12 === 0;
+  if (hit) { advance('ok', midi); return; }
+  if (via === 'legato') return; // плавный переход без удара не штрафуем
+  cur.errors++;
+  if (cur.errors === 1) { session.streak = 0; renderStats(); }
+  const sp = spellMidi(midi, cur.acc < 0);
+  ghost = { d: sp.d, acc: sp.acc, midi, clef: clefFor(midi) };
+  anim = { type: 'shake', idx: row.idx };
+  flashKey(midi, 'bad');
+  say(`Сыграно ${shortName(sp.d, sp.acc)}, а нужна другая нота.`, 'bad');
+  renderScore();
+  clearTimeout(ghostTimer);
+  ghostTimer = setTimeout(() => { ghost = null; renderScore(); }, 1600);
+}
+
+/* ---------- Микрофон ---------- */
+const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+let audio = null, wakeLock = null;
+
+function setMicUI() {
+  const on = micState === 'on';
+  const btn = $('micBtn');
+  btn.classList.toggle('primary', !on);
+  btn.classList.toggle('on', on);
+  btn.disabled = micState === 'starting';
+  $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
+  $('meter').hidden = !on;
+  $('spacer').hidden = on;
+}
+function micError(e) {
+  const name = e && e.name;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    say('Микрофон работает только на странице с адресом https:// или в файле, открытом на компьютере. Пока можно нажимать клавиши внизу.', 'bad');
+  } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+    say('Микрофон не найден. Проверьте, что он подключён, и попробуйте ещё раз.', 'bad');
+  } else if (inFrame) {
+    say('Здесь браузер не даёт доступ к микрофону. Откройте приложение как отдельный сайт или нажимайте клавиши внизу.', 'bad');
+  } else {
+    say('Нет доступа к микрофону. Разрешите его в настройках сайта в браузере и нажмите «Включить микрофон» ещё раз.', 'bad');
+  }
+}
+async function startMic() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { micError(null); return; }
+  micState = 'starting'; setMicUI();
+  let ctx = null;
+  try {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    if (ctx.state === 'suspended') await ctx.resume();
+    const src = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 4096;
+    analyser.smoothingTimeConstant = 0;
+    src.connect(analyser);
+    const listener = new PitchListener(ctx.sampleRate, 4096, onDetector);
+    audio = { ctx, stream, analyser, listener, buf: new Float32Array(4096), raf: 0 };
+    applyListener();
+    micState = 'on'; setMicUI(); idleMessage();
+    requestWake();
+    const loop = () => {
+      if (!audio) return;
+      audio.analyser.getFloatTimeDomainData(audio.buf);
+      audio.listener.process(audio.buf, performance.now());
+      audio.raf = requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) {
+    if (ctx) try { ctx.close(); } catch (_) { /* уже закрыт */ }
+    audio = null; micState = 'off'; setMicUI();
+    micError(e);
+  }
+}
+function stopMic() {
+  if (audio) {
+    cancelAnimationFrame(audio.raf);
+    audio.stream.getTracks().forEach((t) => t.stop());
+    try { audio.ctx.close(); } catch (e) { /* уже закрыт */ }
+  }
+  audio = null; micState = 'off'; setMicUI(); setHeard(null); idleMessage();
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+}
+function applyListener() {
+  if (!audio) return;
+  audio.listener.gateDb = -30 - S.sens;
+  audio.listener.setRange(midiOf(lowD()) - 1, midiOf(highD()) + 1);
+}
+async function requestWake() {
+  try { if ('wakeLock' in navigator && micState === 'on') wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWake(); });
+
+let heardUntil = 0;
+function onDetector(type, d) {
+  if (type === 'note') { if (!midiSeen) handleInput(d.midi, d.via); return; }
+  const pos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
+  $('meterFill').style.width = pos(d.db).toFixed(1) + '%';
+  $('meterGate').style.left = pos(d.gateDb).toFixed(1) + '%';
+  const now = performance.now();
+  if (d.midi != null) {
+    const sp = spellMidi(d.midi, false);
+    const c = d.cents > 0 ? '+' + d.cents : d.cents < 0 ? '−' + Math.abs(d.cents) : '±0';
+    $('heard').innerHTML = `Слышу <strong>${shortName(sp.d, sp.acc)}</strong> ${c}¢`;
+    heardUntil = now + 350;
+    setHeard(d.midi);
+  } else if (now > heardUntil) {
+    $('heard').textContent = d.db < d.gateDb ? 'Тишина' : 'Слушаю…';
+    setHeard(null);
+  }
+}
+
+/* ---------- MIDI ---------- */
+async function connectMidi() {
+  const note = $('midiNote');
+  if (!navigator.requestMIDIAccess) { note.textContent = 'Этот браузер не поддерживает MIDI. Подойдёт Chrome или Edge на компьютере или Android.'; return; }
+  try {
+    const access = await navigator.requestMIDIAccess();
+    const hook = () => {
+      const names = [];
+      access.inputs.forEach((inp) => {
+        if (inp.state === 'disconnected') return;
+        names.push(inp.name);
+        inp.onmidimessage = (e) => {
+          const [st, n, vel] = e.data;
+          if ((st & 0xf0) === 0x90 && vel > 0) { midiSeen = true; handleInput(n, 'midi'); }
+        };
+      });
+      midiNames = names;
+      if (!names.length) midiSeen = false;
+      if (names.length && micState === 'on') stopMic(); // иначе одна нота придёт дважды: по MIDI и через микрофон
+      note.textContent = names.length
+        ? 'Подключено: ' + names.join(', ') + '. Микрофон не нужен: ноты приходят по кабелю или Bluetooth.'
+        : 'MIDI-устройства не найдены. Проверьте кабель или Bluetooth и нажмите кнопку ещё раз.';
+      idleMessage();
+    };
+    hook();
+    access.onstatechange = hook;
+  } catch (e) {
+    note.textContent = 'Нет доступа к MIDI. Разрешите его в настройках сайта или откройте приложение как отдельный сайт.';
+  }
+}
+
+/* ---------- Панели ---------- */
+let openPanelEl = null, returnFocus = null;
+function openPanel(id) {
+  closePanel();
+  returnFocus = document.activeElement;
+  openPanelEl = $(id);
+  if (id === 'progressPanel') renderProgress();
+  if (id === 'settingsPanel') syncForm();
+  $('scrim').hidden = false;
+  openPanelEl.hidden = false;
+  paused = true;
+  const f = openPanelEl.querySelector('[data-close]');
+  if (f) f.focus();
+}
+function closePanel() {
+  if (!openPanelEl) return;
+  openPanelEl.hidden = true;
+  $('scrim').hidden = true;
+  openPanelEl = null;
+  paused = false;
+  if (row && row.idx < row.notes.length) row.notes[row.idx].startAt = performance.now();
+  if (returnFocus && returnFocus.focus) returnFocus.focus();
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+$('scrim').addEventListener('click', closePanel);
+document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePanel));
+
+function miniStaff(n) {
+  const G = geometry(1, n.clef, n.d, n.d);
+  let s = `<svg viewBox="0 0 ${f1(G.width)} ${f1(G.height)}" aria-hidden="true">` + staffFrame(G);
+  s += noteSVG(n, G.xs[0], G.staves[0], 'g-ink', n.acc || null) + '</svg>';
+  return s;
+}
+function renderProgress() {
+  $('sessionKv').innerHTML = `
+    <dt>Сыграно нот</dt><dd>${session.n}</dd>
+    <dt>С первого раза</dt><dd>${pct(session.first, session.n)}</dd>
+    <dt>Лучшая серия</dt><dd>${session.best}</dd>
+    <dt>Средняя реакция</dt><dd>${session.n ? fmtSec(session.ms / session.n) : '—'}</dd>`;
+  $('allKv').innerHTML = `
+    <dt>Всего нот</dt><dd>${STATS.n}</dd>
+    <dt>С первого раза</dt><dd>${pct(STATS.first, STATS.n)}</dd>`;
+  const items = Object.entries(STATS.notes)
+    .filter(([, st]) => st.n >= 2)
+    .map(([k, st]) => {
+      const [clef, d, acc] = k.split(':');
+      const n = { clef, d: +d, acc: +acc };
+      const err = st.e / st.n, avg = st.ms / st.n;
+      return { n, st, err, avg, score: err * 0.7 + Math.min(1, avg / 4000) * 0.3 };
+    })
+    .filter((x) => x.err > 0 || x.avg > 1800)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6);
+  $('hardList').innerHTML = items.length
+    ? items.map((x) => `<div class="hard-item">${miniStaff(x.n)}<div><b>${shortName(x.n.d, x.n.acc)}</b><span>${CLEFS[x.n.clef].name.toLowerCase()} · ошибки ${Math.round(x.err * 100)}% · ${fmtSec(x.avg)}</span></div></div>`).join('')
+    : '<p class="note">Пока мало данных. Сыграйте пару строк, и здесь появятся ноты, на которых вы ошибаетесь или думаете дольше всего.</p>';
+  renderReset(false);
+}
+function renderReset(confirming) {
+  const a = $('resetArea');
+  a.innerHTML = confirming
+    ? '<span>Удалить всю статистику?</span><button class="btn danger" type="button" id="resetYes">Удалить</button><button class="btn" type="button" id="resetNo">Отмена</button>'
+    : '<button class="btn" type="button" id="resetBtn">Сбросить статистику</button>';
+  if (confirming) {
+    $('resetYes').onclick = () => {
+      STATS = { notes: {}, n: 0, first: 0 };
+      Object.assign(session, { n: 0, first: 0, streak: 0, best: 0, ms: 0 });
+      store.set('slista.stats.v1', STATS);
+      renderStats(); renderProgress();
+    };
+    $('resetNo').onclick = () => renderReset(false);
+  } else $('resetBtn').onclick = () => renderReset(true);
+}
+
+/* ---------- Форма настроек ---------- */
+function fillRangeSelects() {
+  const other = S.naming === 'letters' ? 'solfege' : 'letters';
+  let opts = '';
+  for (let d = D_MIN; d <= D_MAX; d++) opts += `<option value="${d}">${shortName(d)} · ${shortName(d, 0, other)}</option>`;
+  $('loSel').innerHTML = opts;
+  $('hiSel').innerHTML = opts;
+}
+function syncForm() {
+  const pid = presetId();
+  $('presetChips').innerHTML = PRESETS.map((p) => `<button type="button" class="chip" data-preset="${p.id}" aria-pressed="${p.id === pid}">${p.name}</button>`).join('');
+  document.querySelectorAll('input[name="clef"]').forEach((r) => { r.checked = r.value === S.clef; });
+  document.querySelectorAll('input[name="motion"]').forEach((r) => { r.checked = r.value === S.motion; });
+  document.querySelectorAll('input[name="perRow"]').forEach((r) => { r.checked = r.value === S.perRow; });
+  document.querySelectorAll('input[name="naming"]').forEach((r) => { r.checked = r.value === S.naming; });
+  $('loSel').value = String(lowD());
+  $('hiSel').value = String(highD());
+  $('optAcc').checked = S.acc;
+  $('optOctave').checked = S.octave;
+  $('optAdaptive').checked = S.adaptive;
+  $('optKeys').checked = S.showKeys;
+  $('optSound').checked = S.keySound;
+  $('sens').value = String(S.sens);
+  $('frameNote').hidden = !inFrame;
+}
+function apply(kind) {
+  store.set('slista.settings.v1', S);
+  if (kind === 'exercise') { lastNote = null; buildKeys(); newRow(); applyListener(); }
+  if (kind === 'names') { fillRangeSelects(); buildKeys(); }
+  $('keysWrap').hidden = !S.showKeys;
+  renderLevel(); renderScore(); syncForm();
+  if (kind === 'exercise') idleMessage();
+}
+$('presetChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-preset]');
+  if (!b) return;
+  const p = PRESETS.find((x) => x.id === b.dataset.preset);
+  Object.assign(S, { clef: p.clef, lo: p.lo, hi: p.hi });
+  apply('exercise');
+});
+document.querySelectorAll('input[name="clef"]').forEach((r) => r.addEventListener('change', () => { S.clef = r.value; apply('exercise'); }));
+document.querySelectorAll('input[name="motion"]').forEach((r) => r.addEventListener('change', () => { S.motion = r.value; apply('exercise'); }));
+document.querySelectorAll('input[name="perRow"]').forEach((r) => r.addEventListener('change', () => { S.perRow = r.value; apply('exercise'); }));
+document.querySelectorAll('input[name="naming"]').forEach((r) => r.addEventListener('change', () => { S.naming = r.value; apply('names'); }));
+const onRange = () => {
+  let lo = +$('loSel').value, hi = +$('hiSel').value;
+  if (hi - lo < 2) { if (document.activeElement === $('loSel')) hi = Math.min(D_MAX, lo + 2); else lo = Math.max(D_MIN, hi - 2); }
+  S.lo = lo; S.hi = hi;
+  apply('exercise');
+};
+$('loSel').addEventListener('change', onRange);
+$('hiSel').addEventListener('change', onRange);
+$('optAcc').addEventListener('change', (e) => { S.acc = e.target.checked; apply('exercise'); });
+$('optOctave').addEventListener('change', (e) => { S.octave = e.target.checked; apply(); });
+$('optAdaptive').addEventListener('change', (e) => { S.adaptive = e.target.checked; apply(); });
+$('optKeys').addEventListener('change', (e) => { S.showKeys = e.target.checked; apply(); });
+$('optSound').addEventListener('change', (e) => { S.keySound = e.target.checked; apply(); });
+$('sens').addEventListener('input', (e) => { S.sens = +e.target.value; store.set('slista.settings.v1', S); applyListener(); });
+$('midiBtn').addEventListener('click', connectMidi);
+
+/* ---------- Кнопки ---------- */
+$('micBtn').addEventListener('click', () => (micState === 'on' ? stopMic() : startMic()));
+$('hintBtn').addEventListener('click', () => {
+  if (!row || busy || row.idx >= row.notes.length) return;
+  const cur = row.notes[row.idx];
+  cur.hinted = true;
+  session.streak = 0;
+  setHintKey(cur.midi);
+  say(`Это ${fullName(cur.d, cur.acc)}.`, 'hint');
+  renderScore(); renderStats();
+});
+$('skipBtn').addEventListener('click', () => {
+  if (!row || busy || row.idx >= row.notes.length) return;
+  const cur = row.notes[row.idx];
+  say(`Пропущено. Это была нота ${fullName(cur.d, cur.acc)}.`, 'bad');
+  advance('miss');
+});
+$('settingsBtn').addEventListener('click', () => openPanel('settingsPanel'));
+$('levelBtn').addEventListener('click', () => openPanel('settingsPanel'));
+$('progressBtn').addEventListener('click', () => openPanel('progressPanel'));
+$('stats').addEventListener('click', () => openPanel('progressPanel'));
+
+$('keys').addEventListener('click', (e) => {
+  const k = e.target.closest('[data-midi]');
+  if (!k) return;
+  const m = +k.dataset.midi;
+  playTone(m);
+  handleInput(m, 'screen');
+});
+
+/* ---------- Запуск ---------- */
+let lastW = 0;
+const ro = new ResizeObserver(() => {
+  const w = $('sheet').clientWidth;
+  if (Math.abs(w - lastW) < 2) return;
+  lastW = w;
+  if (row && row.idx === 0 && !row.notes[0].errors && !row.notes[0].hinted && autoCount() !== row.notes.length) { newRow(); renderScore(); }
+});
+
+fillRangeSelects();
+syncForm();
+buildKeys();
+$('keysWrap').hidden = !S.showKeys;
+renderLevel();
+newRow();
+renderScore();
+renderStats();
+setMicUI();
+idleMessage();
+lastW = $('sheet').clientWidth;
+ro.observe($('sheet'));
+})();
+</script>
+
+</body>
+</html>
