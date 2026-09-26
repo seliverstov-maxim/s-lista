@@ -16,6 +16,7 @@
   --accent-soft: rgba(133, 88, 16, 0.15);
   --ok: #17703F;
   --bad: #B23024;
+  --near: #A85A00;
   --key-label: #57534C;
   --felt: #6F1F24;
   --key-w: #FFFFFF;
@@ -42,6 +43,7 @@
     --accent-soft: rgba(217, 169, 79, 0.17);
     --ok: #4FCB8C;
     --bad: #FF6F5F;
+    --near: #FFA94D;
     --felt: #5C1A1E;
     --key-w: #D9D5CC;
     --key-w-edge: #7F7A72;
@@ -65,6 +67,7 @@
   --accent-soft: rgba(217, 169, 79, 0.17);
   --ok: #4FCB8C;
   --bad: #FF6F5F;
+  --near: #FFA94D;
   --felt: #5C1A1E;
   --key-w: #D9D5CC;
   --key-w-edge: #7F7A72;
@@ -190,6 +193,11 @@ button { cursor: pointer; }
 }
 .play-btn svg { width: 18px; height: 18px; fill: currentColor; }
 .play-btn.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.play-btn:disabled { opacity: 0.4; }
+.run-btn { right: 60px; }
+.run-btn svg { fill: none; }
+.run-btn.on svg { fill: currentColor; }
+.stars { color: var(--accent); letter-spacing: 1px; margin-left: 6px; }
 .keys.muted { opacity: 0.55; }
 #score { width: 100%; }
 #score svg { display: block; width: 100%; height: auto; max-height: min(48vh, 460px); margin-inline: auto; }
@@ -197,6 +205,7 @@ button { cursor: pointer; }
 .g-ink { fill: var(--ink); }
 .g-ok { fill: var(--ok); }
 .g-miss { fill: var(--bad); opacity: 0.55; }
+.g-near { fill: var(--near); }
 .g-bad { fill: var(--bad); }
 .band { fill: var(--accent-soft); }
 .band.play { fill: color-mix(in srgb, var(--ok) 18%, transparent); }
@@ -499,6 +508,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
     </button>
 
     <main class="sheet" id="sheet">
+      <button class="play-btn run-btn" id="runBtn" type="button" aria-label="На оценку: сыграть в темпе с метрономом" hidden></button>
       <button class="play-btn" id="playBtn" type="button" aria-label="Прослушать с этой строки" hidden></button>
       <div id="score" role="img" aria-label="Нотный стан с упражнением"></div>
     </main>
@@ -624,6 +634,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
   <section class="group">
     <p class="note" id="donePiece"></p>
     <dl class="kv" id="doneKv"></dl>
+    <p class="note" id="doneNote" hidden></p>
   </section>
   <div class="controls done-actions">
     <button class="btn primary" type="button" id="doneAgain">Ещё раз</button>
@@ -761,8 +772,10 @@ async function renderPieces() {
   msg.textContent = piecesFlash || (piecesIndex.length ? 'Выберите пьесу и ключ: скрипичный — для правой руки, басовый — для левой.' : 'Пьес пока нет.');
   piecesFlash = null;
   list.innerHTML = piecesIndex.map((p) => `<li class="piece"><div class="piece-t"><b>${esc(p.title)}</b><span>${esc(p.composer || '')}</span></div>` +
-    `<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) =>
-      `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}">${CLEFS[c].name}</button>`).join('')}</div></li>`).join('');
+    `<div class="piece-b">${['treble', 'bass'].filter((c) => p.clefs.includes(c)).map((c) => {
+      const sc = SCORES[`${p.id}:${c}`];
+      return `<button class="btn" type="button" data-piece="${esc(p.id)}" data-clef="${c}"${sc ? ` aria-label="${CLEFS[c].name}, лучший результат на оценку ${sc.best}%"` : ''}>${CLEFS[c].name}${sc ? `<span class="stars" aria-hidden="true">${starsText(starsOf(sc.best))}</span>` : ''}</button>`;
+    }).join('')}</div></li>`).join('');
 }
 $('piecesList').addEventListener('click', (e) => {
   const b = e.target.closest('[data-piece]');
@@ -830,7 +843,7 @@ function startRandom() {
   ex.W = sheetUnits();
   ex.vb = scoreVBox(randomScore([{ d: r.lo }, { d: r.hi }], S.clef));
   startExercise();
-  $('playBtn').hidden = true;
+  $('playBtn').hidden = $('runBtn').hidden = true;
   newRandomRow(false);
   renderAll();
 }
@@ -865,7 +878,7 @@ function startPiece(piece, clef) {
   ex.cur = 0;
   ex.row = 0;
   startExercise();
-  $('playBtn').hidden = false;
+  $('playBtn').hidden = $('runBtn').hidden = false;
   score.notes[0].startAt = performance.now();
   fresh = true;
   renderAll();
@@ -873,6 +886,7 @@ function startPiece(piece, clef) {
 }
 function startExercise() {
   stopPlayback();
+  stopRun(true);
   busy = false; ghost = null; anim = null; lastDone = null;
   clearTimeout(ghostTimer);
   buildKeys(ex.lo, ex.hi);
@@ -889,7 +903,8 @@ function preloadPiano() {
 }
 function leavePlay() {
   stopPlayback();
-  $('playBtn').hidden = true;
+  stopRun(true);
+  $('playBtn').hidden = $('runBtn').hidden = true;
   ex = null;
   busy = false;
   clearTimeout(ghostTimer);
@@ -1160,7 +1175,8 @@ function nextRow() {
   renderScore(); renderTitle();
 }
 let lastDone = null; // последняя засчитанная нота: её отголоски не считаем ни ошибкой, ни новым ответом (isEcho)
-function handleInput(midi, via, strong = true) {
+function handleInput(midi, via, strong = true, at = performance.now()) {
+  if (run) { if (screen === 'play' && !paused) runInput(midi, via, strong, at); return; }
   const cur = curNote();
   if (!cur || screen !== 'play' || busy || paused || pb) return;
   const now = performance.now();
@@ -1199,6 +1215,8 @@ function finishPiece() {
   const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
   $('doneTitle').textContent = 'Пьеса сыграна';
   $('doneList').textContent = 'К списку';
+  $('doneNote').hidden = true;
+  doneKind = 'piece';
   $('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)}`;
   $('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
   say('Пьеса сыграна.', 'ok');
@@ -1208,6 +1226,8 @@ function finishPiece() {
 function finishRandom() {
   $('doneTitle').textContent = 'Упражнение пройдено';
   $('doneList').textContent = 'К настройке';
+  $('doneNote').hidden = true;
+  doneKind = 'random';
   $('donePiece').textContent = `Случайные ноты · ${clefLabel(ex.clef)} · ${linesLabel(S.below, S.above)}`;
   $('doneKv').innerHTML = `<dt>Нот</dt><dd>${ex.total}</dd><dt>С первого раза</dt><dd>${ex.clean} (${pct(ex.clean, ex.total)})</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd><dt>В среднем на ноту</dt><dd>${fmtSec(ex.elapsed / ex.total)}</dd>`;
   say('Упражнение пройдено.', 'ok');
@@ -1215,8 +1235,8 @@ function finishRandom() {
   openPanel('donePanel');
 }
 $('doneAgain').addEventListener('click', () => {
-  const e = ex;
-  closePanel(() => { if (!e) return; if (e.mode === 'random') { startRandom(); } else startPiece(e.piece, e.clef); });
+  const e = ex, kind = doneKind;
+  closePanel(() => { if (!e || ex !== e) return; if (kind === 'run') startRun(); else if (e.mode === 'random') startRandom(); else startPiece(e.piece, e.clef); });
 });
 $('doneList').addEventListener('click', () => closePanel(() => history.back()));
 
@@ -1293,6 +1313,154 @@ function stopPlayback() {
   }
 }
 
+/* ---------- Игра на оценку (FR-PC-12) ---------- */
+// «На оценку»: пьеса с начала под тихий метроном в её темпе, после счёта. Ноты оценивает судья (createJudge
+// в music.js): в такт — зелёная, неточно — оранжевая, пропущена — красная; лишние нажатия снижают счёт.
+// В конце — процент, звёзды и лучший результат этой версии пьесы (slista.scores.v1). Пока идёт игра,
+// подсказка, пропуск, прослушивание и кнопка микрофона не работают; панели и уход с экрана игру прерывают.
+const SCORES_KEY = 'slista.scores.v1';
+const SCORES = store.get(SCORES_KEY, null) || {};
+const MIC_LAG = 30; // мс: настоящий удар раньше, чем его замечает распознавание (≈15 мс анализа и задержка микрофона)
+const METRO_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5L19 20.5H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 16.5l4.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const starsText = (k) => '★'.repeat(k) + '☆'.repeat(3 - k);
+let run = null, clickBuf = null, doneKind = null, resetAfterRun = false;
+$('runBtn').innerHTML = METRO_ICON;
+function setRunUI(on) {
+  const b = $('runBtn');
+  b.classList.toggle('on', on);
+  b.innerHTML = on ? STOP_ICON : METRO_ICON;
+  b.setAttribute('aria-label', on ? 'Прервать игру на оценку' : 'На оценку: сыграть в темпе с метрономом');
+  $('hintBtn').disabled = $('skipBtn').disabled = $('playBtn').disabled = on;
+  setMicUI();
+}
+// Щелчок метронома — короткий шум через полосовой фильтр, без тона: распознавание не примет его за ноту
+function metroClick(ctx, when, accent, nodes) {
+  if (!clickBuf || clickBuf.sampleRate !== ctx.sampleRate) {
+    const n = Math.round(ctx.sampleRate * 0.03);
+    clickBuf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const x = clickBuf.getChannelData(0);
+    for (let i = 0; i < n; i++) x[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.004));
+  }
+  const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+  src.buffer = clickBuf;
+  f.type = 'bandpass'; f.frequency.value = accent ? 3200 : 2300; f.Q.value = 1.4;
+  g.gain.value = accent ? METRO_GAIN * 1.6 : METRO_GAIN;
+  src.connect(f); f.connect(g); g.connect(outBus);
+  src.start(Math.max(when, ctx.currentTime));
+  nodes.push({ g, srcs: [src] });
+}
+const METRO_GAIN = 0.5;
+// Когда по часам AudioContext поставить звук, чтобы он прозвучал в момент страницы ms (с учётом задержки вывода)
+const ctxTimeAt = (ctx, ms) => ctx.currentTime + (ms - performance.now()) / 1000 - ((ctx.outputLatency || 0) + (ctx.baseLatency || 0));
+function startRun() {
+  if (!ex || ex.mode !== 'piece' || run || paused) return;
+  stopPlayback();
+  let ctx;
+  try { ctx = audioOut(); } catch (e) { say('Этот браузер не умеет воспроизводить звук.', 'bad'); return; }
+  busy = false; ghost = null; anim = null;
+  clearTimeout(ghostTimer);
+  setHintKey(null);
+  for (const n of ex.score.notes) { n.status = null; n.errors = 0; n.hinted = false; }
+  const timeline = judgeTimeline(ex.score), beats = metronomeBeats(ex.score);
+  const same = S.octave ? undefined : (a, b) => (((a - b) % 12) + 12) % 12 === 0;
+  run = { e: ex, ctx, timeline, beats, judge: createJudge(timeline, same), t0: performance.now() + (0.25 - beats[0].t) * 1000,
+    end: playbackPlan(ex.score, null).total, nextBeat: 0, nodes: [], timer: 0, pend: -2, msg: '', holdUntil: 0, last: null };
+  ex.cur = 0;
+  ex.row = rowOfNote(ex.rows, 0);
+  fresh = true;
+  setRunUI(true);
+  run.timer = setInterval(runTick, 25);
+  runTick();
+}
+function runTick() {
+  const r = run;
+  if (!r) return;
+  if (ex !== r.e || screen !== 'play') { stopRun(true); return; }
+  const now = performance.now(), t = (now - r.t0) / 1000; // с от первой ноты
+  while (r.nextBeat < r.beats.length && r.beats[r.nextBeat].t < t + 0.3) {
+    const b = r.beats[r.nextBeat++];
+    metroClick(r.ctx, ctxTimeAt(r.ctx, r.t0 + b.t * 1000), b.accent, r.nodes);
+  }
+  // счёт перед первой нотой, потом — подсказка; сообщение о лишней ноте держится секунду
+  let beat = null;
+  for (const b of r.beats) { if (b.t > t + 0.02) break; beat = b; }
+  const msg = t < 0 ? (beat && beat.count ? `Счёт: ${beat.n}` : 'Приготовьтесь…') : 'Играйте в такт с метрономом.';
+  if (msg !== r.msg && now > r.holdUntil) { r.msg = msg; say(msg); }
+  const missed = r.judge.tick(t);
+  for (const i of missed) r.timeline[i].item.status = 'miss';
+  const k = r.judge.pending();
+  if (missed.length || k !== r.pend) {
+    r.pend = k;
+    if (k >= 0) {
+      ex.cur = r.timeline[k].item.idx;
+      const row = rowOfNote(ex.rows, ex.cur);
+      if (row !== ex.row) { ex.row = row; fresh = true; }
+    }
+    renderScore(); renderTitle();
+  }
+  const lastNote = r.timeline[r.timeline.length - 1];
+  if (t > r.end + 0.3 || (k < 0 && t > lastNote.t + lastNote.loose + 0.3)) finishRun();
+}
+function runInput(midi, via, strong, at) {
+  const r = run, t = (at - r.t0) / 1000;
+  if (t < -0.4) return; // ещё идёт счёт
+  const mic = via === 'onset' || via === 'legato';
+  if (mic && r.last && r.last.midi === midi && at - r.last.at < 250) return; // двойное срабатывание на один удар
+  const res = r.judge.input(midi, t, !mic || (via === 'onset' && strong));
+  if (res.i >= 0) {
+    const it = r.timeline[res.i].item;
+    r.last = { midi, at };
+    it.status = res.state === 'on' ? 'ok' : 'near';
+    anim = { type: 'pop', note: it };
+    flashKey(midi, 'ok');
+    r.pend = -2; // перерисовать
+  } else if (res.state === 'wrong') {
+    const sp = spellMidi(midi, keyAt(ex.score, curNote() || ex.score.notes[0]) < 0);
+    flashKey(midi, 'bad');
+    say(`Лишняя нота: ${nm(sp.d, sp.acc)}.`, 'bad');
+    r.msg = '';
+    r.holdUntil = performance.now() + 1100;
+  }
+  runTick();
+}
+// finished — игра закончилась сама (итог откроется следом) или упражнение сменилось; иначе прервана пользователем
+function stopRun(finished = false) {
+  const r = run;
+  if (!r) return;
+  run = null;
+  keyDownRun = false;
+  clearInterval(r.timer);
+  const t = r.ctx.currentTime;
+  for (const n of r.nodes) {
+    try { n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, 0.01); n.srcs.forEach((o) => o.stop(t + 0.05)); } catch (e) { /* уже отзвучал */ }
+  }
+  setRunUI(false);
+  if (!finished && ex === r.e && screen === 'play') { startPiece(ex.piece, ex.clef); say('Игра на оценку прервана.'); }
+}
+function finishRun() {
+  const r = run;
+  if (!r) return;
+  r.judge.tick(Infinity).forEach((i) => { r.timeline[i].item.status = 'miss'; });
+  stopRun(true);
+  const res = r.judge.result(), key = `${ex.piece.id}:${ex.clef}`;
+  const prev = SCORES[key] ? SCORES[key].best : null, better = prev == null || res.pct > prev;
+  if (better) { SCORES[key] = { best: res.pct }; store.set(SCORES_KEY, SCORES); }
+  const best = SCORES[key].best;
+  ex.cur = ex.score.notes.length;
+  $('doneTitle').textContent = `${res.pct}% ${starsText(res.stars)}`;
+  $('doneList').textContent = 'К списку';
+  $('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)} · на оценку, ♩ = ${String(ex.score.measures[0].tempo).replace('.', ',')}`;
+  $('doneKv').innerHTML = `<dt>В такт</dt><dd>${res.on} из ${res.n}</dd><dt>Неточно</dt><dd>${res.near}</dd><dt>Пропущено</dt><dd>${res.miss}</dd>`
+    + `<dt>Лишние ноты</dt><dd>${res.wrong}</dd><dt>Лучший результат</dt><dd>${best}% ${starsText(starsOf(best))}${better && prev != null ? ' · новый' : ''}</dd>`;
+  $('doneNote').textContent = 'В такт — балл, неточно — половина, лишняя нота — минус половина. ★ — от 60%, ★★ — от 85%, ★★★ — 100%: все ноты в такт и без лишних.';
+  $('doneNote').hidden = false;
+  doneKind = 'run';
+  renderScore(); renderTitle();
+  say(`На оценку: ${res.pct}%.`, res.pct >= 60 ? 'ok' : '');
+  openPanel('donePanel');
+}
+$('runBtn').addEventListener('click', () => (run ? stopRun() : startRun()));
+
 /* ---------- Микрофон ---------- */
 const inFrame = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 let audio = null, wakeLock = null;
@@ -1302,7 +1470,7 @@ function setMicUI() {
   const btn = $('micBtn');
   btn.classList.toggle('primary', !on);
   btn.classList.toggle('on', on);
-  btn.disabled = micState === 'starting' || !!pb;
+  btn.disabled = micState === 'starting' || !!pb || !!run;
   $('micLabel').textContent = micState === 'starting' ? 'Подключаю…' : on ? 'Выключить' : 'Включить микрофон';
   $('meter').hidden = !on;
   $('spacer').hidden = on;
@@ -1374,7 +1542,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 let heardUntil = 0;
 function onDetector(type, d) {
-  if (type === 'note') { if (!midiSeen && !calActive()) handleInput(d.midi, d.via, d.strong); return; }
+  if (type === 'note') { if (!midiSeen && !calActive()) handleInput(d.midi, d.via, d.strong, d.at != null ? d.at - MIC_LAG : performance.now()); return; }
   if (calActive()) calFeed(d);
   const pos = (db) => Math.max(0, Math.min(100, ((db + 80) / 70) * 100));
   $('meterFill').style.width = pos(d.db).toFixed(1) + '%';
@@ -1517,7 +1685,7 @@ async function connectMidi() {
         names.push(inp.name);
         inp.onmidimessage = (e) => {
           const [st, n, vel] = e.data;
-          if ((st & 0xf0) === 0x90 && vel > 0) { midiSeen = true; handleInput(n, 'midi'); }
+          if ((st & 0xf0) === 0x90 && vel > 0) { midiSeen = true; handleInput(n, 'midi', true, e.timeStamp); }
         };
       });
       midiNames = names;
@@ -1553,16 +1721,19 @@ function showPanel(id) {
 function hidePanel() {
   if (!openPanelEl) return;
   if (openPanelEl.id === 'calibPanel') cal.state = 'idle';
+  if (openPanelEl.id === 'donePanel' && doneKind === 'run' && ex && ex.mode === 'piece' && screen === 'play') { doneKind = null; resetAfterRun = true; }
   openPanelEl.hidden = true;
   $('scrim').hidden = true;
   openPanelEl = null;
   paused = false;
+  if (resetAfterRun) { resetAfterRun = false; startPiece(ex.piece, ex.clef); }
   const cur = curNote();
   if (cur) cur.startAt = performance.now();
   if (returnFocus && returnFocus.focus) returnFocus.focus();
 }
 function openPanel(id) {
   stopPlayback();
+  stopRun();
   if (openPanelEl) { hidePanel(); history.replaceState({ s: screen, panel: id }, ''); }
   else history.pushState({ s: screen, panel: id }, '');
   showPanel(id);
@@ -1667,12 +1838,23 @@ $('skipBtn').addEventListener('click', () => {
   say(text, 'bad');
   advance('miss', undefined, text);
 });
+// В игре на оценку клавиша срабатывает при нажатии (pointerdown), а не при отпускании: иначе опаздывает на время касания
+let keyDownRun = false;
+$('keys').addEventListener('pointerdown', (e) => {
+  const k = run && e.target.closest('[data-midi]');
+  if (!k) return;
+  keyDownRun = true;
+  const m = +k.dataset.midi;
+  playTone(m);
+  handleInput(m, 'screen', true, e.timeStamp);
+});
 $('keys').addEventListener('click', (e) => {
   const k = e.target.closest('[data-midi]');
   if (!k || pb) return;
+  if (keyDownRun) { keyDownRun = false; return; }
   const m = +k.dataset.midi;
   playTone(m);
-  handleInput(m, 'screen');
+  handleInput(m, 'screen', true, e.timeStamp);
 });
 
 /* ---------- Запуск ---------- */

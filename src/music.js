@@ -202,6 +202,78 @@ function playbackPlan(score, from) {
   }
   return { events, total: t };
 }
+/* ---------- Игра на оценку (FR-PC-12) ---------- */
+// Ноты пьесы с моментами (с от первой ноты) и окнами попадания: «в такт» — не дальше min(120 мс, трети промежутка
+// до ближайшей соседней ноты), «неточно» — не дальше min(250 мс, половины промежутка). Окна соседних нот не пересекаются.
+const JUDGE_TIGHT = 0.12, JUDGE_LOOSE = 0.25;
+function judgeTimeline(score) {
+  const ev = playbackPlan(score, null).events.filter((e) => e.midi != null);
+  return ev.map((e, i) => {
+    const gap = Math.min(i ? e.t - ev[i - 1].t : Infinity, i + 1 < ev.length ? ev[i + 1].t - e.t : Infinity);
+    return { item: e.item, t: e.t, midi: e.midi, tight: Math.min(JUDGE_TIGHT, gap / 3), loose: Math.min(JUDGE_LOOSE, gap / 2) };
+  });
+}
+const starsOf = (pct) => (pct >= 100 ? 3 : pct >= 85 ? 2 : pct >= 60 ? 1 : 0);
+// Судья: нажатие (MIDI, время в с от первой ноты) засчитывается ближайшей по времени ещё не сыгранной ноте
+// той же высоты в пределах её окна — «в такт» или «неточно»; не нашлось — лишняя нота (если canWrong: неуверенный
+// звук с микрофона лишним не считаем). tick(t) — ноты, чьё окно прошло, пропущены. Счёт: в такт — 1, неточно — ½,
+// лишняя нота — минус ½; процент от числа нот, вниз до целого, поэтому 100 % — только все в такт и без лишних.
+function createJudge(timeline, same = (a, b) => a === b) {
+  const res = timeline.map(() => null);
+  let wrong = 0, next = 0;
+  return {
+    res,
+    input(midi, t, canWrong = true) {
+      let best = -1, bd = Infinity;
+      for (let i = next; i < timeline.length && timeline[i].t - timeline[i].loose <= t; i++) {
+        const n = timeline[i], d = Math.abs(t - n.t);
+        if (!res[i] && d <= n.loose && same(midi, n.midi) && d < bd) { best = i; bd = d; }
+      }
+      if (best >= 0) {
+        res[best] = { state: bd <= timeline[best].tight ? 'on' : 'near', dt: t - timeline[best].t };
+        return { i: best, state: res[best].state, dt: res[best].dt };
+      }
+      if (canWrong) wrong++;
+      return { i: -1, state: canWrong ? 'wrong' : 'ignored' };
+    },
+    tick(t) {
+      const missed = [];
+      while (next < timeline.length && (res[next] || t > timeline[next].t + timeline[next].loose)) {
+        if (!res[next]) { res[next] = { state: 'miss', dt: null }; missed.push(next); }
+        next++;
+      }
+      return missed;
+    },
+    // первая ещё не оценённая нота — её и ждём
+    pending() { for (let i = next; i < timeline.length; i++) if (!res[i]) return i; return -1; },
+    result() {
+      const n = timeline.length, count = (st) => res.filter((r) => r && r.state === st).length;
+      const on = count('on'), near = count('near');
+      const pct = n ? Math.max(0, Math.floor((100 * (on + near / 2 - wrong / 2)) / n)) : 0;
+      return { n, on, near, miss: n - on - near, wrong, pct, stars: starsOf(pct) };
+    },
+  };
+}
+// Доля метронома: в 3/8, 6/8, 9/8, 12/8 — четверть с точкой, иначе — знаменатель размера
+const metroBeat = (time) => { const [n, d] = time || [4, 4]; return (d >= 8 && n % 3 === 0 ? 3 : 1) * durOf(d); };
+// Щелчки метронома (с от первой ноты): n — номер доли в такте, accent — сильная доля, count — счёт до первой ноты.
+// Счёт — целый такт, а если такт короче 1,6 с — два; у затакта доли отсчитываются от конца такта, так что он
+// встаёт на свои доли. Метроном идёт до конца пьесы.
+function metronomeBeats(score) {
+  const plan = playbackPlan(score, null), start = new Map(plan.events.map((e) => [e.item, e.t]));
+  const beats = [];
+  score.measures.forEach((m, mi) => {
+    if (!m.items.length) return;
+    const spt = 60 / ((m.tempo || 100) * TPQ), unit = metroBeat(m.time), per = Math.max(1, Math.round(m.full / unit));
+    const beat = unit * spt, bar = per * beat, t0 = start.get(m.items[0]), len = m.items.reduce((a, it) => a + it.dur, 0) * spt;
+    const down = m.pickup ? t0 + len - bar : t0;
+    const from = mi === 0 ? down - (bar < 1.6 ? 2 : 1) * bar : down;
+    for (let q = 0, b = from; b < t0 + len - 1e-6; q++, b = from + q * beat) {
+      if (b >= t0 - 1e-6 || mi === 0) beats.push({ t: b, n: (q % per) + 1, accent: q % per === 0, count: b < t0 - 1e-6 });
+    }
+  });
+  return beats.filter((b) => b.t < plan.total - 1e-6);
+}
 // Строка каждого знака: по ней проигрыш листает строки
 function itemRowMap(score, rows) {
   const map = new Map();
@@ -466,7 +538,7 @@ function glyph(name, x, y, cls, scale = SP) {
 }
 const rect = (x, y, w, h, cls) => `<rect class="${cls}" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}"/>`;
 const statusOf = (n) => (n.tieFrom ? n.head.status : n.status);
-const clsOf = (n) => { const s = statusOf(n); return s === 'ok' ? 'g-ok' : s === 'miss' ? 'g-miss' : 'g-ink'; };
+const clsOf = (n) => { const s = statusOf(n); return s === 'ok' ? 'g-ok' : s === 'near' ? 'g-near' : s === 'miss' ? 'g-miss' : 'g-ink'; };
 
 // Головка, добавочные линейки, знак альтерации и точки. Штили — отдельно.
 function noteHeadSVG(score, n, x, Y, cls) {

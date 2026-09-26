@@ -267,10 +267,12 @@ class PitchListener {
   }
 
   // strong — уверенное распознавание: громкий удар (на 6 дБ выше порога) и три совпавших замера
+  // at — когда замечен удар (для легато — когда тон установился): по нему игра на оценку судит о ритме
   emit(midi, via, strong = false) {
+    const at = this.collect ? this.collect.t0 : via === 'legato' ? this.stableSince : this.lastT;
     this.collect = null;
     this.lastEmitted = midi;
     this.stableMidi = midi;
-    this.onEvent('note', { midi, via, strong });
+    this.onEvent('note', { midi, via, strong, at });
   }
 }

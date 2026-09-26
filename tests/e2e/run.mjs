@@ -487,6 +487,71 @@ try {
     await ctx.close();
   }
 
+  // 10в. На оценку (FR-PC-12): счёт, нажатия по расписанию, итог и звёзды, прерывание
+  {
+    const init = { fn: () => {
+      window.__metro = 0;
+      const AC = window.AudioContext, bq = AC.prototype.createBiquadFilter;
+      AC.prototype.createBiquadFilter = function () { window.__metro++; return bq.call(this); };
+    } };
+    const q = (d) => ({ d, acc: 0, len: 4 });
+    const piece = { id: 'e2e-run', title: 'На оценку', composer: 'тест', license: 'CC0', shift: { treble: 0 },
+      measures: [{ time: [4, 4], key: 0, tempo: 120, items: [q(28), q(29), q(30), q(31)] }, { items: [q(32), q(33), q(34), q(35)] }] };
+    const route = async (page) => {
+      await page.route('**/pieces/index.json', (r) => r.fulfill({ json: { pieces: [{ id: 'e2e-run', title: 'На оценку', composer: 'тест', clefs: ['treble'] }] } }));
+      await page.route('**/pieces/e2e-run.json', (r) => r.fulfill({ json: piece }));
+    };
+    const { ctx, page, errors } = await open(base + '#pieces', { init, route });
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="e2e-run"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
+    await page.waitForTimeout(300);
+    check('в пьесе есть кнопка «На оценку»', await visible(page, '#runBtn'));
+    // ноты — четверти при ♩ = 120 (через 0,5 с), счёт — такт 4/4 (2 с) и 0,25 с запаса.
+    // [нота, сдвиг в мс, перед ней лишняя]: 0–3 в такт, 4 — на 180 мс позже (неточно), 5 — пропуск, перед 6 — лишняя
+    const plan = [[0, 0], [1, 30], [2, -40], [3, 10], [4, 180], [6, 0, true], [7, 0]];
+    await page.evaluate((plan) => {
+      const midis = [60, 62, 64, 65, 67, 69, 71, 72];
+      const press = (m) => document.querySelector(`#keys [data-midi="${m}"]`).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const t0 = performance.now() + 2250;
+      document.getElementById('runBtn').click();
+      for (const [i, off, wrong] of plan) {
+        if (wrong) setTimeout(() => press(midis[i] - 1), t0 + i * 500 - 200 - performance.now());
+        setTimeout(() => press(midis[i]), t0 + i * 500 + off - performance.now());
+      }
+    }, plan);
+    await page.waitForTimeout(700);
+    check('на оценку: идёт счёт', (await text(page, '#msg')).startsWith('Счёт'), await text(page, '#msg'));
+    check('на оценку: подсказка, пропуск и прослушивание недоступны, кнопка — «■»',
+      (await page.isDisabled('#hintBtn')) && (await page.isDisabled('#skipBtn')) && (await page.isDisabled('#playBtn')) && (await page.getAttribute('#runBtn', 'class')).includes('on'));
+    await page.waitForTimeout(2600);
+    check('на оценку: сыгранные в такт ноты — зелёные', (await page.locator('#score .n[data-i="0"] .g-ok').count()) > 0 && (await page.locator('#score .n[data-i="1"] .g-ok').count()) > 0);
+    await page.screenshot({ path: outDir + 'run-play.png' });
+    await page.waitForTimeout(3400);
+    check('на оценку: метроном щёлкал', (await page.evaluate(() => window.__metro)) >= 12, `${await page.evaluate(() => window.__metro)} щелчков`);
+    check('на оценку: итог открылся', await visible(page, '#donePanel'));
+    const title = await text(page, '#doneTitle'), kv = await text(page, '#doneKv');
+    check('итог на оценку: 75% и одна звезда', title === '75% ★☆☆', title);
+    check('итог на оценку: 6 в такт, 1 неточно, 1 пропущена, 1 лишняя', kv.includes('В такт6 из 8') && kv.includes('Неточно1') && kv.includes('Пропущено1') && kv.includes('Лишние ноты1'), kv);
+    check('итог на оценку: объяснение шкалы', (await text(page, '#doneNote')).includes('★★★ — 100%'));
+    await page.screenshot({ path: outDir + 'run-done.png' });
+    await page.click('#donePanel [data-close]');
+    await page.waitForTimeout(400);
+    check('после итога — обычная игра с начала', (await page.locator('#score .g-ok, #score .g-near, #score .g-miss').count()) === 0 && !(await page.getAttribute('#runBtn', 'class')).includes('on'));
+    // прерывание: «■» — пьеса с начала, итога нет, результат не записан
+    await page.click('#runBtn');
+    await page.waitForTimeout(800);
+    await page.click('#runBtn');
+    await page.waitForTimeout(300);
+    check('«■» прерывает игру на оценку', (await text(page, '#msg')) === 'Игра на оценку прервана.' && !(await visible(page, '#donePanel')) && !(await page.isDisabled('#hintBtn')));
+    await page.goBack();
+    await page.waitForSelector('#piecesList .piece');
+    const btn = page.locator('[data-piece="e2e-run"][data-clef="treble"]');
+    check('в списке пьес — лучший результат звёздами', (await btn.textContent()).includes('★☆☆') && (await btn.getAttribute('aria-label')).includes('75%'), await btn.getAttribute('aria-label'));
+    check('страница без ошибок JS (на оценку)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
   // 10б. Поворот экрана: посреди пьесы и в момент смены строки текущая нота остаётся на экране
   {
     const { ctx, page, errors } = await open(base + '#pieces');

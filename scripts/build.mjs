@@ -20,7 +20,7 @@ fragment = compactBlock(compactBlock(fragment, 'style', false), 'script', true);
 
 const [head, body] = splitOnce(fragment, '<div class="app">');
 const iconPath = join(root, 'assets/icon-180.png');
-const icon = existsSync(iconPath) ? readFileSync(iconPath).toString('base64') : '';
+const icon = existsSync(iconPath) ? pngEssentials(readFileSync(iconPath)).toString('base64') : '';
 const iconTag = icon ? `<link rel="apple-touch-icon" href="data:image/png;base64,${icon}">\n` : '';
 
 const doc = `<!doctype html>
@@ -55,14 +55,45 @@ console.log(`index.html: ${kb.toFixed(1)} КБ`);
 if (kb > 150) { console.error('Больше 150 КБ — нарушено требование NFR-SIZE-01'); process.exitCode = 1; }
 
 // Сжатие без изменения смысла (NFR-SIZE-01): внутри <style> и <script> убираем отступы, пустые строки
-// и строки, целиком состоящие из комментария. Переносы строк остаются, комментарии — только в исходниках.
+// и строки, целиком состоящие из комментария; в скрипте — ещё комментарии в конце строки, в стилях — пробелы
+// вокруг { } ; : , >. Переносы строк остаются, комментарии — только в исходниках.
 function compactBlock(html, tag, js) {
   const open = `<${tag}>`, close = `</${tag}>`;
   const i = html.indexOf(open), j = html.indexOf(close);
   if (i < 0 || j < i) throw new Error(`Не найден блок ${open}`);
+  let inTemplate = false;
   const body = html.slice(i + open.length, j).split('\n').map((l) => l.trim())
-    .filter((l) => l && !(js && l.startsWith('//')) && !/^\/\*(?:(?!\*\/).)*\*\/$/.test(l)).join('\n'); // строка — один комментарий целиком
+    .filter((l) => l && !(js && l.startsWith('//')) && !/^\/\*(?:(?!\*\/).)*\*\/$/.test(l)) // строка — один комментарий целиком
+    .map((l) => {
+      if (!js) return l.replace(/\s*([{};,>])\s*/g, '$1').replace(/:\s+/g, ':');
+      const was = inTemplate;
+      if ((l.match(/(?<!\\)`/g) || []).length % 2) inTemplate = !inTemplate;
+      return was || inTemplate ? l : stripTrailingComment(l);
+    })
+    .join('\n');
   return html.slice(0, i + open.length) + '\n' + body + '\n' + html.slice(j);
+}
+// «код; // комментарий» → «код;». Только если до «//» кавычки сбалансированы и нет регулярного выражения —
+// тогда «//» точно не внутри строки. Строки внутри многострочного шаблона `…` не трогаем (см. выше).
+function stripTrailingComment(l) {
+  const k = l.search(/\s\/\/\s/);
+  if (k < 0) return l;
+  const code = l.slice(0, k);
+  const odd = (ch) => (code.split('\\' + ch).join('').split(ch).length - 1) % 2;
+  if (odd("'") || odd('"') || odd('`') || /[=(,:!&|?{};]\s*\/[^/*]/.test(code)) return l;
+  return code.trimEnd();
+}
+
+// Из PNG иконки — только блоки самой картинки. Служебные (например, caBX — метаданные о происхождении, почти
+// 6 КБ из 10) странице не нужны, а в base64 весят на треть больше.
+function pngEssentials(buf) {
+  const keep = new Set(['IHDR', 'PLTE', 'tRNS', 'IDAT', 'IEND']), parts = [buf.subarray(0, 8)];
+  for (let o = 8; o + 8 <= buf.length;) {
+    const len = buf.readUInt32BE(o);
+    if (keep.has(buf.toString('ascii', o + 4, o + 8))) parts.push(buf.subarray(o, o + 12 + len));
+    o += 12 + len;
+  }
+  return Buffer.concat(parts);
 }
 
 function splitOnce(s, sep) {

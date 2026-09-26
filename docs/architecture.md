@@ -150,6 +150,8 @@ stateDiagram-v2
 
 **Звук рояля** (FR-UI-04). `audioOut()` создаёт `AudioContext` и общий ограничитель громкости (`DynamicsCompressorNode`, порог −10 дБ), через который идут все ноты. Записи — `sounds/piano/<нота>.mp3`: C1–C7 через малую терцию (`C`, `Ds`, `Fs`, `A`), `pianoBase(m)` — ближайшая запись, `pianoFile(b)` — её файл. `startExercise` вызывает `preloadPiano()`: записи для всей клавиатуры на экране, если включён звук клавиш или открыта пьеса. `loadPiano` декодирует файлы в `AudioBuffer` и запоминает `off` — где начинается удар (`onsetOf`: MP3 начинается с тишины кодировщика, браузеры срезают её по-разному). `voice(ctx, midi, t, end, nodes)` играет запись со скоростью 2^(сдвиг/12); `end` — момент, когда «демпфер» глушит струну (у проигрыша — конец ноты, у клавиатуры его нет — запись затихает сама). Нет записи — `loadPiano` для этой ноты и `synthVoice` (четыре гармоники). `playTone` помнит звук каждой клавиши (`keyVoices`) и глушит его при повторном нажатии. Файлы готовит `scripts/make-piano.mjs` из архива Salamander (ADR-13).
 
+**Игра на оценку** (FR-PC-12). Чистые функции — в `music.js`: `judgeTimeline(score)` — звучащие ноты с моментами и окнами, `createJudge(timeline, same)` — судья (`input`, `tick`, `pending`, `result`), `starsOf`, `metronomeBeats(score)` — щелчки со счётом и номером доли. В `app.html` состояние `run`: `t0` — момент первой ноты по часам страницы; `runTick` раз в 25 мс ставит щелчки на 0,3 с вперёд (`metroClick`, время — `ctxTimeAt` с поправкой на задержку вывода), показывает счёт, отмечает пропущенные и ведёт курсор к `judge.pending()`. `handleInput(midi, via, strong, at)` при идущей игре отдаёт нажатие в `runInput` с меткой времени: экранная клавиатура в игре срабатывает на `pointerdown`, MIDI — `event.timeStamp`, микрофон — `at` из детектора минус `MIC_LAG`. `finishRun` — итог в `#donePanel` (`doneKind = 'run'`) и лучший процент в `slista.scores.v1`; после закрытия итога пьеса начинается заново для обычной игры.
+
 ## 7. Распознавание звука (`detector.js`)
 
 ### Цепочка
@@ -221,6 +223,7 @@ slista.settings.v2 = {
   gateDb: число (−80…−20), calibrated: bool, showKeys: bool, keySound: bool,
   last: null | { mode: 'random' } | { mode: 'piece', id, clef, title }   // что открыть после перезагрузки на тренажёре
 }
+slista.scores.v1 = { "<id пьесы>:treble|bass": { best: 0…100 } }   // лучший процент на оценку
 slista.stats.v1 = {
   n: всего нот, first: с первого раза,
   notes: { "treble:30:0": { n: попыток, e: не с первого раза, ms: сумма реакций }, … }   // ключ = ключ:d:acc
