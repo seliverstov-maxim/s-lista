@@ -663,7 +663,7 @@ const clefLabel = (clef) => CLEFS[clef].name.toLowerCase() + ' ключ';
 /* ---------- Экраны и история браузера (FR-NAV) ---------- */
 const $ = (id) => document.getElementById(id);
 const SCREENS = { home: 'homeScreen', random: 'randomScreen', pieces: 'piecesScreen', play: 'playScreen' };
-let screen = 'home', afterPop = null;
+let screen = 'home', afterPop = null, closing = false; // closing — уже ждём возврата истории при закрытии панели
 const hashScreen = () => { const h = location.hash.slice(1); return SCREENS[h] ? h : 'home'; };
 
 function show(name) {
@@ -683,8 +683,10 @@ function go(name) {
 }
 window.addEventListener('popstate', (e) => {
   const st = e.state && SCREENS[e.state.s] ? e.state : { s: hashScreen() };
-  if (openPanelEl && !st.panel) hidePanel();
+  closing = false;
+  if (openPanelEl && (!st.panel || openPanelEl.id !== st.panel)) hidePanel();
   if (st.s !== screen) { show(st.s); if (st.s === 'play' && !ex) continueLast(false); } // «Вперёд» в браузере — снова в тренажёр
+  if (st.panel && !openPanelEl && $(st.panel)) showPanel(st.panel); // «Вперёд» на запись панели — панель снова открыта
   if (afterPop) { const f = afterPop; afterPop = null; f(); }
 });
 document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => history.back()));
@@ -1015,7 +1017,7 @@ function record(note, clean, ms) {
   st.n++; if (!clean) st.e++; st.ms += ms;
   store.set('slista.stats.v1', STATS);
 }
-function advance(status, midi) {
+function advance(status, midi, note = '') {
   const cur = curNote(), now = performance.now();
   const ms = Math.min(10000, now - cur.startAt);
   const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
@@ -1032,7 +1034,8 @@ function advance(status, midi) {
     const notes = ex.score.notes.slice(row.noteFrom, row.noteTo);
     const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
     const done = ex.mode === 'piece' && ex.cur >= ex.score.notes.length;
-    if (!done) say(notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '', 'ok');
+    const rowMsg = notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '';
+    if (!done) say([note, rowMsg].filter(Boolean).join(' '), note ? 'bad' : 'ok');
     busy = true;
     renderScore(); renderStats(); renderTitle();
     const e = ex;
@@ -1075,7 +1078,7 @@ function handleInput(midi, via, strong = true) {
   if (via === 'onset' && !strong) return; // распознано неуверенно — не штрафуем
   cur.errors++;
   if (cur.errors === 1) { session.streak = 0; renderStats(); }
-  const sp = spellMidi(midi, cur.acc < 0);
+  const sp = spellMidi(midi, cur.acc < 0 || keyAt(ex.score, cur) < 0); // в бемольной тональности — бемолем
   ghost = { d: sp.d, acc: sp.acc };
   anim = { type: 'shake', note: cur };
   flashKey(midi, 'bad');
@@ -1371,8 +1374,9 @@ function openPanel(id) {
 }
 // then — что сделать после закрытия (когда история уже вернулась на экран)
 function closePanel(then) {
+  if (closing) return;
   if (!openPanelEl) { if (then) then(); return; }
-  if (history.state && history.state.panel) { afterPop = then || null; history.back(); }
+  if (history.state && history.state.panel) { closing = true; afterPop = then || null; history.back(); }
   else { hidePanel(); if (then) then(); }
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
@@ -1463,8 +1467,9 @@ $('hintBtn').addEventListener('click', () => {
 $('skipBtn').addEventListener('click', () => {
   const cur = curNote();
   if (!cur || busy) return;
-  say(`Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`, 'bad');
-  advance('miss');
+  const text = `Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`;
+  say(text, 'bad');
+  advance('miss', undefined, text);
 });
 $('keys').addEventListener('click', (e) => {
   const k = e.target.closest('[data-midi]');
@@ -1494,10 +1499,19 @@ ro.observe($('sheet'));
 
 $('keysWrap').hidden = !S.showKeys;
 setMicUI();
-const initial = hashScreen();
-history.replaceState({ s: 'home' }, '', location.pathname + location.search);
-if (initial === 'random' || initial === 'pieces') go(initial);
-else if (initial === 'play' && S.last) continueLast(true);
-else show('home');
+// Перезагрузка страницы сохраняет историю вкладки и её текущую запись: продолжаем с неё, не добавляя новых записей.
+// Открытие по ссылке (записи нет) — строим историю: главный экран, при необходимости экран выбора, затем нужный экран.
+const restored = history.state && SCREENS[history.state.s] ? history.state : null;
+if (restored) {
+  show(restored.s);
+  if (restored.s === 'play') continueLast(false);
+  if (restored.panel) history.back(); // панель после перезагрузки закрыта — возвращаемся на запись экрана
+} else {
+  const initial = hashScreen();
+  history.replaceState({ s: 'home' }, '', location.pathname + location.search);
+  if (initial === 'random' || initial === 'pieces') go(initial);
+  else if (initial === 'play' && S.last) continueLast(true);
+  else show('home');
+}
 })();
 </script>

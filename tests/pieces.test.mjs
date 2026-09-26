@@ -369,6 +369,20 @@ test('FR-TOOL-03: add-piece пишет JSON, копию исходника и с
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
+test('FR-TOOL-03: --force из собственного исходника pieces/src/ — исходник на месте, данные обновлены', () => {
+  const root = tmp(), file = join(root, 'a.musicxml');
+  try {
+    writeFileSync(file, score({ title: 'Пьеса', measures: ['C4:1'] }));
+    assert.equal(run([file, '--root', root]).status, 0);
+    const stored = join(root, 'pieces/src/pesa.musicxml');
+    const r = run([stored, '--root', root, '--id', 'pesa', '--title', 'Новое название', '--force']);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(existsSync(stored), 'исходник удалён');
+    assert.equal(JSON.parse(readFileSync(join(root, 'pieces/pesa.json'), 'utf8')).title, 'Новое название');
+    assert.equal(JSON.parse(readFileSync(join(root, 'pieces/index.json'), 'utf8')).pieces[0].title, 'Новое название');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
 test('FR-TOOL-03: без --force существующая пьеса не перезаписывается; с --force заменяется', () => {
   const root = tmp(), file = join(root, 'a.musicxml');
   try {

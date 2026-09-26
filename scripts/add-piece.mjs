@@ -5,7 +5,7 @@
 //   npm run add-piece -- --rebuild        пересобрать все пьесы из pieces/src/ (метаданные — из pieces/<id>.json)
 //
 // --root <каталог> — где лежит pieces/ (по умолчанию корень репозитория; нужно тестам).
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, copyFileSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convert, noteName, plural, CLEFS } from './lib/musicxml.mjs';
@@ -160,12 +160,14 @@ function addPiece(a, root) {
     return 1;
   }
   mkdirSync(P.src, { recursive: true });
+  // исходник читаем в память до удаления старых копий: входной файл может оказаться самим pieces/src/<id>.*
+  const source = readFileSync(file);
   // старый исходник с тем же id мог быть с другим расширением
   for (const f of existsSync(P.src) ? readdirSync(P.src) : []) {
     if (EXTS.includes(extname(f).toLowerCase()) && basename(f, extname(f)) === id) rmSync(join(P.src, f));
   }
   const srcCopy = join(P.src, id + ext);
-  copyFileSync(file, srcCopy);
+  writeFileSync(srcCopy, source);
   writeFileSync(P.json(id), formatPiece(piece));
   const list = loadIndex(P).filter((e) => e.id !== id);
   list.push(indexEntry(piece));

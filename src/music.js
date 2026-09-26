@@ -91,9 +91,10 @@ function migrateSettings(old) {
   if (out.gateDb == null && typeof old.sens === 'number') out.gateDb = -30 - old.sens; // шкала ползунка до калибровки
   out.clef = old.clef === 'bass' ? 'bass' : 'treble';
   if (typeof old.lo === 'number' && typeof old.hi === 'number') {
-    const clamp = (v) => Math.max(0, Math.min(3, v));
-    out.below = clamp(linesNeeded(out.clef, Math.min(old.lo, old.hi)));
-    out.above = clamp(linesNeeded(out.clef, Math.max(old.lo, old.hi)));
+    const clamp = (v) => Math.max(0, Math.min(3, v)), b = CLEFS[out.clef].bottomD;
+    const lo = Math.min(old.lo, old.hi), hi = Math.max(old.lo, old.hi);
+    out.below = clamp(lo < b ? linesNeeded(out.clef, lo) : 0);
+    out.above = clamp(hi > b + 8 ? linesNeeded(out.clef, hi) : 0);
   }
   out.last = { mode: 'random' };
   return out;
@@ -292,10 +293,16 @@ function partMetrics(clef, m, from, to, withChange) {
 }
 // Где можно перенести такт на следующую строку: strict 2 — на границе доли вне группы восьмых,
 // 1 — где угодно вне группы, 0 — где угодно.
-function splitOk(m, k, strict) {
+// Внутри группы (strict 0) — только так, чтобы по обе стороны осталось хотя бы по две её ноты.
+function splitOk(m, from, k, strict) {
   const prev = m.items[k - 1], it = m.items[k];
-  const inBeam = prev.type === 'note' && prev.group && it.type === 'note' && it.group === prev.group;
-  if (inBeam) return strict === 0;
+  const g = prev.type === 'note' && prev.group && it.type === 'note' && it.group === prev.group ? prev.group : null;
+  if (g) {
+    if (strict !== 0) return false;
+    let before = 0, after = 0;
+    m.items.forEach((x, i) => { if (x.group === g && i >= from) { if (i < k) before++; else after++; } });
+    return before >= 2 && after >= 2;
+  }
   return strict === 2 ? it.start % beatOf(m.time) === 0 : true;
 }
 // Точка переноса части такта, начатой с from: первая часть должна влезть (fitFirst).
@@ -304,7 +311,7 @@ function splitOk(m, k, strict) {
 function chooseSplit(m, from, fitFirst, fitRest, fill, minStrict = 0) {
   for (let strict = 2; strict >= minStrict; strict--) {
     const ok = [];
-    for (let j = from + 1; j < m.items.length; j++) if (splitOk(m, j, strict) && fitFirst(j)) ok.push(j);
+    for (let j = from + 1; j < m.items.length; j++) if (splitOk(m, from, j, strict) && fitFirst(j)) ok.push(j);
     if (!ok.length) continue;
     const two = ok.filter(fitRest).reverse(); // при равенстве — длиннее первая часть
     if (two.length) return two.reduce((best, j) => (fill(j) < fill(best) - 1e-6 ? j : best));
@@ -465,7 +472,8 @@ function beamSVG(g, pos, Y, baseY) {
   if (notes.length < 2) return '';
   const stemX = (n) => (g.up ? pos.x.get(n) + headW(n) / 2 - 1.2 : pos.x.get(n) - headW(n) / 2);
   const xa = stemX(notes[0]), xb = stemX(notes[notes.length - 1]);
-  const ya = baseY + g.y0, yb = baseY + g.y1;
+  // концы ребра — по концам крайних штилей в строке: у куска разорванной группы ребро идёт по той же линии
+  const ya = baseY + notes[0].stem.end, yb = baseY + notes[notes.length - 1].stem.end;
   const beamY = (sx) => ya + ((yb - ya) * (sx - xa)) / (xb - xa || 1);
   const allOk = notes.every((n) => statusOf(n) === 'ok');
   const bcls = allOk ? 'g-ok' : 'g-ink';
@@ -575,7 +583,8 @@ function renderRow(score, row, o) {
   }
   // ноты и паузы
   s += `<g class="${o.fresh ? 'row-in fx' : ''}">`;
-  const groups = new Set();
+  const groups = new Set(), inRow = new Map(); // сколько нот каждой группы попало в строку
+  for (const p of row.parts) for (const it of score.measures[p.mi].items.slice(p.from, p.to)) if (it.group) inRow.set(it.group, (inRow.get(it.group) || 0) + 1);
   const content0 = headerWidth(score.clef, row.key, row.time) - HEAD_END;
   for (const p of row.parts) {
     const m = score.measures[p.mi];
@@ -585,8 +594,10 @@ function renderRow(score, row, o) {
       const cls = clsOf(it);
       const a = o.anim && (o.anim.note === it || (it.tieFrom && o.anim.note === it.head)) ? ` fx ${o.anim.type}` : '';
       const data = it.tieFrom ? '' : ` data-i="${it.idx}" data-midi="${it.midi}" data-d="${it.d}"`;
-      s += `<g class="n${it === cur ? ' cur' : ''}${a}"${data}>${noteHeadSVG(score, it, x, Y, cls)}${stemSVG(it, x, Y, baseY, cls)}</g>`;
-      if (it.group) groups.add(it.group);
+      // нота группы, оставшаяся в строке одна (группу пришлось разорвать), — со своим штилем и флажком
+      const lone = it.group && inRow.get(it.group) < 2 ? Object.assign({}, it, { stem: soloStem(score, it, it.stem.up) }) : it;
+      s += `<g class="n${it === cur ? ' cur' : ''}${a}"${data}>${noteHeadSVG(score, it, x, Y, cls)}${stemSVG(lone, x, Y, baseY, cls)}</g>`;
+      if (it.group && lone === it) groups.add(it.group);
       // лиги: к следующей ноте или, если она в другой строке, — до края
       const below = it.stem ? it.stem.up : it.d < b + 4;
       const hw = headW(it) / 2;
@@ -609,7 +620,7 @@ function renderRow(score, row, o) {
   }
   // сыгранная неверная нота — «призрак» рядом с текущей
   if (cur && o.ghost) {
-    const gn = makeNote({ d: o.ghost.d, acc: o.ghost.acc, mark: o.ghost.acc || null, len: 4 });
+    const gn = makeNote({ d: o.ghost.d, acc: o.ghost.acc, mark: shownAcc(score, cur, o.ghost.d, o.ghost.acc), len: 4 });
     const y = Y(gn.d);
     if (y > 4 && y < H - 4) {
       const up = gn.d < b + 4;
@@ -619,6 +630,23 @@ function renderRow(score, row, o) {
     }
   }
   return s + '</svg>';
+}
+
+// Штиль обычной длины (для ноты без ребра) в заданном направлении
+function soloStem(score, n, up) {
+  const y = yRel(score, n.d);
+  return { up, end: up ? Math.min(y - STEM, -2 * SP) : Math.max(y + STEM, -2 * SP), beamed: false };
+}
+// Ключевые знаки и знаки раньше в такте: какой знак нужно нарисовать у ноты d/acc на месте текущей ноты cur
+const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6], FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3]; // фа до соль ре ля ми си; си ми ля ре соль до фа
+const keyAlter = (d, key) => (key > 0 ? (SHARP_ORDER.slice(0, key).includes(d % 7) ? 1 : 0) : key < 0 ? (FLAT_ORDER.slice(0, -key).includes(d % 7) ? -1 : 0) : 0);
+const measureOf = (score, note) => score.measures.find((m) => m.items.includes(note)) || null;
+const keyAt = (score, note) => { const m = measureOf(score, note); return m ? m.key : 0; };
+function shownAcc(score, cur, d, acc) {
+  const m = measureOf(score, cur);
+  let state = keyAlter(d, m ? m.key : 0);
+  if (m) for (const it of m.items) { if (it === cur) break; if (it.type === 'note' && it.d === d && it.mark != null) state = it.mark; }
+  return acc === state ? null : acc;
 }
 
 // Маленький стан с отдельными нотами без тактов: образец диапазона, «трудные ноты».

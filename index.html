@@ -693,9 +693,10 @@ for (const k of ['adaptive', 'naming', 'octave', 'gateDb', 'calibrated', 'showKe
 if (out.gateDb == null && typeof old.sens === 'number') out.gateDb = -30 - old.sens; // шкала ползунка до калибровки
 out.clef = old.clef === 'bass' ? 'bass' : 'treble';
 if (typeof old.lo === 'number' && typeof old.hi === 'number') {
-const clamp = (v) => Math.max(0, Math.min(3, v));
-out.below = clamp(linesNeeded(out.clef, Math.min(old.lo, old.hi)));
-out.above = clamp(linesNeeded(out.clef, Math.max(old.lo, old.hi)));
+const clamp = (v) => Math.max(0, Math.min(3, v)), b = CLEFS[out.clef].bottomD;
+const lo = Math.min(old.lo, old.hi), hi = Math.max(old.lo, old.hi);
+out.below = clamp(lo < b ? linesNeeded(out.clef, lo) : 0);
+out.above = clamp(hi > b + 8 ? linesNeeded(out.clef, hi) : 0);
 }
 out.last = { mode: 'random' };
 return out;
@@ -867,16 +868,21 @@ spring += i < to - 1 ? spaceFor(it.dur) : endSpring(it);
 }
 return { fixed, spring };
 }
-function splitOk(m, k, strict) {
+function splitOk(m, from, k, strict) {
 const prev = m.items[k - 1], it = m.items[k];
-const inBeam = prev.type === 'note' && prev.group && it.type === 'note' && it.group === prev.group;
-if (inBeam) return strict === 0;
+const g = prev.type === 'note' && prev.group && it.type === 'note' && it.group === prev.group ? prev.group : null;
+if (g) {
+if (strict !== 0) return false;
+let before = 0, after = 0;
+m.items.forEach((x, i) => { if (x.group === g && i >= from) { if (i < k) before++; else after++; } });
+return before >= 2 && after >= 2;
+}
 return strict === 2 ? it.start % beatOf(m.time) === 0 : true;
 }
 function chooseSplit(m, from, fitFirst, fitRest, fill, minStrict = 0) {
 for (let strict = 2; strict >= minStrict; strict--) {
 const ok = [];
-for (let j = from + 1; j < m.items.length; j++) if (splitOk(m, j, strict) && fitFirst(j)) ok.push(j);
+for (let j = from + 1; j < m.items.length; j++) if (splitOk(m, from, j, strict) && fitFirst(j)) ok.push(j);
 if (!ok.length) continue;
 const two = ok.filter(fitRest).reverse(); // при равенстве — длиннее первая часть
 if (two.length) return two.reduce((best, j) => (fill(j) < fill(best) - 1e-6 ? j : best));
@@ -1018,7 +1024,7 @@ const notes = g.notes.filter((n) => pos.x.has(n));
 if (notes.length < 2) return '';
 const stemX = (n) => (g.up ? pos.x.get(n) + headW(n) / 2 - 1.2 : pos.x.get(n) - headW(n) / 2);
 const xa = stemX(notes[0]), xb = stemX(notes[notes.length - 1]);
-const ya = baseY + g.y0, yb = baseY + g.y1;
+const ya = baseY + notes[0].stem.end, yb = baseY + notes[notes.length - 1].stem.end;
 const beamY = (sx) => ya + ((yb - ya) * (sx - xa)) / (xb - xa || 1);
 const allOk = notes.every((n) => statusOf(n) === 'ok');
 const bcls = allOk ? 'g-ok' : 'g-ink';
@@ -1119,7 +1125,8 @@ s += rect(bar.x - 0.5 * SP, staffTop - 0.6, 0.5 * SP, 4 * SP + 1.2, 'st') + rect
 }
 }
 s += `<g class="${o.fresh ? 'row-in fx' : ''}">`;
-const groups = new Set();
+const groups = new Set(), inRow = new Map(); // сколько нот каждой группы попало в строку
+for (const p of row.parts) for (const it of score.measures[p.mi].items.slice(p.from, p.to)) if (it.group) inRow.set(it.group, (inRow.get(it.group) || 0) + 1);
 const content0 = headerWidth(score.clef, row.key, row.time) - HEAD_END;
 for (const p of row.parts) {
 const m = score.measures[p.mi];
@@ -1129,8 +1136,9 @@ if (it.type === 'rest') { s += restSVG(it, x, baseY, 'g-ink'); continue; }
 const cls = clsOf(it);
 const a = o.anim && (o.anim.note === it || (it.tieFrom && o.anim.note === it.head)) ? ` fx ${o.anim.type}` : '';
 const data = it.tieFrom ? '' : ` data-i="${it.idx}" data-midi="${it.midi}" data-d="${it.d}"`;
-s += `<g class="n${it === cur ? ' cur' : ''}${a}"${data}>${noteHeadSVG(score, it, x, Y, cls)}${stemSVG(it, x, Y, baseY, cls)}</g>`;
-if (it.group) groups.add(it.group);
+const lone = it.group && inRow.get(it.group) < 2 ? Object.assign({}, it, { stem: soloStem(score, it, it.stem.up) }) : it;
+s += `<g class="n${it === cur ? ' cur' : ''}${a}"${data}>${noteHeadSVG(score, it, x, Y, cls)}${stemSVG(lone, x, Y, baseY, cls)}</g>`;
+if (it.group && lone === it) groups.add(it.group);
 const below = it.stem ? it.stem.up : it.d < b + 4;
 const hw = headW(it) / 2;
 if (it.tie && it.tieTo) {
@@ -1150,7 +1158,7 @@ if (cur.stem && cur.stem.up) y = Math.min(y, baseY + cur.stem.end - 0.4 * SP);
 s += `<text class="hint-t" x="${f1(pos.x.get(cur))}" y="${f1(y - 0.9 * SP)}" text-anchor="middle">${shortName(cur.d, cur.acc, o.naming)}</text>`;
 }
 if (cur && o.ghost) {
-const gn = makeNote({ d: o.ghost.d, acc: o.ghost.acc, mark: o.ghost.acc || null, len: 4 });
+const gn = makeNote({ d: o.ghost.d, acc: o.ghost.acc, mark: shownAcc(score, cur, o.ghost.d, o.ghost.acc), len: 4 });
 const y = Y(gn.d);
 if (y > 4 && y < H - 4) {
 const up = gn.d < b + 4;
@@ -1160,6 +1168,20 @@ s += `<g class="ghost">${noteHeadSVG(score, gn, x, Y, 'g-bad')}${stemSVG(gn, x, 
 }
 }
 return s + '</svg>';
+}
+function soloStem(score, n, up) {
+const y = yRel(score, n.d);
+return { up, end: up ? Math.min(y - STEM, -2 * SP) : Math.max(y + STEM, -2 * SP), beamed: false };
+}
+const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6], FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3]; // фа до соль ре ля ми си; си ми ля ре соль до фа
+const keyAlter = (d, key) => (key > 0 ? (SHARP_ORDER.slice(0, key).includes(d % 7) ? 1 : 0) : key < 0 ? (FLAT_ORDER.slice(0, -key).includes(d % 7) ? -1 : 0) : 0);
+const measureOf = (score, note) => score.measures.find((m) => m.items.includes(note)) || null;
+const keyAt = (score, note) => { const m = measureOf(score, note); return m ? m.key : 0; };
+function shownAcc(score, cur, d, acc) {
+const m = measureOf(score, cur);
+let state = keyAlter(d, m ? m.key : 0);
+if (m) for (const it of m.items) { if (it === cur) break; if (it.type === 'note' && it.d === d && it.mark != null) state = it.mark; }
+return acc === state ? null : acc;
 }
 function staffSVG(clef, list) {
 const items = list.map((c) => makeNote({ d: c.d, acc: c.acc || 0, midi: midiOf(c.d, c.acc || 0), clef, len: c.len || 4, dur: durOf(c.len || 4), mark: c.acc ? c.acc : null }));
@@ -1445,7 +1467,7 @@ const linesLabel = (below, above) => (below || above ? `линейки: ${below}
 const clefLabel = (clef) => CLEFS[clef].name.toLowerCase() + ' ключ';
 const $ = (id) => document.getElementById(id);
 const SCREENS = { home: 'homeScreen', random: 'randomScreen', pieces: 'piecesScreen', play: 'playScreen' };
-let screen = 'home', afterPop = null;
+let screen = 'home', afterPop = null, closing = false; // closing — уже ждём возврата истории при закрытии панели
 const hashScreen = () => { const h = location.hash.slice(1); return SCREENS[h] ? h : 'home'; };
 function show(name) {
 const was = screen;
@@ -1463,8 +1485,10 @@ show(name);
 }
 window.addEventListener('popstate', (e) => {
 const st = e.state && SCREENS[e.state.s] ? e.state : { s: hashScreen() };
-if (openPanelEl && !st.panel) hidePanel();
+closing = false;
+if (openPanelEl && (!st.panel || openPanelEl.id !== st.panel)) hidePanel();
 if (st.s !== screen) { show(st.s); if (st.s === 'play' && !ex) continueLast(false); } // «Вперёд» в браузере — снова в тренажёр
+if (st.panel && !openPanelEl && $(st.panel)) showPanel(st.panel); // «Вперёд» на запись панели — панель снова открыта
 if (afterPop) { const f = afterPop; afterPop = null; f(); }
 });
 document.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => history.back()));
@@ -1767,7 +1791,7 @@ const st = STATS.notes[k] || (STATS.notes[k] = { n: 0, e: 0, ms: 0 });
 st.n++; if (!clean) st.e++; st.ms += ms;
 store.set('slista.stats.v1', STATS);
 }
-function advance(status, midi) {
+function advance(status, midi, note = '') {
 const cur = curNote(), now = performance.now();
 const ms = Math.min(10000, now - cur.startAt);
 const clean = status === 'ok' && cur.errors === 0 && !cur.hinted;
@@ -1784,7 +1808,8 @@ if (ex.cur >= row.noteTo) {
 const notes = ex.score.notes.slice(row.noteFrom, row.noteTo);
 const good = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hinted).length;
 const done = ex.mode === 'piece' && ex.cur >= ex.score.notes.length;
-if (!done) say(notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '', 'ok');
+const rowMsg = notes.length > 1 ? `Строка пройдена: ${good} из ${notes.length} с первого раза.` : status === 'ok' ? 'Верно.' : '';
+if (!done) say([note, rowMsg].filter(Boolean).join(' '), note ? 'bad' : 'ok');
 busy = true;
 renderScore(); renderStats(); renderTitle();
 const e = ex;
@@ -1824,7 +1849,7 @@ if (via === 'legato') return; // плавный переход без удара
 if (via === 'onset' && !strong) return; // распознано неуверенно — не штрафуем
 cur.errors++;
 if (cur.errors === 1) { session.streak = 0; renderStats(); }
-const sp = spellMidi(midi, cur.acc < 0);
+const sp = spellMidi(midi, cur.acc < 0 || keyAt(ex.score, cur) < 0); // в бемольной тональности — бемолем
 ghost = { d: sp.d, acc: sp.acc };
 anim = { type: 'shake', note: cur };
 flashKey(midi, 'bad');
@@ -2105,8 +2130,9 @@ else history.pushState({ s: screen, panel: id }, '');
 showPanel(id);
 }
 function closePanel(then) {
+if (closing) return;
 if (!openPanelEl) { if (then) then(); return; }
-if (history.state && history.state.panel) { afterPop = then || null; history.back(); }
+if (history.state && history.state.panel) { closing = true; afterPop = then || null; history.back(); }
 else { hidePanel(); if (then) then(); }
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
@@ -2192,8 +2218,9 @@ renderScore(); renderStats();
 $('skipBtn').addEventListener('click', () => {
 const cur = curNote();
 if (!cur || busy) return;
-say(`Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`, 'bad');
-advance('miss');
+const text = `Пропущено. Это была нота ${fn(cur.d, cur.acc)}.`;
+say(text, 'bad');
+advance('miss', undefined, text);
 });
 $('keys').addEventListener('click', (e) => {
 const k = e.target.closest('[data-midi]');
@@ -2219,11 +2246,18 @@ renderScore();
 ro.observe($('sheet'));
 $('keysWrap').hidden = !S.showKeys;
 setMicUI();
+const restored = history.state && SCREENS[history.state.s] ? history.state : null;
+if (restored) {
+show(restored.s);
+if (restored.s === 'play') continueLast(false);
+if (restored.panel) history.back(); // панель после перезагрузки закрыта — возвращаемся на запись экрана
+} else {
 const initial = hashScreen();
 history.replaceState({ s: 'home' }, '', location.pathname + location.search);
 if (initial === 'random' || initial === 'pieces') go(initial);
 else if (initial === 'play' && S.last) continueLast(true);
 else show('home');
+}
 })();
 </script>
 

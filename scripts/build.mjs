@@ -61,7 +61,7 @@ function compactBlock(html, tag, js) {
   const i = html.indexOf(open), j = html.indexOf(close);
   if (i < 0 || j < i) throw new Error(`Не найден блок ${open}`);
   const body = html.slice(i + open.length, j).split('\n').map((l) => l.trim())
-    .filter((l) => l && !(js && l.startsWith('//')) && !/^\/\*.*\*\/$/.test(l)).join('\n');
+    .filter((l) => l && !(js && l.startsWith('//')) && !/^\/\*(?:(?!\*\/).)*\*\/$/.test(l)).join('\n'); // строка — один комментарий целиком
   return html.slice(0, i + open.length) + '\n' + body + '\n' + html.slice(j);
 }
 

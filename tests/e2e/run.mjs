@@ -299,6 +299,26 @@ try {
     await page.waitForSelector('#playScreen:not([hidden])');
     const firstRow = await page.locator('#score .n').count();
     check('раскладка: такт из восьми восьмых на 360 px переносится', firstRow > 0 && firstRow < 8, `${firstRow} нот в первой строке`);
+    // третья нота — ми-бемоль из ключевых знаков; сыгранное ми рисуется с бекаром
+    await press(page, await curMidi(page));
+    await press(page, await curMidi(page));
+    await press(page, (await curMidi(page)) + 1);
+    check('«призрак» в тональности: ми с бекаром', (await page.locator('#score .ghost path').count()) === 2, `${await page.locator('#score .ghost path').count()} знака`);
+    await page.click('#skipBtn');
+    for (let i = 0; i < 3; i++) await press(page, await curMidi(page));
+    await page.goto(base + '#pieces');
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="e2e-layout"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
+    for (let i = 0; i < firstRow - 1; i++) await press(page, await curMidi(page));
+    await page.click('#skipBtn');
+    const skipMsg = await text(page, '#msg');
+    check('«Пропустить» на конце строки: названа пропущенная нота', skipMsg.startsWith('Пропущено. Это была нота') && skipMsg.includes('Строка пройдена'), skipMsg);
+    // дальше — пьеса с начала
+    await page.goto(base + '#pieces');
+    await page.waitForSelector('#piecesList .piece');
+    await page.click('[data-piece="e2e-layout"][data-clef="treble"]');
+    await page.waitForSelector('#playScreen:not([hidden])');
     const widths = new Set();
     let rows = 0;
     // первые 27 нот (восьмые, шестнадцатые, такт с лигой), затем строка без нот для игры должна появиться на экране
@@ -339,6 +359,33 @@ try {
     const c2 = await page.getAttribute('#score .n.cur', 'data-i');
     check('поворот посреди строки: текущая нота та же', c2 === String(firstRow + 1), `${c2}`);
     check('страница без ошибок JS (поворот)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
+  // 10в. История браузера: перезагрузка при открытой панели, «Вперёд» на запись панели
+  {
+    const { ctx, page, errors } = await open(base + '#random');
+    await page.click('#startRandom');
+    await page.click('#playScreen [data-panel="settingsPanel"]');
+    await page.reload();
+    await page.waitForSelector('#playScreen:not([hidden])');
+    await page.waitForTimeout(400);
+    check('перезагрузка с открытой панелью: тренажёр, панель закрыта', !(await visible(page, '#settingsPanel')));
+    await page.goBack();
+    await page.waitForTimeout(200);
+    check('после перезагрузки одна «Назад» — к настройке', await visible(page, '#randomScreen'));
+    await page.goForward();
+    await page.waitForSelector('#playScreen:not([hidden])');
+    await page.click('#playScreen [data-panel="progressPanel"]');
+    await page.goBack();
+    await page.waitForTimeout(200);
+    await page.goForward();
+    await page.waitForTimeout(200);
+    check('«Вперёд» на запись панели — панель снова открыта', await visible(page, '#progressPanel'));
+    await page.click('#progressPanel [data-close]');
+    await page.waitForTimeout(200);
+    check('и закрывается одним нажатием', !(await visible(page, '#progressPanel')) && await visible(page, '#playScreen'));
+    check('страница без ошибок JS (история)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
 

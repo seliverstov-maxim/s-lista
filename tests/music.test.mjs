@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { M } from './helpers/load-music.mjs';
+import { M, GLYPH } from './helpers/load-music.mjs';
 
 const piecesDir = new URL('../pieces/', import.meta.url);
 const samples = readdirSync(piecesDir).filter((f) => f.endsWith('.json') && f !== 'index.json')
@@ -187,4 +187,65 @@ test('Правило линеек одинаковое в приложении �
     const r = M.ledgerRange(clef, tool.MAX_LEDGER, tool.MAX_LEDGER);
     for (let d = r.lo - 2; d <= r.hi + 2; d++) assert.equal(tool.ledgerLines(d, clef) <= tool.MAX_LEDGER, d >= r.lo && d <= r.hi, `${clef}, ступень ${d}`);
   }
+});
+
+// группы восьмых по строкам: сколько нот каждой группы попало в каждую строку
+function groupSplits(score, rows) {
+  const out = [];
+  for (const r of rows) {
+    const cnt = new Map();
+    for (const p of r.parts) for (const it of score.measures[p.mi].items.slice(p.from, p.to)) if (it.group) cnt.set(it.group, (cnt.get(it.group) || 0) + 1);
+    out.push([...cnt.values()]);
+  }
+  return out;
+}
+
+test('FR-PC-05: перенос внутри группы шестнадцатых не оставляет в строке одну ноту группы (6/8, три диеза, телефон)', () => {
+  const six = (i) => ['begin', 'continue', 'continue', 'continue', 'continue', 'end'][i % 6];
+  const piece = { shift: { treble: 0 }, measures: [
+    { time: [6, 8], key: 3, items: [31, 32, 33, 34, 35, 36, 37, 36, 35, 34, 33, 32].map((d, i) => n(d, 16, { acc: [31, 35, 32].includes(d) ? 1 : 0, mark: i === 2 ? 1 : undefined, beam: [six(i), six(i)] })) },
+  ] };
+  for (const W of [247, 269, 297, 311]) {
+    const score = M.buildScore(piece, 'treble');
+    const rows = M.layoutRows(score, W);
+    const lone = groupSplits(score, rows).flat().filter((c) => c === 1).length;
+    assert.equal(lone, 0, `ширина ${W}: одиночная нота группы в строке`);
+  }
+});
+
+test('Отрисовка: нота группы, оставшаяся в строке одна, — со штилем и флажком', () => {
+  // одна группа из восьми шестнадцатых на очень узком рисунке — группу приходится рвать где угодно
+  const piece = { shift: { treble: 0 }, measures: [
+    { time: [2, 4], key: 0, items: [28, 30, 32, 34, 35, 34, 32, 30].map((d, i) => n(d, 16, { beam: [i === 0 ? 'begin' : i === 7 ? 'end' : 'continue', i === 0 ? 'begin' : i === 7 ? 'end' : 'continue'] })) },
+  ] };
+  const score = M.buildScore(piece, 'treble');
+  const rows = M.layoutRows(score, 120);
+  const vb = M.scoreVBox(score);
+  const flags = [GLYPH.flag16thUp.d, GLYPH.flag16thDown.d];
+  groupSplits(score, rows).forEach((counts, ri) => {
+    const svg = M.renderRow(score, rows[ri], { W: 120, vb });
+    if (counts.includes(1)) assert.ok(flags.some((f) => svg.includes(f)), `строка ${ri}: у одиночной ноты нет флажка`);
+  });
+});
+
+test('«Призрак» неверной ноты: знак с учётом ключевых знаков и знаков раньше в такте', () => {
+  const piece = { shift: { treble: 0 }, measures: [
+    { time: [4, 4], key: 1, items: [n(31, 4, { acc: 1 }), n(32), n(33), n(34)] },   // соль мажор: фа-диез в ключе
+    { key: 0, items: [n(31, 4, { acc: 1, mark: 1 }), n(32), n(33), n(34)] },       // до мажор, фа-диез со знаком
+  ] };
+  const score = M.buildScore(piece, 'treble');
+  const g1 = score.notes[0], g2 = score.notes[5];
+  assert.equal(M.shownAcc(score, g1, 31, 0), 0, 'соль мажор: сыграно фа — нужен бекар');
+  assert.equal(M.shownAcc(score, g1, 31, 1), null, 'соль мажор: фа-диез — знак уже в ключе');
+  assert.equal(M.shownAcc(score, g2, 31, 0), 0, 'после фа-диеза в такте: фа — бекар');
+  assert.equal(M.shownAcc(score, g2, 31, 1), null, 'после фа-диеза в такте: фа-диез без знака');
+  assert.equal(M.shownAcc(score, score.notes[4], 34, -1), -1, 'до мажор: си-бемоль — бемоль');
+  assert.equal(M.keyAt(score, g1), 1);
+});
+
+test('FR-RND-04: перенос настроек — линейки только с той стороны, где граница за станом', () => {
+  const pick = (o) => { const g = M.migrateSettings(o); return [g.clef, g.below, g.above].join(' '); };
+  assert.equal(pick({ clef: 'treble', lo: 40, hi: 49 }), 'treble 0 3');
+  assert.equal(pick({ clef: 'grand', lo: 14, hi: 26 }), 'treble 3 0');
+  assert.equal(pick({ clef: 'bass', lo: 12, hi: 16 }), 'bass 3 0');
 });
