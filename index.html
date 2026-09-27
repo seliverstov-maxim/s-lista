@@ -571,6 +571,12 @@ border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;fo
     <p class="note" id="midiNote">Цифровое пианино можно подключить кабелем USB: ноты будут приходить без микрофона.</p>
     <p class="note">Звук рояля — записи <a href="https://archive.org/details/SalamanderGrandPianoV3" target="_blank" rel="noopener">Salamander Grand Piano V3</a> (Alexander Holm, <a href="https://creativecommons.org/licenses/by/3.0/deed.ru" target="_blank" rel="noopener">CC BY 3.0</a>): один микрофон, начало и хвост обрезаны, пережато в MP3.</p>
   </section>
+
+  <section class="group">
+    <h3>Без интернета</h3>
+    <p class="note" id="offlineNote" aria-live="polite"></p>
+    <p class="note">На iPhone добавьте сайт на экран «Домой»: в Safari сохранённое (и прогресс) стирается, если сайт не открывать неделю.</p>
+  </section>
 </aside>
 
 <aside class="panel" id="calibPanel" role="dialog" aria-modal="true" aria-labelledby="calibTitle" hidden>
@@ -2500,6 +2506,22 @@ access.onstatechange = hook;
 note.textContent = 'Нет доступа к MIDI. Разрешите его в настройках сайта или откройте приложение как отдельный сайт.';
 }
 }
+let offline = null;
+const swOk = 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost');
+if (swOk) {
+navigator.serviceWorker.register('sw.js').catch(() => { /* нельзя — работаем как раньше */ });
+navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.type === 'offline') { offline = e.data; renderOffline(); } });
+}
+function askOffline() {
+renderOffline();
+if (swOk) navigator.serviceWorker.ready.then((reg) => { const w = navigator.serviceWorker.controller || reg.active; if (w) w.postMessage('status'); }).catch(() => {});
+}
+function renderOffline() {
+$('offlineNote').textContent = !swOk ? 'Этот браузер или адрес не даёт сохранить сайт: без интернета он не откроется.'
+: !offline ? 'Сохраняю пьесы и звук рояля, чтобы сайт работал без интернета…'
+: offline.missing ? `Сохраняю пьесы и звук рояля… осталось ${offline.missing} из ${offline.total} файлов.`
+: `Всё сохранено: ${offline.pieces} ${plural(offline.pieces, 'пьеса', 'пьесы', 'пьес')} и звук рояля работают без интернета.`;
+}
 function pauseStart() { if (ex && ex.mode === 'piece' && !ex.pausedAt) ex.pausedAt = performance.now(); }
 function pauseEnd() { if (ex && ex.pausedAt) { ex.pauseAcc += performance.now() - ex.pausedAt; ex.pausedAt = 0; } }
 let openPanelEl = null, returnFocus = null;
@@ -2585,6 +2607,7 @@ $('resetNo').onclick = () => renderReset(false);
 } else $('resetBtn').onclick = () => renderReset(true);
 }
 function syncForm() {
+askOffline();
 document.querySelectorAll('input[name="naming"]').forEach((r) => { r.checked = r.value === S.naming; });
 $('optOctave').checked = S.octave;
 $('optKeys').checked = S.showKeys;

@@ -30,7 +30,8 @@ const check = (name, ok, info = '') => { results.push({ name, ok }); console.log
 
 // Новая вкладка: телефон 390×844 по умолчанию, ошибки JS собираются
 async function open(url = base, opts = {}) {
-  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 390, height: 844 }, colorScheme: opts.colorScheme || 'light' });
+  // service worker только мешал бы подменять пьесы через page.route; работу без интернета проверяет отдельный блок
+  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 390, height: 844 }, colorScheme: opts.colorScheme || 'light', serviceWorkers: 'block' });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -562,6 +563,41 @@ try {
     const t = await page.locator('[data-piece="oda-k-radosti"][data-clef="treble"]').textContent();
     check('старые результаты (87% в режиме «На оценку») — ★★ в списке', t.includes('★★☆'), t);
     check('страница без ошибок JS (перенос результатов)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+
+  // 10г. Без интернета (FR-UI-05): после первого открытия всё сохранено; без сети открываются страница, пьеса, звук
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    await page.goto(base);
+    const status = await page.evaluate(async () => {
+      const reg = await navigator.serviceWorker.ready;
+      const ask = () => new Promise((res) => {
+        const h = (e) => { navigator.serviceWorker.removeEventListener('message', h); res(e.data); };
+        navigator.serviceWorker.addEventListener('message', h);
+        (navigator.serviceWorker.controller || reg.active).postMessage('status');
+      });
+      for (let i = 0; i < 60; i++) { const st = await ask(); if (st && !st.missing) return st; await new Promise((r) => setTimeout(r, 250)); }
+      return ask();
+    });
+    check('без интернета: при первом открытии сохранены все файлы', status && status.missing === 0 && status.pieces >= 16 && status.total >= status.pieces + 28, JSON.stringify(status));
+    await ctx.setOffline(true);
+    await page.reload();
+    await page.waitForTimeout(300);
+    check('без интернета: сайт открывается', await visible(page, '#homeScreen'));
+    await page.click('[data-go="pieces"]');
+    await page.waitForSelector('#piecesList .piece', { timeout: 8000 });
+    await page.click('[data-piece="k-elize-nachalo"][data-clef="bass"]');
+    await page.waitForSelector('#playScreen:not([hidden])', { timeout: 8000 });
+    check('без интернета: пьеса открывается', (await text(page, '#levelName')) === 'К Элизе (начало)');
+    check('без интернета: звук рояля — из сохранённого', await page.evaluate(async () => (await fetch('sounds/piano/C2.mp3')).ok));
+    await page.click('#playScreen [data-panel="settingsPanel"]');
+    await page.waitForTimeout(300);
+    check('в настройках: «Всё сохранено…»', (await text(page, '#offlineNote')).startsWith('Всё сохранено: 16 пьес'), await text(page, '#offlineNote'));
+    check('страница без ошибок JS (без интернета)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
 

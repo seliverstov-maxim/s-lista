@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { convert, noteName, plural, CLEFS } from './lib/musicxml.mjs';
 import { readMxl } from './lib/zip.mjs';
 import { lyToMusicXml } from './lib/lilypond.mjs';
+import { writeServiceWorker } from './lib/offline.mjs';
 import { decodeText } from './lib/xml.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -180,6 +181,7 @@ function addPiece(a, root) {
   console.log(summary(piece, result.info).join('\n'));
   console.log(`  Исходник: ${relative(root, srcCopy)}`);
   console.log(`  Список: ${relative(root, P.index)} (${list.length} ${plural(list.length, 'пьеса', 'пьесы', 'пьес')})`);
+  if (writeServiceWorker(root)) console.log('  sw.js обновлён: пьеса будет доступна без интернета');
   console.log('Сайт обновится после git commit и git push.');
   return 0;
 }
@@ -207,6 +209,7 @@ function rebuild(root) {
     console.log(`Пересобрано: «${piece.title}» (${id})`);
   }
   saveIndex(P, list);
+  writeServiceWorker(root);
   console.log(failed ? `Не удалось пересобрать: ${failed} из ${files.length}.` : `Готово: пересобрано ${files.length} ${plural(files.length, 'пьеса', 'пьесы', 'пьес')}.`);
   return failed ? 1 : 0;
 }

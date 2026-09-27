@@ -1,9 +1,11 @@
 // Сборка: src/app.html + src/music.js + src/detector.js + src/glyphs.json + assets/icon-180.png → index.html
 // index.html лежит в корне репозитория, его раздаёт GitHub Pages.
-// Дополнительно пишет dist/artifact.html — фрагмент без <html>/<head> для публикации как артефакт Claude.
+// Дополнительно пишет dist/artifact.html — фрагмент без <html>/<head> для публикации как артефакт Claude,
+// и sw.js — работу без интернета: список всех файлов сайта и версию по их содержимому (scripts/lib/offline.mjs).
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeServiceWorker } from './lib/offline.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -53,6 +55,7 @@ writeFileSync(join(root, 'dist/artifact.html'), fragment);
 const kb = Buffer.byteLength(doc) / 1024;
 console.log(`index.html: ${kb.toFixed(1)} КБ`);
 if (kb > 150) { console.error('Больше 150 КБ — нарушено требование NFR-SIZE-01'); process.exitCode = 1; }
+if (writeServiceWorker(root)) console.log('sw.js обновлён: новая версия для работы без интернета');
 
 // Сжатие без изменения смысла (NFR-SIZE-01): внутри <style> и <script> убираем отступы, пустые строки
 // и строки, целиком состоящие из комментария; в скрипте — ещё комментарии в конце строки, в стилях — пробелы

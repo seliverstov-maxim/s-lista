@@ -244,6 +244,14 @@ slista.stats.v1 = {
 
 `navigator.requestMIDIAccess()`. На каждый вход вешается `onmidimessage`. Нотой считается событие `0x9n` со скоростью больше 0. На `onstatechange` список входов строится заново. Когда устройство подключено, микрофон выключается (`stopMic`), а `midiSeen` глушит ноты с микрофона.
 
+## 11а. Работа без интернета (FR-UI-05)
+
+- `src/sw.js` — шаблон service worker; `scripts/lib/offline.mjs` подставляет список файлов (`offlineFiles`: `./`, `index.html`, `pieces/index.json`, все пьесы из списка, все `sounds/piano/*.mp3`) и версию — первые 12 знаков SHA-256 содержимого этих файлов — и пишет `sw.js` в корень. Его пишет `npm run build`, а `add-piece` обновляет после каждой пьесы. Тест `tests/offline.test.mjs` падает, если `sw.js` устарел.
+- `install`: всё из списка — в кеш `slista-<версия>` (`cache: 'reload'`, мимо HTTP-кеша), `skipWaiting`. `activate`: старые кеши `slista-*` удаляются, `clients.claim`.
+- `fetch`: свои файлы — `networkFirst` (сеть с тайм-аутом 3 с, удачный ответ обновляет кеш; ключ — адрес без `?…`), звуки — `cacheFirst`, шрифты Google — `cacheThenRefresh` в кеше `slista-fonts`.
+- `message 'status'` → `{ total, missing, pieces, version }`; `app.html` (раздел «Работа без интернета») регистрирует `sw.js` только по https и на localhost и показывает состояние в настройках (`askOffline`, `renderOffline`).
+- e2e: обычные проверки идут без service worker (`serviceWorkers: 'block'`), иначе он мешал бы подменять пьесы через `page.route`; работу без сети проверяет отдельный блок (`context.setOffline`).
+
 ## 12. Развёртывание
 
 - Репозиторий: `github.com/seliverstov-maxim/s-lista`, публичный.

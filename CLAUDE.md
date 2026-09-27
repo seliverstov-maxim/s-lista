@@ -21,6 +21,7 @@ npm run add-piece -- --rebuild                                   # пересо�
 - `src/detector.js` — распознавание: YIN, БПФ, `harmonicPick`, класс `PitchListener`. Не зависит от DOM, тестируется в Node.
 - `src/glyphs.json` — контуры нотных знаков Bravura (SMuFL), в межстрочных интервалах. Генерируется `scripts/extract-glyphs.py`.
 - `index.html` — **сгенерированный** файл, но хранится в git: его раздаёт Pages. Руками не править.
+- `sw.js` — **сгенерированный** service worker (работа без интернета, FR-UI-05): шаблон `src/sw.js`, список файлов и версию подставляет `scripts/lib/offline.mjs` при `npm run build` и после `add-piece`. Руками не править; тест `tests/offline.test.mjs` падает, если он устарел.
 - `sounds/piano/` — записи рояля (MP3, CC BY 3.0). **Генерируются** `scripts/make-piano.mjs` из архива Salamander Grand Piano V3; указание автора — в настройках, `README.md` и `sounds/piano/README.md`.
 - `pieces/` — пьесы: `index.json` (список), `<id>.json` (данные), `src/` (исходники MusicXML). **Генерируются** `scripts/add-piece.mjs`; руками не править.
 - `scripts/add-piece.mjs`, `scripts/lib/` — инструмент загрузки пьес: XML, zip (`.mxl`), проверки и перевод MusicXML, перевод LilyPond → MusicXML (`lilypond.mjs`).
@@ -52,6 +53,7 @@ npm run add-piece -- --rebuild                                   # пересо�
 - **Правило линеек записано дважды** — `ledgerRange`/`linesNeeded` в `src/music.js` и `ledgerLines` в `scripts/lib/musicxml.mjs`. Меняете одно — меняйте другое; совпадение проверяет тест.
 - **Проигрыш пьесы (`pb`): пока звучит, любой ввод игнорируется**, а звук с микрофона — ещё 1,2 с после (`micMuteUntil`): иначе микрофон засчитает динамик. Звук — через `audioOut()`, `AudioContext` создаётся по нажатию.
 - **Темп пьесы обязателен** (`tempo` в данных, из `<sound tempo>` или метронома); смена темпа — только в начале такта.
+- **Без интернета (`sw.js`): страница и пьесы — из сети, из кеша — только без сети или если сеть молчит 3 с.** Не меняйте на «сначала из кеша»: тогда новая версия сайта появлялась бы только со второго открытия. Изменили пьесы или звуки — `npm run build`, чтобы `sw.js` получил новую версию. В e2e обычные блоки идут с `serviceWorkers: 'block'`.
 - **История браузера:** экраны и открытые панели — записи в истории, «Назад» в приложении — `history.back()`. Не заменяйте это прямым переключением экранов, иначе системная «Назад» уведёт с сайта.
 
 ## Стиль
