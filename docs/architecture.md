@@ -223,7 +223,7 @@ slista.settings.v2 = {
   gateDb: число (−80…−20), calibrated: bool, showKeys: bool, keySound: bool,
   last: null | { mode: 'random' } | { mode: 'piece', id, clef, title }   // что открыть после перезагрузки на тренажёре
 }
-slista.scores.v2 = { "<id пьесы>:treble|bass": { stars: 0…3, dev: отклонение ритма, % } }   // лучший результат версии
+slista.scores.v2 = { "<id пьесы>:treble|bass": { stars: 0…3, dev: отклонение ритма, % | null } }   // лучший результат версии; из v1 — migrateScores
 slista.stats.v1 = {
   n: всего нот, first: с первого раза,
   notes: { "treble:30:0": { n: попыток, e: не с первого раза, ms: сумма реакций }, … }   // ключ = ключ:d:acc

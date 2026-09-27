@@ -223,6 +223,16 @@ function rhythmResult(expected, actual) {
   }
   return { diff, total, n, dev: total > 0 ? Math.max(0, Math.ceil((100 * diff) / total - 1e-9)) : 0 };
 }
+// Результаты версии 1 (прежний режим «На оценку»: процент, звёзды от 60, 85 и 100 %) → версия 2: звёзды сохраняются,
+// отклонения ритма там не было (dev: null)
+function migrateScores(v1) {
+  const out = {};
+  for (const [k, v] of Object.entries(v1 || {})) {
+    const best = v && +v.best;
+    if (Number.isFinite(best)) out[k] = { stars: best >= 100 ? 3 : best >= 85 ? 2 : best >= 60 ? 1 : 0, dev: null };
+  }
+  return out;
+}
 // Звёзды: ★ — все ноты без ошибок (неверных нажатий, подсказок, пропусков), ★★ — ещё и отклонение ритма
 // не больше 40 %, ★★★ — не больше 20 % (сумма расхождений — не больше 20 % длины пьесы)
 const pieceStars = (errors, dev) => (errors ? 0 : dev <= 20 ? 3 : dev <= 40 ? 2 : 1);

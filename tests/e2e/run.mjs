@@ -528,11 +528,12 @@ try {
     // заминка 1 с перед пятой нотой, дальше ровно: (1,5 − 0,5) / 3,5 = 29% → ★★
     await play([0, 500, 1000, 1500, 3000, 3500, 4000, 4500]);
     check('заминка, потом ровно — ★★, отклонение около 29%', (await text(page, '#doneStars')) === '★★☆' && Math.abs((await devOf()) - 29) <= 3, await text(page, '#doneKv'));
-    check('лучший результат остаётся ★★★', (await text(page, '#doneKv')).includes('Лучший результат★★★'));
+    check('итог: строка — что нужно для третьей звезды', (await text(page, '#doneNote')).startsWith('Ноты без ошибок, ритм близко к пьесе — две звезды. Третья'), await text(page, '#doneNote'));
+    check('в теле итога звёзд нет', !(await text(page, '#doneKv')).includes('★') && !(await text(page, '#doneNote')).includes('★'));
     await page.click('#doneAgain');
     await page.waitForTimeout(400);
     await play(even, 3); // перед четвёртой нотой — неверная клавиша
-    check('с ошибкой — ни одной звезды', (await text(page, '#doneStars')) === '☆☆☆' && (await text(page, '#msg')).includes('Звезда — когда все ноты без ошибок'), await text(page, '#msg'));
+    check('с ошибкой — ни одной звезды и причина', (await text(page, '#doneStars')) === '☆☆☆' && (await text(page, '#doneNote')).startsWith('Без звёзд: 1 нота с ошибкой'), await text(page, '#doneNote'));
     await page.click('#doneAgain');
     await page.waitForTimeout(400);
     // метроном — только ориентир: щёлкает, механика та же (курсор ждёт ноту)
@@ -551,6 +552,16 @@ try {
     await page.waitForSelector('#piecesList .piece');
     check('в списке — лучший результат ★★★', (await btn().textContent()).includes('★★★') && (await btn().getAttribute('aria-label')).includes('звёзд: 3 из 3'));
     check('страница без ошибок JS (звёзды)', errors.length === 0, errors.join('; '));
+    await ctx.close();
+  }
+  {
+    // результаты прежнего режима «На оценку» (slista.scores.v1) видны звёздами в списке
+    const init = { fn: () => localStorage.setItem('slista.scores.v1', JSON.stringify({ 'oda-k-radosti:treble': { best: 87 } })) };
+    const { ctx, page, errors } = await open(base + '#pieces', { init });
+    await page.waitForSelector('#piecesList .piece');
+    const t = await page.locator('[data-piece="oda-k-radosti"][data-clef="treble"]').textContent();
+    check('старые результаты (87% в режиме «На оценку») — ★★ в списке', t.includes('★★☆'), t);
+    check('страница без ошибок JS (перенос результатов)', errors.length === 0, errors.join('; '));
     await ctx.close();
   }
 

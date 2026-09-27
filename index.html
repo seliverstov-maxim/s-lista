@@ -827,6 +827,14 @@ n++;
 }
 return { diff, total, n, dev: total > 0 ? Math.max(0, Math.ceil((100 * diff) / total - 1e-9)) : 0 };
 }
+function migrateScores(v1) {
+const out = {};
+for (const [k, v] of Object.entries(v1 || {})) {
+const best = v && +v.best;
+if (Number.isFinite(best)) out[k] = { stars: best >= 100 ? 3 : best >= 85 ? 2 : best >= 60 ? 1 : 0, dev: null };
+}
+return out;
+}
 const pieceStars = (errors, dev) => (errors ? 0 : dev <= 20 ? 3 : dev <= 40 ? 2 : 1);
 const metroBeat = (time) => { const [n, d] = time || [4, 4]; return (d >= 8 && n % 3 === 0 ? 3 : 1) * durOf(d); };
 function metronomeBeats(score) {
@@ -1780,6 +1788,7 @@ fresh = false;
 const fmtSec = (ms) => (ms / 1000).toFixed(1).replace('.', ',') + ' с';
 const fmtDur = (ms) => { const s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+const plural = (n, one, few, many) => { const a = n % 10, b = n % 100; return a === 1 && b !== 11 ? one : a >= 2 && a <= 4 && (b < 12 || b > 14) ? few : many; };
 function renderStats() {
 $('stAcc').textContent = pct(session.first, session.n);
 $('stStreak').textContent = session.streak;
@@ -2072,9 +2081,10 @@ const first = notes.filter((n) => n.status === 'ok' && n.errors === 0 && !n.hint
 const r = rhythmResult(noteTimes(ex.score), notes.map((n) => (n.at != null ? n.at / 1000 : null)));
 const stars = pieceStars(notes.length - first, r.dev);
 const key = `${ex.piece.id}:${ex.clef}`, prev = SCORES[key];
-const better = !prev || stars > prev.stars || (stars === prev.stars && r.dev < prev.dev);
+const better = !prev || stars > prev.stars || (stars === prev.stars && (prev.dev == null || r.dev < prev.dev));
 if (better) { SCORES[key] = { stars, dev: r.dev }; store.set(SCORES_KEY, SCORES); }
-const best = SCORES[key], ms = (x) => (x < 1 ? `${Math.round(x * 1000)} мс` : `${x.toFixed(1).replace('.', ',')} с`);
+const ms = (x) => (x < 1 ? `${Math.round(x * 1000)} мс` : `${x.toFixed(1).replace('.', ',')} с`);
+const errors = notes.length - first;
 $('doneTitle').textContent = 'Пьеса сыграна';
 $('doneStars').textContent = starsText(stars);
 $('doneStars').setAttribute('aria-label', `Звёзд: ${stars} из 3`);
@@ -2083,9 +2093,11 @@ $('doneList').textContent = 'К списку';
 doneKind = 'piece';
 $('donePiece').textContent = `«${ex.piece.title}» · ${clefLabel(ex.clef)} · ♩ = ${String(ex.score.measures[0].tempo).replace('.', ',')}`;
 $('doneKv').innerHTML = `<dt>Нот</dt><dd>${notes.length}</dd><dt>С первого раза</dt><dd>${first} (${pct(first, notes.length)})</dd>`
-+ `<dt>Отклонение ритма</dt><dd>${r.dev}%${r.n ? ` · ${ms(r.diff / r.n)} на промежуток` : ''}</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`
-+ `<dt>Лучший результат</dt><dd>${starsText(best.stars)} · отклонение ${best.dev}%${better && prev ? ' · новый' : ''}</dd>`;
-$('doneNote').textContent = '★ — все ноты без ошибок, подсказок и пропусков. ★★ — ещё и отклонение ритма не больше 40%, ★★★ — не больше 20%. Отклонение — насколько в среднем промежуток между нотами разошёлся с пьесой в её темпе, от среднего промежутка; заминка портит только один промежуток. Метроном — кнопка на листе.';
++ `<dt>Отклонение ритма</dt><dd>${r.dev}%${r.n ? ` · ${ms(r.diff / r.n)} на промежуток` : ''}</dd><dt>Время</dt><dd>${fmtDur(ex.elapsed)}</dd>`;
+$('doneNote').textContent = stars === 0 ? `Без звёзд: ${errors} ${plural(errors, 'нота', 'ноты', 'нот')} с ошибкой, подсказкой или пропуском. Первая звезда — когда все ноты сыграны без ошибок.`
+: stars === 1 ? `Ноты без ошибок — первая звезда. Вторая — когда отклонение ритма не больше 40%, сейчас ${r.dev}%.`
+: stars === 2 ? `Ноты без ошибок, ритм близко к пьесе — две звезды. Третья — когда отклонение не больше 20%, сейчас ${r.dev}%.`
+: 'Все ноты без ошибок и в ритме пьесы — три звезды.';
 $('doneNote').hidden = false;
 say(stars ? `Пьеса сыграна: ${starsText(stars)}.` : 'Пьеса сыграна. Звезда — когда все ноты без ошибок.', 'ok');
 openPanel('donePanel');
@@ -2176,7 +2188,8 @@ renderScore(); renderTitle(); idleMessage();
 }
 }
 const SCORES_KEY = 'slista.scores.v2';
-const SCORES = store.get(SCORES_KEY, null) || {};
+const SCORES = store.get(SCORES_KEY, null) || migrateScores(store.get('slista.scores.v1', null));
+store.set(SCORES_KEY, SCORES);
 const MIC_LAG = 30;
 const METRO_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5L19 20.5H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 16.5l4.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 const METRO_GAIN = 0.5;

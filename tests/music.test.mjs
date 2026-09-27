@@ -324,6 +324,12 @@ test('FR-PC-12: звёзды — ★ за ноты без ошибок, ★★ �
   assert.deepEqual([[1, 0], [0, 0], [0, 20], [0, 21], [0, 40], [0, 41], [0, 100]].map(([e, d]) => M.pieceStars(e, d)), [0, 3, 3, 2, 2, 1, 1]);
 });
 
+test('FR-PC-12: результаты прежнего режима «На оценку» (v1) переносятся звёздами', () => {
+  assert.deepEqual(M.migrateScores({ 'a:treble': { best: 87 }, 'a:bass': { best: 100 }, 'b:treble': { best: 59 }, 'c:bass': { best: 'x' } }),
+    { 'a:treble': { stars: 2, dev: null }, 'a:bass': { stars: 3, dev: null }, 'b:treble': { stars: 0, dev: null } });
+  assert.deepEqual(M.migrateScores(null), {});
+});
+
 test('FR-PC-12: эталон ритма — моменты нот пьесы в её темпе, лиги не звучат заново', () => {
   const piece = { id: 't', title: 't', shift: { treble: 0 }, measures: [{ time: [4, 4], key: 0, tempo: 120,
     items: [{ d: 30, acc: 0, len: 2, tie: true }, { d: 30, acc: 0, len: 4 }, { d: 32, acc: 0, len: 4 }] }, { tempo: 60, items: [{ d: 33, acc: 0, len: 1 }] }] };
